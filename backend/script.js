@@ -265,6 +265,50 @@ function init() {
   
   // Adicionar evento ao botão de adicionar despesa
   document.getElementById('add-expense-btn').addEventListener('click', addExpense);
+
+  // Adicionar eventos aos radio buttons de tipo de despesa
+  document.getElementById('expense-type-credit-card').addEventListener('change', updateInstallmentOptions);
+  document.getElementById('expense-type-recurring').addEventListener('change', updateInstallmentOptions);
+  document.getElementById('expense-type-seasonal').addEventListener('change', updateInstallmentOptions);
+}
+
+// Função para atualizar as opções de parcelas com base no tipo de despesa selecionado
+function updateInstallmentOptions() {
+  const installmentOptions = document.getElementById('installment-options');
+  const installmentSelect = document.getElementById('payment-installments');
+  
+  // Limpar opções anteriores
+  installmentSelect.innerHTML = '';
+  
+  // Verificar qual tipo de despesa está selecionado
+  const isCreditCard = document.getElementById('expense-type-credit-card').checked;
+  const isRecurring = document.getElementById('expense-type-recurring').checked;
+  const isSeasonal = document.getElementById('expense-type-seasonal').checked;
+  
+  if (isCreditCard) {
+    // Cartão de Crédito: à vista ou 2 a 12x
+    installmentSelect.innerHTML = `
+      <option value="1">À vista</option>
+      ${Array.from({length: 11}, (_, i) => `<option value="${i+2}">${i+2}x</option>`).join('')}
+    `;
+    installmentOptions.style.display = 'block';
+  } else if (isRecurring) {
+    // Recorrente: 7 a 12x
+    installmentSelect.innerHTML = `
+      ${Array.from({length: 6}, (_, i) => `<option value="${i+7}">${i+7}x</option>`).join('')}
+    `;
+    installmentOptions.style.display = 'block';
+  } else if (isSeasonal) {
+    // Sazonal: à vista ou 2 a 6x
+    installmentSelect.innerHTML = `
+      <option value="1">À vista</option>
+      ${Array.from({length: 5}, (_, i) => `<option value="${i+2}">${i+2}x</option>`).join('')}
+    `;
+    installmentOptions.style.display = 'block';
+  } else {
+    // Nenhum tipo selecionado, esconder opções
+    installmentOptions.style.display = 'none';
+  }
 }
 
 // Iniciar a aplicação quando o DOM estiver pronto
