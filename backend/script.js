@@ -50,6 +50,23 @@ function formatDateToBrazil(dateString) {
   return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
 }
 
+// Função para criar uma data considerando o fuso GMT-3 (Brasil)
+function createDateWithBrazilianTimezone(dateString) {
+  if (!dateString) return new Date();
+  
+  // Criar a data a partir da string no formato YYYY-MM-DD
+  const date = new Date(dateString);
+  
+  // Ajustar para o fuso horário do Brasil (GMT-3)
+  // Isso garante que a data seja interpretada corretamente no fuso do Brasil
+  const brazilOffset = -3 * 60; // GMT-3 em minutos
+  const localOffset = date.getTimezoneOffset(); // Offset local em minutos
+  const totalOffsetMs = (localOffset - brazilOffset) * 60 * 1000;
+  
+  // Criar nova data ajustada
+  return new Date(date.getTime() + totalOffsetMs);
+}
+
 // Calcular totais apenas para o mês atual, sem carregar para os meses seguintes
 function calculateTotals() {
   const filteredExpenses = state.expenses.filter(expense => expense.month === state.selectedMonth && expense.year === state.selectedYear);
@@ -243,8 +260,8 @@ function addExpense() {
   if (description && amountStr && category && dueDate && (isCreditCard || isRecurring || isSeasonal)) {
     const amount = parseFloat(amountStr);
     if (!isNaN(amount)) {
-      // Extrair o mês da data de vencimento
-      const dueDateObj = new Date(dueDate);
+      // Extrair o mês da data de vencimento usando a função de timezone brasileiro
+      const dueDateObj = createDateWithBrazilianTimezone(dueDate);
       const expenseMonth = state.months[dueDateObj.getMonth()].name;
       const expenseYear = dueDateObj.getFullYear();
       
@@ -260,7 +277,7 @@ function addExpense() {
       if (isRecurring && installmentsCount > 1) {
         // Criar uma entrada para cada mês da recorrência
         for (let i = 0; i < installmentsCount; i++) {
-          // Calcular a data de vencimento para cada parcela
+          // Calcular a data de vencimento para cada parcela usando timezone brasileiro
           const currentDueDate = new Date(dueDateObj);
           currentDueDate.setMonth(dueDateObj.getMonth() + i);
           
