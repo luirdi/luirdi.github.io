@@ -329,3 +329,22 @@ th.text-right, td.text-right {
   color: #1f2937;
   font-weight: 500;
 }
+
+/* Action buttons */
+.action-btn {
+  padding: 0.25rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+  opacity: 1;
+}
+
+.action-btn + .action-btn {
+  margin-left: 0.5rem;
+}

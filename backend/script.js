@@ -216,14 +216,32 @@ function renderExpensesTable() {
           ${expense.paid ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>' : ''}
         </button>
       </td>
+      <td class="text-center">
+        <button class="action-btn edit-btn" data-id="${expense.id}" title="Editar">✏️</button>
+        <button class="action-btn delete-btn" data-id="${expense.id}" title="Excluir">🗑️</button>
+      </td>
     </tr>
   `).join('');
 
-  // Adicionar eventos aos botões de pago
+  // Adicionar eventos aos botões
   document.querySelectorAll('.paid-btn').forEach(button => {
     button.addEventListener('click', () => {
       const id = parseInt(button.getAttribute('data-id'));
       togglePaid(id);
+    });
+  });
+
+  document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const id = parseInt(button.getAttribute('data-id'));
+      editExpense(id);
+    });
+  });
+
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const id = parseInt(button.getAttribute('data-id'));
+      deleteExpense(id);
     });
   });
 }
@@ -500,3 +518,57 @@ function updateInstallmentOptions() {
 
 // Iniciar a aplicação quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', init);
+
+// Editar despesa
+function editExpense(id) {
+  // Encontrar a despesa pelo ID
+  const expense = state.expenses.find(expense => expense.id === id);
+  
+  if (expense) {
+    // Preencher o formulário com os dados da despesa
+    document.getElementById('expense-description').value = expense.description;
+    document.getElementById('expense-amount').value = expense.amount;
+    document.getElementById('expense-category').value = expense.category;
+    document.getElementById('expense-due-date').value = expense.dueDate;
+    
+    // Selecionar o tipo de despesa
+    if (expense.type === 'credit-card') {
+      document.getElementById('expense-type-credit-card').checked = true;
+    } else if (expense.type === 'recurring') {
+      document.getElementById('expense-type-recurring').checked = true;
+    } else if (expense.type === 'seasonal') {
+      document.getElementById('expense-type-seasonal').checked = true;
+    }
+    
+    // Atualizar opções de parcelas
+    updateInstallmentOptions();
+    
+    // Configurar opções específicas do tipo
+    if (expense.type === 'credit-card') {
+      document.getElementById('payment-installments').value = expense.installments || '1';
+      document.getElementById('closed-invoice-checkbox').checked = expense.closedInvoice || false;
+    }
+    
+    // Remover a despesa atual
+    deleteExpense(id, false); // false para não mostrar confirmação
+    
+    // Rolar para o formulário
+    document.querySelector('.form-grid').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// Excluir despesa
+function deleteExpense(id, showConfirmation = true) {
+  if (showConfirmation && !confirm('Tem certeza que deseja excluir esta despesa?')) {
+    return;
+  }
+  
+  // Filtrar a despesa do array
+  state.expenses = state.expenses.filter(expense => expense.id !== id);
+  
+  // Atualizar UI
+  renderExpensesTable();
+  renderTopSection();
+  calculateTotals();
+  saveStateToLocalStorage(); // Salvar alterações no localStorage
+}
