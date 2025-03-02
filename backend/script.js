@@ -228,6 +228,42 @@ function renderExpensesTable() {
   });
 }
 
+// Função para salvar o estado no localStorage
+function saveStateToLocalStorage() {
+  // Criar uma cópia do estado para armazenar
+  const stateToSave = {
+    expenses: state.expenses,
+    selectedMonth: state.selectedMonth,
+    selectedYear: state.selectedYear,
+    totalAmount: state.totalAmount,
+    totalPaid: state.totalPaid
+  };
+  
+  // Salvar no localStorage como string JSON
+  localStorage.setItem('financialPlannerState', JSON.stringify(stateToSave));
+}
+
+// Função para carregar o estado do localStorage
+function loadStateFromLocalStorage() {
+  const savedState = localStorage.getItem('financialPlannerState');
+  
+  if (savedState) {
+    try {
+      // Converter a string JSON de volta para objeto
+      const parsedState = JSON.parse(savedState);
+      
+      // Atualizar o estado com os dados salvos
+      state.expenses = parsedState.expenses || [];
+      state.selectedMonth = parsedState.selectedMonth || 'JANEIRO';
+      state.selectedYear = parsedState.selectedYear || new Date().getFullYear();
+      state.totalAmount = parsedState.totalAmount || 0;
+      state.totalPaid = parsedState.totalPaid || 0;
+    } catch (error) {
+      console.error('Erro ao carregar dados do localStorage:', error);
+    }
+  }
+}
+
 // Alternar status de pago
 function togglePaid(id) {
   state.expenses = state.expenses.map(expense => 
@@ -236,6 +272,7 @@ function togglePaid(id) {
   renderExpensesTable();
   renderTopSection(); // Atualizar também o top section com os novos valores
   calculateTotals();
+  saveStateToLocalStorage(); // Salvar alterações no localStorage
 }
 
 // Adicionar nova despesa
@@ -383,6 +420,7 @@ function addExpense() {
       renderExpensesTable();
       renderTopSection();
       calculateTotals();
+      saveStateToLocalStorage(); // Salvar alterações no localStorage
     }
   } else {
     alert('Por favor, preencha todos os campos e selecione um tipo de despesa.');
@@ -391,6 +429,9 @@ function addExpense() {
 
 // Inicialização da aplicação
 function init() {
+  // Carregar dados do localStorage
+  loadStateFromLocalStorage();
+  
   // Definir ano atual no footer
   document.getElementById('current-year').textContent = new Date().getFullYear();
   
