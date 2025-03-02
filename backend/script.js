@@ -368,9 +368,13 @@ function addExpense() {
       
       const installmentsCount = parseInt(installments) || 1;
       
-      // Para despesas recorrentes, criar múltiplas entradas
-      if (isRecurring && installmentsCount > 1) {
-        // Criar uma entrada para cada mês da recorrência
+      // Para despesas parceladas (cartão de crédito) ou recorrentes, criar múltiplas entradas
+      if ((isCreditCard && installmentsCount > 1) || (isRecurring && installmentsCount > 1)) {
+        // Calcular o valor de cada parcela para cartão de crédito
+        // Para despesas recorrentes, mantém o valor original em cada parcela
+        const installmentAmount = isCreditCard ? amount / installmentsCount : amount;
+        
+        // Criar uma entrada para cada mês da recorrência/parcela
         for (let i = 0; i < installmentsCount; i++) {
           // Calcular a data de vencimento para cada parcela usando timezone brasileiro
           const currentDueDate = new Date(dueDateObj);
@@ -390,7 +394,7 @@ function addExpense() {
           state.expenses.push({
             id: newId,
             description: `${description} (${i+1}/${installmentsCount})`,
-            amount,
+            amount: installmentAmount,
             paid: i === 0 ? isPaid : false, // Apenas a primeira parcela mantém o status de pagamento
             month: currentMonth,
             year: currentYear,
