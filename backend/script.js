@@ -369,9 +369,9 @@ function addExpense() {
       const installmentsCount = parseInt(installments) || 1;
       
       // Para despesas parceladas (cartão de crédito) ou recorrentes, criar múltiplas entradas
-      if ((isCreditCard && installmentsCount > 1) || (isRecurring && installmentsCount > 1)) {
+      if ((isCreditCard && installmentsCount > 1) || (isRecurring && installmentsCount > 1) || (isSeasonal && installmentsCount > 1)) {
         // Calcular o valor de cada parcela para cartão de crédito
-        // Para despesas recorrentes, mantém o valor original em cada parcela
+        // Para despesas recorrentes e sazonais, mantém o valor original em cada parcela
         const installmentAmount = isCreditCard ? amount / installmentsCount : amount;
         
         // Criar uma entrada para cada mês da recorrência/parcela
