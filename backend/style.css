@@ -293,3 +293,39 @@ th.text-right, td.text-right {
 .radio-label span {
   color: #1f2937;
 }
+
+/* Payment options container */
+.payment-options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .payment-options-container {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+}
+
+/* Checkbox label styles */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+}
+
+.checkbox-label span {
+  color: #1f2937;
+  font-weight: 500;
+}

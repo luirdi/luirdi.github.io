@@ -292,12 +292,16 @@ function updateInstallmentOptions() {
       ${Array.from({length: 11}, (_, i) => `<option value="${i+2}">${i+2}x</option>`).join('')}
     `;
     installmentOptions.style.display = 'block';
+    // Mostrar a opção de fatura fechada para cartão de crédito
+    document.getElementById('closed-invoice-container').style.display = 'block';
   } else if (isRecurring) {
     // Recorrente: 7 a 12x
     installmentSelect.innerHTML = `
       ${Array.from({length: 6}, (_, i) => `<option value="${i+7}">${i+7}x</option>`).join('')}
     `;
     installmentOptions.style.display = 'block';
+    // Esconder a opção de fatura fechada para recorrente
+    document.getElementById('closed-invoice-container').style.display = 'none';
   } else if (isSeasonal) {
     // Sazonal: à vista ou 2 a 6x
     installmentSelect.innerHTML = `
@@ -305,9 +309,13 @@ function updateInstallmentOptions() {
       ${Array.from({length: 5}, (_, i) => `<option value="${i+2}">${i+2}x</option>`).join('')}
     `;
     installmentOptions.style.display = 'block';
+    // Esconder a opção de fatura fechada para sazonal
+    document.getElementById('closed-invoice-container').style.display = 'none';
   } else {
     // Nenhum tipo selecionado, esconder opções
     installmentOptions.style.display = 'none';
+    // Esconder a opção de fatura fechada quando nenhum tipo estiver selecionado
+    document.getElementById('closed-invoice-container').style.display = 'none';
   }
 }
 

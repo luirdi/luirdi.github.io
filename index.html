@@ -68,10 +68,20 @@
 
         <!-- Installment options -->
         <div id="installment-options" style="display: none;">
-          <label class="expense-type-label">Forma de Pagamento:</label>
-          <select id="payment-installments" class="period-select">
-            <option value="">Selecione as parcelas</option>
-          </select>
+          <div class="payment-options-container">
+            <div>
+              <label class="expense-type-label">Forma de Pagamento:</label>
+              <select id="payment-installments" class="period-select">
+                <option value="">Selecione as parcelas</option>
+              </select>
+            </div>
+            <div id="closed-invoice-container" style="display: none;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="closed-invoice-checkbox">
+                <span>Fatura Fechada</span>
+              </label>
+            </div>
+          </div>
         </div>
         
         <button class="btn-primary" id="add-expense-btn">Adicionar</button>
