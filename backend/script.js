@@ -262,8 +262,21 @@ function addExpense() {
     if (!isNaN(amount)) {
       // Extrair o mês da data de vencimento usando a função de timezone brasileiro
       const dueDateObj = createDateWithBrazilianTimezone(dueDate);
-      const expenseMonth = state.months[dueDateObj.getMonth()].name;
-      const expenseYear = dueDateObj.getFullYear();
+      let expenseMonth = state.months[dueDateObj.getMonth()].name;
+      let expenseYear = dueDateObj.getFullYear();
+      
+      // Ajustar mês e ano para fatura fechada de cartão de crédito
+      if (isCreditCard && isClosedInvoice) {
+        // Avançar para o próximo mês
+        const nextMonth = dueDateObj.getMonth() + 1;
+        // Se for dezembro (11), avançar para janeiro do próximo ano
+        if (nextMonth > 11) {
+          expenseMonth = state.months[0].name; // Janeiro
+          expenseYear = expenseYear + 1;
+        } else {
+          expenseMonth = state.months[nextMonth].name;
+        }
+      }
       
       // Determine expense type
       let expenseType = '';
