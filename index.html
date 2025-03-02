@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/backend/style.css">
+  <title>Planejamento Financeiro</title>
+
+</head>
+
+<body>
+  <header>
+    <h1>Planejamento Financeiro</h1>
+  </header>
+
+  <div class="container">
+    <div class="flex-col" id="top-section">
+      <!-- Month selector e resumo financeiro serão inseridos aqui pelo JS -->
+    </div>
+
+    <!-- Add new expense -->
+    <div class="card">
+      <h2 class="card-title">Adicionar Nova Despesa</h2>
+      <div class="form-grid">
+        <input type="text" id="expense-description" placeholder="Descrição">
+        <input type="number" id="expense-amount" step="0.01" placeholder="Valor">
+        <select id="expense-category">
+          <option value="">Selecione a categoria</option>
+          <!-- Categorias serão inseridas aqui pelo JS -->
+        </select>
+        <input type="date" id="expense-due-date" placeholder="Data de Vencimento">
+        <button class="btn-primary" id="add-expense-btn">Adicionar</button>
+      </div>
+    </div>
+
+    <!-- Expenses table -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="table-header">
+        <h2 class="card-title" id="expenses-title">Despesas</h2>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th class="text-center">Vencimento</th>
+              <th class="text-right">Valor</th>
+              <th class="text-center">Pago</th>
+            </tr>
+          </thead>
+          <tbody id="expenses-table-body">
+            <!-- Expenses will be inserted here by JS -->
+          </tbody>
+          <!-- tfoot element removed -->
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Planejamento Financeiro - <span id="current-year"></span></p>
+  </footer>
+
+  <script src="/backend/script.js"></script>
+
+</body>
+
+</html>
