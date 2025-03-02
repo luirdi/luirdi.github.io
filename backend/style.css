@@ -36,7 +36,7 @@ footer {
   background-color: #2320FF;
   color: white;
   padding: 1rem;
-  text-align: center;
+  text-align: end;
 }
 
 /* Cards e Containers */
@@ -258,4 +258,38 @@ th.text-right, td.text-right {
   .form-grid {
     grid-template-columns: repeat(5, 1fr);
   }
+}
+
+/* Radio button styles */
+.expense-type-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.expense-type-label {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.radio-label span {
+  color: #1f2937;
 }

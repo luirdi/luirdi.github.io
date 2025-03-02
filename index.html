@@ -46,6 +46,26 @@
           <!-- Categorias serão inseridas aqui pelo JS -->
         </select>
         <input type="date" id="expense-due-date" placeholder="Data de Vencimento">
+        
+        <!-- Tipo de despesa (radio buttons) -->
+        <div class="expense-type-container">
+          <label class="expense-type-label">Tipo:</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="expense-type" value="credit-card" id="expense-type-credit-card">
+              <span>Cartão de Crédito</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="expense-type" value="recurring" id="expense-type-recurring">
+              <span>Recorrente</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="expense-type" value="seasonal" id="expense-type-seasonal">
+              <span>Sazonal</span>
+            </label>
+          </div>
+        </div>
+        
         <button class="btn-primary" id="add-expense-btn">Adicionar</button>
       </div>
     </div>
