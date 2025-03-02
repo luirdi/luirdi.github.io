@@ -252,12 +252,35 @@ function addExpense() {
   
   // Get installment information if applicable
   const installmentSelect = document.getElementById('payment-installments');
-  const installments = installmentSelect.style.display !== 'none' ? installmentSelect.value : '1';
+  let installments = installmentSelect.style.display !== 'none' ? installmentSelect.value : '1';
+  
+  // Get end date for recurring expenses
+  let endDate = null;
+  if (isRecurring) {
+    endDate = document.getElementById('recurring-end-date-input').value;
+    if (endDate) {
+      // Calculate number of installments based on months between start and end date
+      const startDate = createDateWithBrazilianTimezone(dueDate);
+      const endDateObj = createDateWithBrazilianTimezone(endDate);
+      
+      // Calculate months difference
+      const monthsDiff = (endDateObj.getFullYear() - startDate.getFullYear()) * 12 + 
+                        (endDateObj.getMonth() - startDate.getMonth()) + 1; // +1 to include the first month
+      
+      installments = Math.max(1, monthsDiff); // Ensure at least 1 installment
+    }
+  }
   
   // Check if invoice is closed (only applies to credit card)
   const isClosedInvoice = isCreditCard ? document.getElementById('closed-invoice-checkbox').checked : false;
   
   if (description && amountStr && category && dueDate && (isCreditCard || isRecurring || isSeasonal)) {
+    // For recurring expenses, also check if end date is provided
+    if (isRecurring && !endDate) {
+      alert('Por favor, selecione uma data final para despesas recorrentes.');
+      return;
+    }
+    
     const amount = parseFloat(amountStr);
     if (!isNaN(amount)) {
       // Extrair o mês da data de vencimento usando a função de timezone brasileiro
@@ -408,12 +431,11 @@ function updateInstallmentOptions() {
     installmentOptions.style.display = 'block';
     // Mostrar a opção de fatura fechada para cartão de crédito
     document.getElementById('closed-invoice-container').style.display = 'block';
+    document.getElementById('recurring-end-date').style.display = 'none';
   } else if (isRecurring) {
-    // Recorrente: 7 a 12x
-    installmentSelect.innerHTML = `
-      ${Array.from({length: 6}, (_, i) => `<option value="${i+7}">${i+7}x</option>`).join('')}
-    `;
-    installmentOptions.style.display = 'block';
+    // Recorrente: mostrar campo de data final
+    installmentOptions.style.display = 'none';
+    document.getElementById('recurring-end-date').style.display = 'block';
     // Esconder a opção de fatura fechada para recorrente
     document.getElementById('closed-invoice-container').style.display = 'none';
   } else if (isSeasonal) {
@@ -425,11 +447,13 @@ function updateInstallmentOptions() {
     installmentOptions.style.display = 'block';
     // Esconder a opção de fatura fechada para sazonal
     document.getElementById('closed-invoice-container').style.display = 'none';
+    document.getElementById('recurring-end-date').style.display = 'none';
   } else {
     // Nenhum tipo selecionado, esconder opções
     installmentOptions.style.display = 'none';
     // Esconder a opção de fatura fechada quando nenhum tipo estiver selecionado
     document.getElementById('closed-invoice-container').style.display = 'none';
+    document.getElementById('recurring-end-date').style.display = 'none';
   }
 }
 
