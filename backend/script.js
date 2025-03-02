@@ -329,6 +329,10 @@ function addExpense() {
   // Check if invoice is closed (only applies to credit card)
   const isClosedInvoice = isCreditCard ? document.getElementById('closed-invoice-checkbox').checked : false;
   
+  // Check if we're editing an expense and get the paid status
+  const paidStatusInput = document.getElementById('expense-paid-status');
+  const isPaid = paidStatusInput ? paidStatusInput.value === '1' : false;
+  
   if (description && amountStr && category && dueDate && (isCreditCard || isRecurring || isSeasonal)) {
     // For recurring expenses, also check if end date is provided
     if (isRecurring && !endDate) {
@@ -387,7 +391,7 @@ function addExpense() {
             id: newId,
             description: `${description} (${i+1}/${installmentsCount})`,
             amount,
-            paid: false,
+            paid: i === 0 ? isPaid : false, // Apenas a primeira parcela mantém o status de pagamento
             month: currentMonth,
             year: currentYear,
             category,
@@ -405,7 +409,7 @@ function addExpense() {
           id: newId,
           description,
           amount,
-          paid: false,
+          paid: isPaid, // Usar o status de pagamento preservado
           month: expenseMonth,
           year: expenseYear,
           category,
@@ -429,6 +433,11 @@ function addExpense() {
       document.getElementById('expense-type-seasonal').checked = false;
       document.getElementById('installment-options').style.display = 'none';
       document.getElementById('closed-invoice-checkbox').checked = false;
+      
+      // Remover o campo de status de pagamento
+      if (paidStatusInput) {
+        paidStatusInput.remove();
+      }
       
       // Mudar para o mês e ano da primeira despesa
       state.selectedMonth = expenseMonth;
@@ -548,6 +557,15 @@ function editExpense(id) {
       document.getElementById('payment-installments').value = expense.installments || '1';
       document.getElementById('closed-invoice-checkbox').checked = expense.closedInvoice || false;
     }
+    
+    // Preservar o status de pagamento
+    if (!document.getElementById('expense-paid-status')) {
+      const paidStatusInput = document.createElement('input');
+      paidStatusInput.type = 'hidden';
+      paidStatusInput.id = 'expense-paid-status';
+      document.querySelector('.form-grid').appendChild(paidStatusInput);
+    }
+    document.getElementById('expense-paid-status').value = expense.paid ? '1' : '0';
     
     // Remover a despesa atual
     deleteExpense(id, false); // false para não mostrar confirmação
