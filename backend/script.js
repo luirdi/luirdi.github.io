@@ -66,9 +66,23 @@ function calculateTotals() {
   state.totalAmount = total - paid;
   state.totalPaid = paid;
   
-  // Remove references to tfoot elements since they've been removed from HTML
-  // document.getElementById('total-debt').textContent = `R$ ${formatCurrency(state.totalAmount)}`;
-  // document.getElementById('total-paid').textContent = `R$ ${formatCurrency(state.totalPaid)}`;
+  // Calculate totals by expense type
+  const creditCardTotal = filteredExpenses
+    .filter(expense => expense.type === 'credit-card')
+    .reduce((sum, expense) => sum + expense.amount, 0);
+    
+  const recurringTotal = filteredExpenses
+    .filter(expense => expense.type === 'recurring')
+    .reduce((sum, expense) => sum + expense.amount, 0);
+    
+  const seasonalTotal = filteredExpenses
+    .filter(expense => expense.type === 'seasonal')
+    .reduce((sum, expense) => sum + expense.amount, 0);
+  
+  // Update amount cards
+  document.getElementById('credit-card-amount').textContent = `R$ ${formatCurrency(creditCardTotal)}`;
+  document.getElementById('recurring-amount').textContent = `R$ ${formatCurrency(recurringTotal)}`;
+  document.getElementById('seasonal-amount').textContent = `R$ ${formatCurrency(seasonalTotal)}`;
 }
 
 // Renderizar meses e resumo financeiro
@@ -214,7 +228,19 @@ function addExpense() {
   const category = document.getElementById('expense-category').value;
   const dueDate = document.getElementById('expense-due-date').value;
   
-  if (description && amountStr && category && dueDate) {
+  // Get expense type
+  const isCreditCard = document.getElementById('expense-type-credit-card').checked;
+  const isRecurring = document.getElementById('expense-type-recurring').checked;
+  const isSeasonal = document.getElementById('expense-type-seasonal').checked;
+  
+  // Get installment information if applicable
+  const installmentSelect = document.getElementById('payment-installments');
+  const installments = installmentSelect.style.display !== 'none' ? installmentSelect.value : '1';
+  
+  // Check if invoice is closed (only applies to credit card)
+  const isClosedInvoice = isCreditCard ? document.getElementById('closed-invoice-checkbox').checked : false;
+  
+  if (description && amountStr && category && dueDate && (isCreditCard || isRecurring || isSeasonal)) {
     const amount = parseFloat(amountStr);
     if (!isNaN(amount)) {
       // Extrair o mês da data de vencimento
@@ -222,17 +248,66 @@ function addExpense() {
       const expenseMonth = state.months[dueDateObj.getMonth()].name;
       const expenseYear = dueDateObj.getFullYear();
       
-      const newId = Math.max(...state.expenses.map(e => e.id), 0) + 1;
-      state.expenses.push({
-        id: newId,
-        description,
-        amount,
-        paid: false,
-        month: expenseMonth,
-        year: expenseYear,
-        category,
-        dueDate
-      });
+      // Determine expense type
+      let expenseType = '';
+      if (isCreditCard) expenseType = 'credit-card';
+      else if (isRecurring) expenseType = 'recurring';
+      else if (isSeasonal) expenseType = 'seasonal';
+      
+      const installmentsCount = parseInt(installments) || 1;
+      
+      // Para despesas recorrentes, criar múltiplas entradas
+      if (isRecurring && installmentsCount > 1) {
+        // Criar uma entrada para cada mês da recorrência
+        for (let i = 0; i < installmentsCount; i++) {
+          // Calcular a data de vencimento para cada parcela
+          const currentDueDate = new Date(dueDateObj);
+          currentDueDate.setMonth(dueDateObj.getMonth() + i);
+          
+          // Obter mês e ano para esta parcela
+          const currentMonth = state.months[currentDueDate.getMonth()].name;
+          const currentYear = currentDueDate.getFullYear();
+          
+          // Formatar a data no formato YYYY-MM-DD para armazenar
+          const formattedDueDate = `${currentYear}-${String(currentDueDate.getMonth() + 1).padStart(2, '0')}-${String(currentDueDate.getDate()).padStart(2, '0')}`;
+          
+          // Criar ID único para cada parcela
+          const newId = Math.max(...state.expenses.map(e => e.id || 0), 0) + 1 + i;
+          
+          // Adicionar a parcela ao array de despesas
+          state.expenses.push({
+            id: newId,
+            description: `${description} (${i+1}/${installmentsCount})`,
+            amount,
+            paid: false,
+            month: currentMonth,
+            year: currentYear,
+            category,
+            dueDate: formattedDueDate,
+            type: expenseType,
+            installments: installmentsCount,
+            currentInstallment: i + 1,
+            closedInvoice: false
+          });
+        }
+      } else {
+        // Para despesas não recorrentes ou à vista, criar apenas uma entrada
+        const newId = Math.max(...state.expenses.map(e => e.id || 0), 0) + 1;
+        state.expenses.push({
+          id: newId,
+          description,
+          amount,
+          paid: false,
+          month: expenseMonth,
+          year: expenseYear,
+          category,
+          dueDate,
+          type: expenseType,
+          installments: installmentsCount,
+          currentInstallment: 1,
+          closedInvoice: isClosedInvoice
+        });
+      }
       
       // Limpar formulário
       document.getElementById('expense-description').value = '';
@@ -240,7 +315,14 @@ function addExpense() {
       document.getElementById('expense-category').value = '';
       document.getElementById('expense-due-date').value = '';
       
-      // Mudar para o mês e ano da despesa
+      // Reset radio buttons and installment options
+      document.getElementById('expense-type-credit-card').checked = false;
+      document.getElementById('expense-type-recurring').checked = false;
+      document.getElementById('expense-type-seasonal').checked = false;
+      document.getElementById('installment-options').style.display = 'none';
+      document.getElementById('closed-invoice-checkbox').checked = false;
+      
+      // Mudar para o mês e ano da primeira despesa
       state.selectedMonth = expenseMonth;
       state.selectedYear = expenseYear;
       
@@ -249,6 +331,8 @@ function addExpense() {
       renderTopSection();
       calculateTotals();
     }
+  } else {
+    alert('Por favor, preencha todos os campos e selecione um tipo de despesa.');
   }
 }
 
