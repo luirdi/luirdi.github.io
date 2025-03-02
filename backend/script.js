@@ -217,7 +217,6 @@ function renderExpensesTable() {
         </button>
       </td>
       <td class="text-center">
-        <button class="action-btn edit-btn" data-id="${expense.id}" title="Editar">✏️</button>
         <button class="action-btn delete-btn" data-id="${expense.id}" title="Excluir">🗑️</button>
       </td>
     </tr>
@@ -231,17 +230,10 @@ function renderExpensesTable() {
     });
   });
 
-  document.querySelectorAll('.edit-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      const id = parseInt(button.getAttribute('data-id'));
-      editExpense(id);
-    });
-  });
-
   document.querySelectorAll('.delete-btn').forEach(button => {
     button.addEventListener('click', () => {
       const id = parseInt(button.getAttribute('data-id'));
-      deleteExpense(id);
+      showDeleteModal(id);
     });
   });
 }
@@ -593,4 +585,62 @@ function deleteExpense(id, showConfirmation = true) {
   renderTopSection();
   calculateTotals();
   saveStateToLocalStorage(); // Salvar alterações no localStorage
+}
+
+function showDeleteModal(id) {
+  // Create modal container
+  const modalContainer = document.createElement('div');
+  modalContainer.className = 'modal-container';
+  modalContainer.innerHTML = `
+    <div class="modal-content">
+      <h2>Excluir Despesa</h2>
+      <p>Como você deseja excluir esta despesa?</p>
+      <div class="modal-buttons">
+        <button class="modal-btn delete-all">Excluir TUDO</button>
+        <button class="modal-btn delete-one">Excluir 1</button>
+        <button class="modal-btn cancel">Voltar</button>
+      </div>
+    </div>
+  `;
+
+  // Add event listeners
+  const deleteAllBtn = modalContainer.querySelector('.delete-all');
+  const deleteOneBtn = modalContainer.querySelector('.delete-one');
+  const cancelBtn = modalContainer.querySelector('.cancel');
+
+  deleteAllBtn.addEventListener('click', () => {
+    const expense = state.expenses.find(e => e.id === id);
+    if (expense) {
+      // Delete all related expenses (same description and type)
+      state.expenses = state.expenses.filter(e => 
+        !(e.description.split(' (')[0] === expense.description.split(' (')[0] && 
+          e.type === expense.type)
+      );
+      updateUIAfterDelete();
+    }
+    document.body.removeChild(modalContainer);
+  });
+
+  deleteOneBtn.addEventListener('click', () => {
+    state.expenses = state.expenses.filter(e => e.id !== id);
+    updateUIAfterDelete();
+    document.body.removeChild(modalContainer);
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    document.body.removeChild(modalContainer);
+  });
+
+  // Add modal to body
+  document.body.appendChild(modalContainer);
+
+  // Add fade-in animation
+  setTimeout(() => modalContainer.classList.add('show'), 10);
+}
+
+function updateUIAfterDelete() {
+  renderExpensesTable();
+  renderTopSection();
+  calculateTotals();
+  saveStateToLocalStorage();
 }
