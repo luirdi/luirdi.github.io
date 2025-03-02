@@ -5,18 +5,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/backend/style.css">
-  <title>Planejamento Financeiro</title>
+  <title>Financial Planner</title>
 
 </head>
 
 <body>
   <header>
-    <h1>Planejamento Financeiro</h1>
+    <h1>{0101010101}</h1>
   </header>
 
   <div class="container">
     <div class="flex-col" id="top-section">
       <!-- Month selector e resumo financeiro serão inseridos aqui pelo JS -->
+    </div>
+
+    <!-- Amount Cards Banner -->
+    <div class="flex-row">
+      <div class="card flex-1">
+        <h3 class="card-title">Cartão de Crédito</h3>
+        <p class="amount" id="credit-card-amount">R$ 0,00</p>
+      </div>
+      <div class="card flex-1">
+        <h3 class="card-title">Recorrente</h3>
+        <p class="amount" id="recurring-amount">R$ 0,00</p>
+      </div>
+      <div class="card flex-1">
+        <h3 class="card-title">Sazonal</h3>
+        <p class="amount" id="seasonal-amount">R$ 0,00</p>
+      </div>
     </div>
 
     <!-- Add new expense -->

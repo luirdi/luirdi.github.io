@@ -48,6 +48,13 @@ footer {
   margin-bottom: 1.5rem;
 }
 
+.amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2563eb;
+  margin-top: 0.5rem;
+}
+
 .card.flex-1 {
   margin-bottom: 0;
 }
