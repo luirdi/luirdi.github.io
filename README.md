@@ -39,3 +39,17 @@ Todos os dados são armazenados localmente no seu dispositivo.
 ## 🤝 Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
+
+## Limpando arquivos ocultos macOS
+
+Terminal
+
+find . -name "._*" -delete && find . -name ".DS_Store" -delete
+
+luizclaudiosantos@MacBook-Air-M2--Luiz-Claudio luirdi.github.io % 
+find . -name "._*" -delete && find . -name 
+".DS_Store" -delete                                              
+find . -name "._*" -delete && find . -name
+".DS_Store" -delete
+
+git add . && git commit -m "Limpando arquivos ocultos do macOS"
