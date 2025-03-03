@@ -557,6 +557,9 @@ function init() {
   document
     .getElementById("expense-type-recurring")
     .addEventListener("change", updateInstallmentOptions);
+
+  // Inicializar o estado do botão com base no tipo de despesa selecionado
+  updateInstallmentOptions();
 }
 
 // Função para atualizar as opções de parcelas com base no tipo de despesa selecionado
@@ -571,15 +574,21 @@ function updateInstallmentOptions() {
   );
   const recurringEndDateContainer =
     document.getElementById("recurring-end-date");
+  const addButton = document.getElementById("add-expense-btn");
 
   // Limpar opções existentes
-  paymentInstallments.innerHTML =
-    '<option value="">Parcelas</option>';
+  paymentInstallments.innerHTML = '<option value="">Parcelas</option>';
+
+  // Remover a classe btn-full-width do botão para todos os casos
+  addButton.classList.remove("btn-full-width");
 
   if (expenseType === "credit-card") {
     installmentOptions.style.display = "block";
     recurringEndDateContainer.style.display = "none";
     closedInvoiceContainer.style.display = "block";
+
+    // Adiciona a classe para o botão ocupar duas colunas
+    addButton.classList.add("btn-full-width");
 
     // Adiciona opções de 1 a 12 parcelas para cartão de crédito
     for (let i = 1; i <= 12; i++) {
@@ -592,6 +601,9 @@ function updateInstallmentOptions() {
     installmentOptions.style.display = "block";
     recurringEndDateContainer.style.display = "none";
     closedInvoiceContainer.style.display = "none";
+
+    // Adiciona a classe para o botão ocupar duas colunas
+    addButton.classList.add("btn-full-width");
 
     // Adiciona opções de 2 a 12 parcelas para despesas recorrentes
     for (let i = 2; i <= 12; i++) {

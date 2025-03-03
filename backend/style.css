@@ -130,6 +130,11 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Classe para fazer o botão ocupar duas colunas no grid */
+.btn-full-width {
+  grid-column: span 2;
+}
+
 input,
 select,
 button {
