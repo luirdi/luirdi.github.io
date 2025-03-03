@@ -17,7 +17,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
   flex-grow: 1;
@@ -62,7 +62,7 @@ footer {
   border-radius: 0.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: .8rem;
 }
 
 .amount {
@@ -154,7 +154,7 @@ footer {
 /* Formulário */
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns:repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -305,7 +305,7 @@ th.text-right, td.text-right {
   }
 
   .form-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
