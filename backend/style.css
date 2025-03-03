@@ -128,7 +128,7 @@ body {
   grid-template-columns: repeat(2, 49%);
   /* grid-template-rows: repeat(3, 1fr, 1fr, 1fr); */
   gap: 0.5rem;
-  margin-bottom: 1rem;
+
 }
 
 input,
@@ -155,7 +155,7 @@ input[type="number"]::-webkit-outer-spin-button {
 button.btn-primary {
   background-color: #3843d0;
   color: white;
-  padding: 0.5rem 1rem;
+  padding:1rem 1rem;
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
