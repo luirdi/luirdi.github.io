@@ -79,7 +79,7 @@ body {
 
 .period-select {
   flex: 1;
-  
+
   padding: 0.5rem;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
@@ -128,7 +128,6 @@ body {
   grid-template-columns: repeat(2, 49%);
   /* grid-template-rows: repeat(3, 1fr, 1fr, 1fr); */
   gap: 0.5rem;
-
 }
 
 input,
@@ -155,7 +154,7 @@ input[type="number"]::-webkit-outer-spin-button {
 button.btn-primary {
   background-color: #3843d0;
   color: white;
-  padding:1rem 1rem;
+  padding: 1rem 1rem;
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
@@ -398,6 +397,43 @@ td.text-right {
   margin-left: 0.5rem;
 }
 
+/* Credit card details button */
+.action-btn[onclick*="showConsolidatedCreditCardExpenses"] {
+  padding: 0.25rem 0.5rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  opacity: 1;
+}
+
+.action-btn[onclick*="showConsolidatedCreditCardExpenses"]:hover {
+  background-color: #e5e7eb;
+}
+
+/* Due date input styles */
+.due-date-input {
+  width: 100%;
+  max-width: 150px;
+  text-align: center;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.due-date-input:hover {
+  border-color: #2563eb;
+}
+
+.due-date-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
 /* Modal Styles */
 .modal-container {
   position: fixed;
@@ -488,4 +524,70 @@ td.text-right {
   .modal-buttons {
     flex-direction: row;
   }
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.consolidated-summary {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.consolidated-summary p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-badge.paid {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.unpaid {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Cursor pointer para o emoji de olho */
+.card-title:contains("Credit Card") {
+  cursor: pointer;
 }

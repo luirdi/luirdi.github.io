@@ -240,7 +240,7 @@ function renderExpensesTable() {
   if (filteredExpenses.length === 0) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="5" class="text-center" style="color: #6b7280;">
+        <td colspan="6" class="text-center" style="color: #6b7280;">
           Nenhuma despesa cadastrada para este período
         </td>
       </tr>
@@ -248,7 +248,86 @@ function renderExpensesTable() {
     return;
   }
 
-  tableBody.innerHTML = filteredExpenses
+  // Separar despesas de cartão e outras despesas
+  const creditCardExpenses = filteredExpenses.filter(
+    (expense) => expense.type === "credit-card"
+  );
+  const otherExpenses = filteredExpenses.filter(
+    (expense) => expense.type !== "credit-card"
+  );
+
+  // Calcular total das despesas de cartão
+  const creditCardTotal = creditCardExpenses.reduce(
+    (sum, expense) => sum + expense.amount,
+    0
+  );
+  const creditCardPaid = creditCardExpenses
+    .filter((expense) => expense.paid)
+    .reduce((sum, expense) => sum + expense.amount, 0);
+
+  // Gerar HTML da tabela
+  let tableHTML = "";
+
+  // Adicionar linha de cartão de crédito consolidada
+  if (creditCardExpenses.length > 0) {
+    // Calcular a data de vencimento para o primeiro dia do mês seguinte
+    const currentDate = new Date();
+    const nextMonth = currentDate.getMonth() + 1;
+    const nextYear =
+      nextMonth > 11
+        ? currentDate.getFullYear() + 1
+        : currentDate.getFullYear();
+    const nextMonthName = state.months[nextMonth % 12].name;
+
+    // Se o mês selecionado for o mês atual, usar a data calculada
+    // Se não, usar a data do primeiro dia do mês seguinte ao mês selecionado
+    const latestDueDate =
+      state.selectedMonth === nextMonthName && state.selectedYear === nextYear
+        ? `${nextYear}-${String(nextMonth + 1).padStart(2, "0")}-01` // Dia 1 do próximo mês
+        : (() => {
+            const selectedMonthIndex = state.months.findIndex(
+              (m) => m.name === state.selectedMonth
+            );
+            const nextMonthIndex = (selectedMonthIndex + 1) % 12;
+            const nextYearForSelected =
+              selectedMonthIndex === 11
+                ? state.selectedYear + 1
+                : state.selectedYear;
+            return `${nextYearForSelected}-${String(
+              nextMonthIndex + 1
+            ).padStart(2, "0")}-01`;
+          })();
+
+    tableHTML += `
+      <tr>
+        <td>Cartão de Crédito</td>
+        <td>Diversos</td>
+        <td class="text-center">
+          <input type="date" 
+                 class="due-date-input" 
+                 value="${latestDueDate}"
+                 onchange="updateCreditCardDueDate(this.value)"
+                 style="padding: 0.25rem; border: 1px solid #e5e7eb; border-radius: 0.25rem; font-size: 0.875rem;">
+        </td>
+        <td class="text-right">R$ ${formatCurrency(creditCardTotal)}</td>
+        <td class="text-center">
+          <button class="paid-btn ${
+            creditCardPaid === creditCardTotal ? "paid" : ""
+          }" data-type="credit-card">
+            ${
+              creditCardPaid === creditCardTotal
+                ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>'
+                : ""
+            }
+          </button>
+        </td>
+        <td class="text-center">-</td>
+      </tr>
+    `;
+  }
+
+  // Adicionar outras despesas
+  tableHTML += otherExpenses
     .map(
       (expense) => `
     <tr>
@@ -277,11 +356,22 @@ function renderExpensesTable() {
     )
     .join("");
 
+  tableBody.innerHTML = tableHTML;
+
   // Adicionar eventos aos botões
   document.querySelectorAll(".paid-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      const id = parseInt(button.getAttribute("data-id"));
-      togglePaid(id);
+      const id = button.getAttribute("data-id");
+      const type = button.getAttribute("data-type");
+
+      if (type === "credit-card") {
+        // Marcar/desmarcar todas as despesas de cartão
+        creditCardExpenses.forEach((expense) => {
+          togglePaid(expense.id);
+        });
+      } else if (id) {
+        togglePaid(parseInt(id));
+      }
     });
   });
 
@@ -291,6 +381,25 @@ function renderExpensesTable() {
       showDeleteModal(id);
     });
   });
+}
+
+// Função para atualizar a data de vencimento das despesas de cartão
+function updateCreditCardDueDate(newDueDate) {
+  const filteredExpenses = state.expenses.filter(
+    (expense) =>
+      expense.month === state.selectedMonth &&
+      expense.year === state.selectedYear &&
+      expense.type === "credit-card"
+  );
+
+  // Atualizar a data de vencimento de todas as despesas de cartão
+  filteredExpenses.forEach((expense) => {
+    expense.dueDate = newDueDate;
+  });
+
+  // Atualizar UI e salvar no localStorage
+  renderExpensesTable();
+  saveStateToLocalStorage();
 }
 
 // Função para salvar o estado no localStorage
@@ -391,8 +500,6 @@ function addExpense() {
     dueDate &&
     (isCreditCard || isRecurring || isSinglePayment)
   ) {
-    // Removido a verificação da data final para despesas recorrentes
-
     const amount = parseFloat(cleanedAmountStr);
     if (!isNaN(amount)) {
       // Extrair o mês da data de vencimento usando a função de timezone brasileiro
@@ -434,19 +541,21 @@ function addExpense() {
 
         // Criar uma entrada para cada mês da recorrência/parcela
         for (let i = 0; i < installmentsCount; i++) {
-          // Manter a data original da compra
+          // Calcular a data de vencimento para cada parcela usando timezone brasileiro
           const currentDueDate = new Date(dueDateObj);
-          
-          // Se for cartão de crédito e a fatura estiver fechada, começar do próximo mês
-          if (isCreditCard && isClosedInvoice) {
-            currentDueDate.setMonth(dueDateObj.getMonth() + i + 1);
-          } else {
-            currentDueDate.setMonth(dueDateObj.getMonth() + i);
-          }
+          currentDueDate.setMonth(dueDateObj.getMonth() + i);
 
           // Obter mês e ano para esta parcela
           const currentMonth = state.months[currentDueDate.getMonth()].name;
           const currentYear = currentDueDate.getFullYear();
+
+          // Formatar a data no formato YYYY-MM-DD para armazenar
+          const formattedDueDate = `${currentYear}-${String(
+            currentDueDate.getMonth() + 1
+          ).padStart(2, "0")}-${String(currentDueDate.getDate()).padStart(
+            2,
+            "0"
+          )}`;
 
           // Criar ID único para cada parcela
           const newId =
@@ -455,17 +564,21 @@ function addExpense() {
           // Adicionar a parcela ao array de despesas
           state.expenses.push({
             id: newId,
-            description: `${description} (${i + 1}/${installmentsCount})`,
+            description: isCreditCard
+              ? "Cartão de Crédito"
+              : `${description} (${i + 1}/${installmentsCount})`,
             amount: installmentAmount,
             paid: i === 0 ? isPaid : false, // Apenas a primeira parcela mantém o status de pagamento
             month: currentMonth,
             year: currentYear,
-            category,
-            dueDate: dueDate, // Manter a data original da compra
+            category: isCreditCard ? "Diversos" : category,
+            dueDate: formattedDueDate,
             type: expenseType,
             installments: installmentsCount,
             currentInstallment: i + 1,
-            closedInvoice: isClosedInvoice,
+            closedInvoice: false,
+            originalDescription: description, // Guardar a descrição original para referência
+            originalCategory: category, // Guardar a categoria original para referência
           });
         }
       } else {
@@ -473,17 +586,19 @@ function addExpense() {
         const newId = Math.max(...state.expenses.map((e) => e.id || 0), 0) + 1;
         state.expenses.push({
           id: newId,
-          description,
+          description: isCreditCard ? "Cartão de Crédito" : description,
           amount,
-          paid: isPaid, // Usar o status de pagamento preservado
+          paid: isPaid,
           month: expenseMonth,
           year: expenseYear,
-          category,
+          category: isCreditCard ? "Diversos" : category,
           dueDate,
           type: expenseType,
           installments: installmentsCount,
           currentInstallment: 1,
           closedInvoice: isClosedInvoice,
+          originalDescription: description, // Guardar a descrição original para referência
+          originalCategory: category, // Guardar a categoria original para referência
         });
       }
 
@@ -527,9 +642,6 @@ function init() {
   // Carregar dados do localStorage
   loadStateFromLocalStorage();
 
-  // // Definir ano atual no footer
-  // document.getElementById('current-year').textContent = new Date().getFullYear();
-
   // Renderizar componentes
   renderTopSection();
   renderCategories();
@@ -555,6 +667,27 @@ function init() {
   document
     .getElementById("expense-type-recurring")
     .addEventListener("change", updateInstallmentOptions);
+
+  // Adicionar evento de clique no ícone de visualização do Banner Credit Card
+  const creditCardTitle = Array.from(
+    document.querySelectorAll(".card-title")
+  ).find((title) => title.textContent.includes("Credit Card"));
+  if (creditCardTitle) {
+    // Substituir o emoji do olho pelo ícone SVG
+    creditCardTitle.innerHTML = creditCardTitle.innerHTML.replace(
+      "👁️",
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="cursor: pointer; margin-left: 8px; vertical-align: middle;">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>`
+    );
+
+    creditCardTitle.addEventListener("click", function (e) {
+      if (e.target.closest("svg")) {
+        showConsolidatedCreditCardExpenses();
+      }
+    });
+  }
 
   // Inicializar o estado do botão com base no tipo de despesa selecionado
   updateInstallmentOptions();
@@ -681,18 +814,35 @@ function deleteExpense(id, showConfirmation = true) {
   saveStateToLocalStorage(); // Salvar alterações no localStorage
 }
 
-function showDeleteModal(id) {
+function showDeleteModal(id, showConfirmation = true, onDelete = null) {
   // Create modal container
   const modalContainer = document.createElement("div");
   modalContainer.className = "modal-container";
+
+  // Verificar se está dentro do modal de cartão de crédito
+  const isInsideCreditCardModal = document.querySelector(".modal") !== null;
+
   modalContainer.innerHTML = `
     <div class="modal-content">
       <h2>Excluir Despesa</h2>
-      <p>Como você deseja excluir esta despesa?</p>
+      <p>${
+        isInsideCreditCardModal
+          ? "Tem certeza que deseja excluir esta despesa?"
+          : "Como você deseja excluir esta despesa?"
+      }</p>
       <div class="modal-buttons">
-        <button class="modal-btn delete-all">Excluir TUDO</button>
-        <button class="modal-btn delete-one">Excluir 1</button>
-        <button class="modal-btn cancel">Voltar</button>
+        ${
+          isInsideCreditCardModal
+            ? `
+          <button class="modal-btn delete-one">Excluir</button>
+          <button class="modal-btn cancel">Retornar</button>
+        `
+            : `
+          <button class="modal-btn delete-all">Excluir TUDO</button>
+          <button class="modal-btn delete-one">Excluir 1</button>
+          <button class="modal-btn cancel">Voltar</button>
+        `
+        }
       </div>
     </div>
   `;
@@ -702,25 +852,38 @@ function showDeleteModal(id) {
   const deleteOneBtn = modalContainer.querySelector(".delete-one");
   const cancelBtn = modalContainer.querySelector(".cancel");
 
-  deleteAllBtn.addEventListener("click", () => {
-    const expense = state.expenses.find((e) => e.id === id);
-    if (expense) {
-      // Delete all related expenses (same description and type)
-      state.expenses = state.expenses.filter(
-        (e) =>
-          !(
-            e.description.split(" (")[0] ===
-              expense.description.split(" (")[0] && e.type === expense.type
-          )
-      );
-      updateUIAfterDelete();
-    }
-    document.body.removeChild(modalContainer);
-  });
+  if (deleteAllBtn) {
+    deleteAllBtn.addEventListener("click", () => {
+      const expense = state.expenses.find((e) => e.id === id);
+      if (expense) {
+        // Se for uma despesa parcelada, excluir todas as parcelas da mesma compra
+        if (expense.installments > 1) {
+          // Encontrar a descrição base (sem o número da parcela)
+          const baseDescription =
+            expense.originalDescription || expense.description.split(" (")[0];
+
+          // Excluir todas as parcelas que têm a mesma descrição base
+          state.expenses = state.expenses.filter((e) => {
+            const eBaseDescription =
+              e.originalDescription || e.description.split(" (")[0];
+            return eBaseDescription !== baseDescription;
+          });
+        } else {
+          // Se não for parcelada, excluir apenas a despesa selecionada
+          state.expenses = state.expenses.filter((e) => e.id !== id);
+        }
+        updateUIAfterDelete();
+        if (onDelete) onDelete();
+      }
+      document.body.removeChild(modalContainer);
+    });
+  }
 
   deleteOneBtn.addEventListener("click", () => {
+    // Excluir apenas a despesa selecionada, independente se é parcelada ou não
     state.expenses = state.expenses.filter((e) => e.id !== id);
     updateUIAfterDelete();
+    if (onDelete) onDelete();
     document.body.removeChild(modalContainer);
   });
 
@@ -781,3 +944,149 @@ document
       e.target.value = formatCurrencyInput(value);
     }
   });
+
+// Função para mostrar despesas consolidadas de cartão de crédito
+function showConsolidatedCreditCardExpenses() {
+  const filteredExpenses = state.expenses.filter(
+    (expense) =>
+      expense.month === state.selectedMonth &&
+      expense.year === state.selectedYear &&
+      expense.type === "credit-card"
+  );
+
+  if (filteredExpenses.length === 0) {
+    alert("Não há despesas de cartão de crédito para este período.");
+    return;
+  }
+
+  // Calcular o total das despesas de cartão
+  const totalAmount = filteredExpenses.reduce(
+    (sum, expense) => sum + expense.amount,
+    0
+  );
+
+  // Criar o conteúdo do modal
+  const modalContent = `
+    <div class="modal-content">
+      <h2>Despesas de Cartão de Crédito - ${state.selectedMonth} ${
+    state.selectedYear
+  }</h2>
+      <div class="consolidated-summary">
+        <p>Total: R$ ${formatCurrency(totalAmount)}</p>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Valor</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredExpenses
+              .map(
+                (expense) => `
+              <tr>
+                <td>${formatDateToBrazil(expense.dueDate)}</td>
+                <td>${expense.originalDescription || expense.description}${
+                  expense.installments > 1
+                    ? ` (${expense.currentInstallment}/${expense.installments})`
+                    : ""
+                }</td>
+                <td>${expense.originalCategory || expense.category}</td>
+                <td class="text-right">R$ ${formatCurrency(expense.amount)}</td>
+                <td class="text-center">
+                  <button class="action-btn delete-btn" data-id="${
+                    expense.id
+                  }" title="Excluir">🗑️</button>
+                </td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+      <button class="btn-primary" onclick="closeModal()">Fechar</button>
+    </div>
+  `;
+
+  // Criar e mostrar o modal
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.innerHTML = modalContent;
+  document.body.appendChild(modal);
+
+  // Função para atualizar o conteúdo do modal
+  const updateModalContent = () => {
+    const updatedExpenses = state.expenses.filter(
+      (expense) =>
+        expense.month === state.selectedMonth &&
+        expense.year === state.selectedYear &&
+        expense.type === "credit-card"
+    );
+
+    if (updatedExpenses.length === 0) {
+      closeModal();
+      return;
+    }
+
+    const updatedTotal = updatedExpenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0
+    );
+
+    modal.querySelector(".consolidated-summary").innerHTML = `
+      <p>Total: R$ ${formatCurrency(updatedTotal)}</p>
+    `;
+
+    modal.querySelector("tbody").innerHTML = updatedExpenses
+      .map(
+        (expense) => `
+        <tr>
+          <td>${formatDateToBrazil(expense.dueDate)}</td>
+          <td>${expense.originalDescription || expense.description}${
+          expense.installments > 1
+            ? ` (${expense.currentInstallment}/${expense.installments})`
+            : ""
+        }</td>
+          <td>${expense.originalCategory || expense.category}</td>
+          <td class="text-right">R$ ${formatCurrency(expense.amount)}</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" data-id="${
+              expense.id
+            }" title="Excluir">🗑️</button>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
+
+    // Adicionar eventos aos novos botões
+    modal.querySelectorAll(".delete-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const id = parseInt(button.getAttribute("data-id"));
+        showDeleteModal(id, true, updateModalContent);
+      });
+    });
+  };
+
+  // Adicionar eventos aos botões de excluir
+  modal.querySelectorAll(".delete-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = parseInt(button.getAttribute("data-id"));
+      showDeleteModal(id, true, updateModalContent);
+    });
+  });
+}
+
+// Função para fechar o modal
+function closeModal() {
+  const modal = document.querySelector(".modal");
+  if (modal) {
+    modal.remove();
+  }
+}
