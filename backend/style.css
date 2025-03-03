@@ -11,7 +11,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #15338d;
+  background: linear-gradient(135deg, #15338d 0%, #1a3d9d 100%);
   /* Prevent content from being hidden under the iOS status bar */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
@@ -26,23 +26,61 @@ body {
 
 /* Cards e Containers */
 .card {
-  background-color: white;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border-radius: 0.5rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(21, 51, 141, 0.15);
   padding: 1rem;
   margin-bottom: 0.8rem;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
 }
+
+/* .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(37, 99, 235, 0.15);
+} */
 
 .amount {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #2563eb;
+  color: #15338d;
   margin-top: 0.5rem;
+  transition: color 0.3s ease;
+  text-shadow: 0 1px 2px rgba(21, 51, 141, 0.1);
 }
 
 .card.flex-1 {
   margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
 }
+
+/* Add colored borders for different card types */
+.card.flex-1:nth-child(1) {
+  border-left: 3px solid #15338d;
+  background: linear-gradient(135deg, #ffffff 0%, #e8f0fe 100%);
+}
+
+.card.flex-1:nth-child(2) {
+  border-left: 3px solid #1a3d9d;
+  background: linear-gradient(135deg, #ffffff 0%, #e8f0fe 100%);
+}
+
+.card.flex-1:nth-child(3) {
+  border-left: 3px solid #1f47ad;
+  background: linear-gradient(135deg, #ffffff 0%, #e8f0fe 100%);
+}
+
+/* .card.flex-1:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+} */
 
 .card-title {
   font-size: 1.125rem;
@@ -104,10 +142,17 @@ body {
 .amount-card {
   padding: 1rem;
   border-radius: 0.5rem;
-  background-color: white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 5px rgba(21, 51, 141, 0.15);
   flex: 1;
+  transition: all 0.3s ease;
+  border-left: 3px solid #15338d;
 }
+
+/* .amount-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(21, 51, 141, 0.15);
+} */
 
 .amount-value {
   font-size: 1.5rem;
@@ -152,7 +197,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 button.btn-primary {
-  background-color: #3843d0;
+  background: linear-gradient(135deg, #15338d 0%, #1a3d9d 100%);
   color: white;
   padding: 1rem 1rem;
   border: none;
@@ -160,10 +205,36 @@ button.btn-primary {
   cursor: pointer;
   grid-column: span 2;
   grid-row: 4;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(21, 51, 141, 0.25);
 }
 
 button.btn-primary:hover {
   background-color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(56, 67, 208, 0.3);
+}
+
+button.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(56, 67, 208, 0.2);
+}
+
+button.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+}
+
+button.btn-primary:hover::after {
+  left: 100%;
 }
 
 /* Tabela */
@@ -199,6 +270,8 @@ td {
 
 tr:hover {
   background-color: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
 th.text-center,
@@ -228,15 +301,25 @@ td.text-right {
   border: none;
   background-color: #d1d5db;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .paid-btn:hover {
   background-color: #9ca3af;
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .paid-btn.paid {
-  background-color: #16a34a;
+  background-color: #15338d;
   color: white;
+  box-shadow: 0 2px 4px rgba(21, 51, 141, 0.3);
+}
+
+.paid-btn.paid:hover {
+  background-color: #1a3d9d;
+  box-shadow: 0 3px 6px rgba(21, 51, 141, 0.4);
 }
 
 /* Responsividade */
@@ -386,11 +469,13 @@ td.text-right {
   cursor: pointer;
   font-size: 1rem;
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease;
 }
 
 .action-btn:hover {
   opacity: 1;
+  transform: scale(1.15);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .action-btn + .action-btn {
@@ -403,10 +488,14 @@ td.text-right {
   background-color: #f3f4f6;
   border-radius: 0.25rem;
   opacity: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .action-btn[onclick*="showConsolidatedCreditCardExpenses"]:hover {
-  background-color: #e5e7eb;
+  background-color: #e8f0fe;
+  box-shadow: 0 3px 6px rgba(21, 51, 141, 0.1);
+  transform: translateY(-1px);
 }
 
 /* Due date input styles */
