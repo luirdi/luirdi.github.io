@@ -46,7 +46,7 @@ Terminal
 
 find . -name "._*" -delete && find . -name ".DS_Store" -delete
 
-luizclaudiosantos@MacBook-Air-M2--Luiz-Claudio luirdi.github.io % 
+luizclaudiosantos@MacBook luirdi.github.io % 
 find . -name "._*" -delete && find . -name 
 ".DS_Store" -delete                                              
 find . -name "._*" -delete && find . -name
