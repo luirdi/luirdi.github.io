@@ -455,8 +455,8 @@ function init() {
   // Carregar dados do localStorage
   loadStateFromLocalStorage();
   
-  // Definir ano atual no footer
-  document.getElementById('current-year').textContent = new Date().getFullYear();
+  // // Definir ano atual no footer
+  // document.getElementById('current-year').textContent = new Date().getFullYear();
   
   // Renderizar componentes
   renderTopSection();

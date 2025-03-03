@@ -18,43 +18,10 @@ body {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 590px;
   margin: 0 auto;
   padding: 1rem;
   flex-grow: 1;
-}
-
-/* Header */
-header {
-  background-color: #2320FF;
-  color: white;
-  width: 100%;
-  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 1rem max(1rem, env(safe-area-inset-left));
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-/* Footer */
-footer {
-  background-color: #2320FF;
-  color: white;
-  width: 100%;
-  padding: 1rem max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
-  text-align: end;
-}
-header h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-/* Footer */
-footer {
-  background-color: #2320FF;
-  color: white;
-  padding: 1rem;
-  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-  text-align: end;
 }
 
 /* Cards e Containers */
@@ -186,7 +153,7 @@ button.btn-primary:hover {
 }
 
 .table-header {
-  background-color: #e5e7eb;
+  background-color: #f1f1f1;
   padding: 1rem;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
@@ -198,7 +165,7 @@ table {
 }
 
 th {
-  background-color: #f3f4f6;
+  background-color: #f8f8f8;
   padding: 0.5rem 1rem;
   text-align: left;
   font-weight: 600;
@@ -221,12 +188,6 @@ th.text-center, td.text-center {
 th.text-right, td.text-right {
   text-align: right;
 }
-
-/* Remove tfoot styling */
-/* tfoot {
-  background-color: #f3f4f6;
-  font-weight: bold;
-} */
 
 .total-row {
   display: flex;
@@ -316,16 +277,8 @@ th.text-right, td.text-right {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
   }
-  
-  header {
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-  
-  footer {
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
+
+
 }
 
 /* Radio button styles */
