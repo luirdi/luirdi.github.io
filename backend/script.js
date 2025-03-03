@@ -907,7 +907,10 @@ function formatCurrencyInput(value) {
   value = value.replace(/\D/g, "");
   value = (parseInt(value) / 100).toFixed(2);
   value = value.replace(".", ",");
-  value = value.replace(/(?=(\d{3})+(?!\d))/g, ".");
+  // Only add thousands separator if value is 1000 or greater
+  if (parseInt(value.replace(",", ".")) >= 1000) {
+    value = value.replace(/(?=(\d{3})+(?!\d))/g, ".");
+  }
   return `R$ ${value}`;
 }
 
