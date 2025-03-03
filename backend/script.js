@@ -434,21 +434,19 @@ function addExpense() {
 
         // Criar uma entrada para cada mês da recorrência/parcela
         for (let i = 0; i < installmentsCount; i++) {
-          // Calcular a data de vencimento para cada parcela usando timezone brasileiro
+          // Manter a data original da compra
           const currentDueDate = new Date(dueDateObj);
-          currentDueDate.setMonth(dueDateObj.getMonth() + i);
+          
+          // Se for cartão de crédito e a fatura estiver fechada, começar do próximo mês
+          if (isCreditCard && isClosedInvoice) {
+            currentDueDate.setMonth(dueDateObj.getMonth() + i + 1);
+          } else {
+            currentDueDate.setMonth(dueDateObj.getMonth() + i);
+          }
 
           // Obter mês e ano para esta parcela
           const currentMonth = state.months[currentDueDate.getMonth()].name;
           const currentYear = currentDueDate.getFullYear();
-
-          // Formatar a data no formato YYYY-MM-DD para armazenar
-          const formattedDueDate = `${currentYear}-${String(
-            currentDueDate.getMonth() + 1
-          ).padStart(2, "0")}-${String(currentDueDate.getDate()).padStart(
-            2,
-            "0"
-          )}`;
 
           // Criar ID único para cada parcela
           const newId =
@@ -463,11 +461,11 @@ function addExpense() {
             month: currentMonth,
             year: currentYear,
             category,
-            dueDate: formattedDueDate,
+            dueDate: dueDate, // Manter a data original da compra
             type: expenseType,
             installments: installmentsCount,
             currentInstallment: i + 1,
-            closedInvoice: false,
+            closedInvoice: isClosedInvoice,
           });
         }
       } else {
