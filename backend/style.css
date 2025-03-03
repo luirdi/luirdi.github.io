@@ -79,7 +79,8 @@ body {
 
 .period-select {
   flex: 1;
-  padding: 0.75rem;
+  
+  padding: 0.5rem;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   background-color: white;
@@ -130,11 +131,6 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Classe para fazer o botão ocupar duas colunas no grid */
-.btn-full-width {
-  grid-column: span 2;
-}
-
 input,
 select,
 button {
@@ -157,10 +153,14 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 button.btn-primary {
-  background-color: #2563eb;
+  background-color: #3843d0;
   color: white;
-  cursor: pointer;
+  padding: 0.5rem 1rem;
   border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  grid-column: span 2;
+  grid-row: 4;
 }
 
 button.btn-primary:hover {
@@ -325,8 +325,11 @@ td.text-right {
 
 .radio-label {
   display: flex;
+  padding-bottom: 12px;
+  padding-top: 12px;
+  padding-left: 3px;
   align-items: center;
-  gap: 3px;
+  gap: 5px;
   cursor: pointer;
 }
 
@@ -343,7 +346,7 @@ td.text-right {
 .payment-options-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -351,7 +354,7 @@ td.text-right {
   .payment-options-container {
     flex-direction: row;
     align-items: center;
-    gap: 5px;
+    gap: 2.5rem;
   }
 }
 
@@ -372,8 +375,8 @@ td.text-right {
 }
 
 .checkbox-label span {
-  color: #1f2937;
-  font-weight: 500;
+  color: #ff0000;
+  font-weight: 700;
 }
 
 /* Action buttons */
