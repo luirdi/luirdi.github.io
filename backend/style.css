@@ -135,6 +135,17 @@ input, select, button {
   max-width: 100%;
 }
 
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 button.btn-primary {
   background-color: #2563eb;
   color: white;
