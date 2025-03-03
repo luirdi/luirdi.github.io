@@ -533,46 +533,39 @@ function addExpense() {
       const installmentsCount = parseInt(installments) || 1;
 
       // Para despesas parceladas (cartão de crédito) ou recorrentes, criar múltiplas entradas
-      if (
-        (isCreditCard && installmentsCount > 1) ||
-        (isRecurring && installmentsCount > 1)
-      ) {
+      if ((isCreditCard && installmentsCount > 1) || (isRecurring && installmentsCount > 1)) {
         // Calcular o valor de cada parcela para cartão de crédito
         // Para despesas recorrentes, mantém o valor original em cada parcela
-        const installmentAmount = isCreditCard
-          ? amount / installmentsCount
-          : amount;
+        const installmentAmount = isCreditCard ? amount / installmentsCount : amount;
+
+        // Ajustar a data inicial para cartão de crédito com fatura fechada
+        let startDate = new Date(dueDateObj);
+        if (isCreditCard && isClosedInvoice) {
+          startDate.setMonth(startDate.getMonth() + 1);
+        }
 
         // Criar uma entrada para cada mês da recorrência/parcela
         for (let i = 0; i < installmentsCount; i++) {
           // Calcular a data de vencimento para cada parcela usando timezone brasileiro
-          const currentDueDate = new Date(dueDateObj);
-          currentDueDate.setMonth(dueDateObj.getMonth() + i);
+          const currentDueDate = new Date(startDate);
+          currentDueDate.setMonth(startDate.getMonth() + i);
 
           // Obter mês e ano para esta parcela
           const currentMonth = state.months[currentDueDate.getMonth()].name;
           const currentYear = currentDueDate.getFullYear();
 
           // Formatar a data no formato YYYY-MM-DD para armazenar
-          const formattedDueDate = `${currentYear}-${String(
-            currentDueDate.getMonth() + 1
-          ).padStart(2, "0")}-${String(currentDueDate.getDate()).padStart(
-            2,
-            "0"
-          )}`;
+          const formattedDueDate = `${currentYear}-${String(currentDueDate.getMonth() + 1).padStart(2, "0")}-${String(currentDueDate.getDate()).padStart(2, "0")}`;
 
           // Criar ID único para cada parcela
-          const newId =
-            Math.max(...state.expenses.map((e) => e.id || 0), 0) + 1 + i;
+          const newId = Math.max(...state.expenses.map((e) => e.id || 0), 0) + 1 + i;
 
           // Adicionar a parcela ao array de despesas
           state.expenses.push({
             id: newId,
-            description: isCreditCard
-              ? "Cartão de Crédito"
-              : `${description} (${i + 1}/${installmentsCount})`,
+            description: isCreditCard ? "Cartão de Crédito" : `${description} (${i + 1}/${installmentsCount})`,
             amount: installmentAmount,
-            paid: i === 0 ? isPaid : false, // Apenas a primeira parcela mantém o status de pagamento
+            paid: i === 0 ? isPaid : false,
             month: currentMonth,
             year: currentYear,
             category: isCreditCard ? "Diversos" : category,
@@ -580,9 +573,9 @@ function addExpense() {
             type: expenseType,
             installments: installmentsCount,
             currentInstallment: i + 1,
-            closedInvoice: false,
-            originalDescription: description, // Guardar a descrição original para referência
-            originalCategory: category, // Guardar a categoria original para referência
+            closedInvoice: isClosedInvoice,
+            originalDescription: description,
+            originalCategory: category,
           });
         }
       } else {
