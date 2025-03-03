@@ -42,14 +42,11 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou env
 
 ## Limpando arquivos ocultos macOS
 
-Terminal
+###Terminal
+Comandos para exclusão de arquivos ocultos
+
+luizclaudiosantos@MacBook luirdi.github.io %  
 
 find . -name "._*" -delete && find . -name ".DS_Store" -delete
-
-luizclaudiosantos@MacBook luirdi.github.io % 
-find . -name "._*" -delete && find . -name 
-".DS_Store" -delete                                              
-find . -name "._*" -delete && find . -name
-".DS_Store" -delete
 
 git add . && git commit -m "Limpando arquivos ocultos do macOS"
