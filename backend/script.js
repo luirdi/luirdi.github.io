@@ -125,7 +125,7 @@ function renderTopSection() {
 
   // Calcular os totais para o mês selecionado antes de renderizar
   const filteredExpenses = state.expenses.filter(
-    (expense) => expense.month === state.selectedMonth
+    (expense) => expense.month === state.selectedMonth && expense.year === state.selectedYear
   );
   const total = filteredExpenses.reduce(
     (sum, expense) => sum + expense.amount,
