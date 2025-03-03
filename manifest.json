@@ -1,7 +1,7 @@
 {
-  "name": "Luirdi Todo App",
-  "short_name": "Luirdi",
-  "description": "Um aplicativo de lista de tarefas simples e eficiente",
+  "name": "financial planner",
+  "short_name": "planner",
+  "description": "controle de gastos financeiros",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
