@@ -289,6 +289,8 @@ function togglePaid(id) {
 function addExpense() {
   const description = document.getElementById('expense-description').value;
   const amountStr = document.getElementById('expense-amount').value;
+  // Limpar a formatação da moeda para obter apenas o valor numérico
+  const cleanedAmountStr = amountStr.replace(/[^\d,]/g, '').replace(',', '.');
   const category = document.getElementById('expense-category').value;
   const dueDate = document.getElementById('expense-due-date').value;
   
@@ -332,7 +334,7 @@ function addExpense() {
       return;
     }
     
-    const amount = parseFloat(amountStr);
+    const amount = parseFloat(cleanedAmountStr);
     if (!isNaN(amount)) {
       // Extrair o mês da data de vencimento usando a função de timezone brasileiro
       const dueDateObj = createDateWithBrazilianTimezone(dueDate);
@@ -464,6 +466,10 @@ function init() {
   renderExpensesTable();
   calculateTotals();
   
+  // Inicializar o campo de valor com formato de moeda vazio
+  const expenseAmountInput = document.getElementById('expense-amount');
+  expenseAmountInput.value = '';
+  
   // Adicionar evento ao botão de adicionar despesa
   document.getElementById('add-expense-btn').addEventListener('click', addExpense);
 
@@ -586,6 +592,98 @@ function deleteExpense(id, showConfirmation = true) {
   calculateTotals();
   saveStateToLocalStorage(); // Salvar alterações no localStorage
 }
+
+function showDeleteModal(id) {
+  // Create modal container
+  const modalContainer = document.createElement('div');
+  modalContainer.className = 'modal-container';
+  modalContainer.innerHTML = `
+    <div class="modal-content">
+      <h2>Excluir Despesa</h2>
+      <p>Como você deseja excluir esta despesa?</p>
+      <div class="modal-buttons">
+        <button class="modal-btn delete-all">Excluir TUDO</button>
+        <button class="modal-btn delete-one">Excluir 1</button>
+        <button class="modal-btn cancel">Voltar</button>
+      </div>
+    </div>
+  `;
+
+  // Add event listeners
+  const deleteAllBtn = modalContainer.querySelector('.delete-all');
+  const deleteOneBtn = modalContainer.querySelector('.delete-one');
+  const cancelBtn = modalContainer.querySelector('.cancel');
+
+  deleteAllBtn.addEventListener('click', () => {
+    const expense = state.expenses.find(e => e.id === id);
+    if (expense) {
+      // Delete all related expenses (same description and type)
+      state.expenses = state.expenses.filter(e => 
+        !(e.description.split(' (')[0] === expense.description.split(' (')[0] && 
+          e.type === expense.type)
+      );
+      updateUIAfterDelete();
+    }
+    document.body.removeChild(modalContainer);
+  });
+
+  deleteOneBtn.addEventListener('click', () => {
+    state.expenses = state.expenses.filter(e => e.id !== id);
+    updateUIAfterDelete();
+    document.body.removeChild(modalContainer);
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    document.body.removeChild(modalContainer);
+  });
+
+  // Add modal to body
+  document.body.appendChild(modalContainer);
+
+  // Add fade-in animation
+  setTimeout(() => modalContainer.classList.add('show'), 10);
+}
+
+function updateUIAfterDelete() {
+  renderExpensesTable();
+  renderTopSection();
+  calculateTotals();
+  saveStateToLocalStorage();
+}
+
+// Format currency for input
+function formatCurrencyInput(value) {
+  value = value.replace(/\D/g, '');
+  value = (parseInt(value) / 100).toFixed(2);
+  value = value.replace('.', ',');
+  value = value.replace(/(?=(\d{3})+(?!\d))/g, '.');
+  return `R$ ${value}`;
+}
+
+// Clear currency format
+function cleanCurrencyInput(value) {
+  return value.replace(/\D/g, '') || '0';
+}
+
+// Add events to input
+document.getElementById('expense-amount').addEventListener('input', function(e) {
+  const value = cleanCurrencyInput(e.target.value);
+  e.target.value = formatCurrencyInput(value);
+});
+
+document.getElementById('expense-amount').addEventListener('focus', function(e) {
+  const value = cleanCurrencyInput(e.target.value);
+  e.target.value = formatCurrencyInput(value);
+});
+
+document.getElementById('expense-amount').addEventListener('blur', function(e) {
+  const value = cleanCurrencyInput(e.target.value);
+  if (value === '0') {
+    e.target.value = '';
+  } else {
+    e.target.value = formatCurrencyInput(value);
+  }
+});
 
 function showDeleteModal(id) {
   // Create modal container
