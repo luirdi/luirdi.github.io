@@ -140,7 +140,11 @@ function renderTopSection() {
 
   // Gerar anos para seleção (5 anos antes e depois do ano atual)
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+  const startYear = 2025;
+  const years = Array.from(
+    { length: currentYear - startYear + 6 },
+    (_, i) => startYear + i
+  );
 
   topSection.innerHTML = `
     <div class="flex-row">
