@@ -403,19 +403,14 @@ function updateCreditCardDueDate(newDueDate) {
     expense.dueDate = newDueDate;
   });
 
-  // Atualizar UI e salvar no Firebase
+  // Atualizar UI e salvar no localStorage
   renderExpensesTable();
-  saveStateToFirebase();
+  saveStateToLocalStorage();
 }
 
-// Import Firebase modules
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
-
-// Get Firebase database reference
-const db = getDatabase();
-
-// Function to save state to Firebase
-function saveStateToFirebase() {
+// Função para salvar o estado no localStorage
+function saveStateToLocalStorage() {
+  // Criar uma cópia do estado para armazenar
   const stateToSave = {
     expenses: state.expenses,
     selectedMonth: state.selectedMonth,
@@ -424,35 +419,29 @@ function saveStateToFirebase() {
     totalPaid: state.totalPaid,
   };
 
-  // Save to Firebase Realtime Database
-  set(ref(db, 'financialPlanner'), stateToSave)
-    .catch((error) => {
-      console.error('Error saving data to Firebase:', error);
-    });
+  // Salvar no localStorage como string JSON
+  localStorage.setItem("financialPlannerState", JSON.stringify(stateToSave));
 }
 
-// Function to load state from Firebase
-function loadStateFromFirebase() {
-  const stateRef = ref(db, 'financialPlanner');
-  
-  onValue(stateRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      // Update state with saved data
-      state.expenses = data.expenses || [];
-      state.selectedMonth = data.selectedMonth || "JANEIRO";
-      state.selectedYear = data.selectedYear || new Date().getFullYear();
-      state.totalAmount = data.totalAmount || 0;
-      state.totalPaid = data.totalPaid || 0;
-      
-      // Update UI
-      renderTopSection();
-      renderExpensesTable();
-      calculateTotals();
+// Função para carregar o estado do localStorage
+function loadStateFromLocalStorage() {
+  const savedState = localStorage.getItem("financialPlannerState");
+
+  if (savedState) {
+    try {
+      // Converter a string JSON de volta para objeto
+      const parsedState = JSON.parse(savedState);
+
+      // Atualizar o estado com os dados salvos
+      state.expenses = parsedState.expenses || [];
+      state.selectedMonth = parsedState.selectedMonth || "JANEIRO";
+      state.selectedYear = parsedState.selectedYear || new Date().getFullYear();
+      state.totalAmount = parsedState.totalAmount || 0;
+      state.totalPaid = parsedState.totalPaid || 0;
+    } catch (error) {
+      console.error("Erro ao carregar dados do localStorage:", error);
     }
-  }, (error) => {
-    console.error('Error loading data from Firebase:', error);
-  });
+  }
 }
 
 // Alternar status de pago
@@ -463,7 +452,7 @@ function togglePaid(id) {
   renderExpensesTable();
   renderTopSection(); // Atualizar também o top section com os novos valores
   calculateTotals();
-  saveStateToFirebase(); // Salvar alterações no Firebase
+  saveStateToLocalStorage(); // Salvar alterações no localStorage
 }
 
 // Adicionar nova despesa
@@ -638,7 +627,7 @@ function addExpense() {
       renderExpensesTable();
       renderTopSection();
       calculateTotals();
-      saveStateToFirebase(); // Salvar alterações no Firebase
+      saveStateToLocalStorage(); // Salvar alterações no localStorage
     }
   } else {
     alert(
@@ -649,8 +638,8 @@ function addExpense() {
 
 // Inicialização da aplicação
 function init() {
-  // Carregar dados do Firebase
-  loadStateFromFirebase();
+  // Carregar dados do localStorage
+  loadStateFromLocalStorage();
 
   // Renderizar componentes
   renderTopSection();
@@ -816,7 +805,7 @@ function deleteExpense(id, showConfirmation = true) {
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
-  saveStateToFirebase(); // Salvar alterações no Firebase
+  saveStateToLocalStorage(); // Salvar alterações no localStorage
 }
 
 function showDeleteModal(id, showConfirmation = true, onDelete = null) {
@@ -907,7 +896,7 @@ function updateUIAfterDelete() {
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
-  saveStateToFirebase();
+  saveStateToLocalStorage();
 }
 
 // Format currency for input
