@@ -1,15 +1,15 @@
 const state = {
   expenses: [],
   categories: [
-    "Moradia",
-    "Transporte",
     "Alimentação",
+    "Mercado",
+    "Transporte",
     "Educação",
     "Saúde",
     "Lazer",
-    "Serviços",
-    "Impostos",
     "Outros",
+
+
   ],
   months: [
     { name: "JANEIRO", number: 0 },
