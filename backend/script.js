@@ -1129,3 +1129,399 @@ function closeModal() {
     modal.remove();
   }
 }
+
+// Firebase configuration and initialization
+const firebaseConfig = {
+  apiKey: "AIzaSyDNipGBlG1w1FlCVknNxA3WYv8TMYL85bs",
+  authDomain: "finpla-c575c.firebaseapp.com",
+  databaseURL: "https://finpla-c575c-default-rtdb.firebaseio.com",
+  projectId: "finpla-c575c",
+  storageBucket: "finpla-c575c.firebasestorage.app",
+  messagingSenderId: "417838979466",
+  appId: "1:417838979466:web:91481c276febd368075073",
+  measurementId: "G-KS97CRRJ11"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const expensesRef = database.ref('expenses');
+
+// Real-time listener for data changes
+expensesRef.on('value', (snapshot) => {
+  state.expenses = [];
+  snapshot.forEach((childSnapshot) => {
+    const expense = childSnapshot.val();
+    expense.id = childSnapshot.key;
+    state.expenses.push(expense);
+  });
+  
+  calculateTotals();
+  renderTopSection();
+  renderExpensesTable();
+});
+
+// Modified addExpense function to push to Firebase
+function addExpense(expense) {
+  const newExpenseRef = expensesRef.push();
+  newExpenseRef.set({
+    ...expense,
+    id: newExpenseRef.key
+  });
+}
+
+// Modified deleteExpense function to remove from Firebase
+function deleteExpense(id) {
+  expensesRef.child(id).remove();
+}
+
+// Iniciar a aplicação quando o DOM estiver pronto
+document.addEventListener("DOMContentLoaded", init);
+
+// Editar despesa
+function editExpense(id) {
+  // Encontrar a despesa pelo ID
+  const expense = state.expenses.find((expense) => expense.id === id);
+
+  if (expense) {
+    // Preencher o formulário com os dados da despesa
+    document.getElementById("expense-description").value = expense.description;
+    document.getElementById("expense-amount").value = expense.amount;
+    document.getElementById("expense-category").value = expense.category;
+    document.getElementById("expense-due-date").value = expense.dueDate;
+
+    // Selecionar o tipo de despesa
+    if (expense.type === "credit-card") {
+      document.getElementById("expense-type-credit-card").checked = true;
+    } else if (expense.type === "recurring") {
+      document.getElementById("expense-type-recurring").checked = true;
+    }
+
+    // Atualizar opções de parcelas
+    updateInstallmentOptions();
+
+    // Configurar opções específicas do tipo
+    if (expense.type === "credit-card") {
+      document.getElementById("payment-installments").value =
+        expense.installments || "1";
+      document.getElementById("closed-invoice-checkbox").checked =
+        expense.closedInvoice || false;
+    }
+
+    // Preservar o status de pagamento
+    if (!document.getElementById("expense-paid-status")) {
+      const paidStatusInput = document.createElement("input");
+      paidStatusInput.type = "hidden";
+      paidStatusInput.id = "expense-paid-status";
+      document.querySelector(".form-grid").appendChild(paidStatusInput);
+    }
+    document.getElementById("expense-paid-status").value = expense.paid
+      ? "1"
+      : "0";
+
+    // Remover a despesa atual
+    deleteExpense(id, false); // false para não mostrar confirmação
+
+    // Rolar para o formulário
+    document.querySelector(".form-grid").scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+// Excluir despesa
+function deleteExpense(id, showConfirmation = true) {
+  if (
+    showConfirmation &&
+    !confirm("Tem certeza que deseja excluir esta despesa?")
+  ) {
+    return;
+  }
+
+  // Filtrar a despesa do array
+  state.expenses = state.expenses.filter((expense) => expense.id !== id);
+
+  // Atualizar UI
+  renderExpensesTable();
+  renderTopSection();
+  calculateTotals();
+  saveStateToLocalStorage(); // Salvar alterações no localStorage
+}
+
+function showDeleteModal(id, showConfirmation = true, onDelete = null) {
+  // Create modal container
+  const modalContainer = document.createElement("div");
+  modalContainer.className = "modal-container";
+
+  // Verificar se está dentro do modal de cartão de crédito
+  const isInsideCreditCardModal = document.querySelector(".modal") !== null;
+
+  modalContainer.innerHTML = `
+    <div class="modal-content">
+      <h2>Excluir Despesa</h2>
+      <p>${
+        isInsideCreditCardModal
+          ? "Tem certeza que deseja excluir esta despesa?"
+          : "Como você deseja excluir esta despesa?"
+      }</p>
+      <div class="modal-buttons">
+        ${
+          isInsideCreditCardModal
+            ? `
+          <button class="modal-btn delete-one">Excluir</button>
+          <button class="modal-btn cancel">Retornar</button>
+        `
+            : `
+          <button class="modal-btn delete-all">Excluir TUDO</button>
+          <button class="modal-btn delete-one">Excluir 1</button>
+          <button class="modal-btn cancel">Voltar</button>
+        `
+        }
+      </div>
+    </div>
+  `;
+
+  // Add event listeners
+  const deleteAllBtn = modalContainer.querySelector(".delete-all");
+  const deleteOneBtn = modalContainer.querySelector(".delete-one");
+  const cancelBtn = modalContainer.querySelector(".cancel");
+
+  if (deleteAllBtn) {
+    deleteAllBtn.addEventListener("click", () => {
+      const expense = state.expenses.find((e) => e.id === id);
+      if (expense) {
+        // Se for uma despesa parcelada, excluir todas as parcelas da mesma compra
+        if (expense.installments > 1) {
+          // Encontrar a descrição base (sem o número da parcela)
+          const baseDescription =
+            expense.originalDescription || expense.description.split(" (")[0];
+
+          // Excluir todas as parcelas que têm a mesma descrição base
+          state.expenses = state.expenses.filter((e) => {
+            const eBaseDescription =
+              e.originalDescription || e.description.split(" (")[0];
+            return eBaseDescription !== baseDescription;
+          });
+        } else {
+          // Se não for parcelada, excluir apenas a despesa selecionada
+          state.expenses = state.expenses.filter((e) => e.id !== id);
+        }
+        updateUIAfterDelete();
+        if (onDelete) onDelete();
+      }
+      document.body.removeChild(modalContainer);
+    });
+  }
+
+  deleteOneBtn.addEventListener("click", () => {
+    // Excluir apenas a despesa selecionada, independente se é parcelada ou não
+    state.expenses = state.expenses.filter((e) => e.id !== id);
+    updateUIAfterDelete();
+    if (onDelete) onDelete();
+    document.body.removeChild(modalContainer);
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    document.body.removeChild(modalContainer);
+  });
+
+  // Add modal to body
+  document.body.appendChild(modalContainer);
+
+  // Add fade-in animation
+  setTimeout(() => modalContainer.classList.add("show"), 10);
+}
+
+function updateUIAfterDelete() {
+  renderExpensesTable();
+  renderTopSection();
+  calculateTotals();
+  saveStateToLocalStorage();
+}
+
+// Format currency for input
+function formatCurrencyInput(value) {
+  value = value.replace(/\D/g, "");
+  value = (parseInt(value) / 100).toFixed(2);
+  value = value.replace(".", ",");
+  // Only add thousands separator if value is 1000 or greater
+  if (parseInt(value.replace(",", ".")) >= 1000) {
+    value = value.replace(/(?=(\d{3})+(?!\d))/g, ".");
+  }
+  return `R$ ${value}`;
+}
+
+// Clear currency format
+function cleanCurrencyInput(value) {
+  return value.replace(/\D/g, "") || "0";
+}
+
+// Add events to input
+document
+  .getElementById("expense-amount")
+  .addEventListener("input", function (e) {
+    const value = cleanCurrencyInput(e.target.value);
+    e.target.value = formatCurrencyInput(value);
+  });
+
+document
+  .getElementById("expense-amount")
+  .addEventListener("focus", function (e) {
+    const value = cleanCurrencyInput(e.target.value);
+    e.target.value = formatCurrencyInput(value);
+  });
+
+document
+  .getElementById("expense-amount")
+  .addEventListener("blur", function (e) {
+    const value = cleanCurrencyInput(e.target.value);
+    if (value === "0") {
+      e.target.value = "";
+    } else {
+      e.target.value = formatCurrencyInput(value);
+    }
+  });
+
+// Função para mostrar despesas consolidadas de cartão de crédito
+function showConsolidatedCreditCardExpenses() {
+  const filteredExpenses = state.expenses.filter(
+    (expense) =>
+      expense.month === state.selectedMonth &&
+      expense.year === state.selectedYear &&
+      expense.type === "credit-card"
+  );
+
+  if (filteredExpenses.length === 0) {
+    alert("Não há despesas de cartão de crédito para este período.");
+    return;
+  }
+
+  // Calcular o total das despesas de cartão
+  const totalAmount = filteredExpenses.reduce(
+    (sum, expense) => sum + expense.amount,
+    0
+  );
+
+  // Criar o conteúdo do modal
+  const modalContent = `
+    <div class="modal-content">
+      <h2>Despesas de Cartão de Crédito - ${state.selectedMonth} ${
+    state.selectedYear
+  }</h2>
+      <div class="consolidated-summary">
+        <p>Total: R$ ${formatCurrency(totalAmount)}</p>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Valor</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredExpenses
+              .map(
+                (expense) => `
+              <tr>
+                <td>${formatDateToBrazil(expense.dueDate)}</td>
+                <td>${expense.originalDescription || expense.description}${
+                  expense.installments > 1
+                    ? ` (${expense.currentInstallment}/${expense.installments})`
+                    : ""
+                }</td>
+                <td>${expense.originalCategory || expense.category}</td>
+                <td class="text-right">R$ ${formatCurrency(expense.amount)}</td>
+                <td class="text-center">
+                  <button class="action-btn delete-btn" data-id="${
+                    expense.id
+                  }" title="Excluir">🗑️</button>
+                </td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+      <button class="btn-primary" onclick="closeModal()">Fechar</button>
+    </div>
+  `;
+
+  // Criar e mostrar o modal
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.innerHTML = modalContent;
+  document.body.appendChild(modal);
+
+  // Função para atualizar o conteúdo do modal
+  const updateModalContent = () => {
+    const updatedExpenses = state.expenses.filter(
+      (expense) =>
+        expense.month === state.selectedMonth &&
+        expense.year === state.selectedYear &&
+        expense.type === "credit-card"
+    );
+
+    if (updatedExpenses.length === 0) {
+      closeModal();
+      return;
+    }
+
+    const updatedTotal = updatedExpenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0
+    );
+
+    modal.querySelector(".consolidated-summary").innerHTML = `
+      <p>Total: R$ ${formatCurrency(updatedTotal)}</p>
+    `;
+
+    modal.querySelector("tbody").innerHTML = updatedExpenses
+      .map(
+        (expense) => `
+        <tr>
+          <td>${formatDateToBrazil(expense.dueDate)}</td>
+          <td>${expense.originalDescription || expense.description}${
+          expense.installments > 1
+            ? ` (${expense.currentInstallment}/${expense.installments})`
+            : ""
+        }</td>
+          <td>${expense.originalCategory || expense.category}</td>
+          <td class="text-right">R$ ${formatCurrency(expense.amount)}</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" data-id="${
+              expense.id
+            }" title="Excluir">🗑️</button>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
+
+    // Adicionar eventos aos novos botões
+    modal.querySelectorAll(".delete-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const id = parseInt(button.getAttribute("data-id"));
+        showDeleteModal(id, true, updateModalContent);
+      });
+    });
+  };
+
+  // Adicionar eventos aos botões de excluir
+  modal.querySelectorAll(".delete-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = parseInt(button.getAttribute("data-id"));
+      showDeleteModal(id, true, updateModalContent);
+    });
+  });
+}
+
+// Função para fechar o modal
+function closeModal() {
+  const modal = document.querySelector(".modal");
+  if (modal) {
+    modal.remove();
+  }
+}
