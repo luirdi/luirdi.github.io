@@ -418,7 +418,7 @@ function togglePaid(id) {
   renderExpensesTable();
   renderTopSection(); // Atualizar também o top section com os novos valores
   calculateTotals();
-
+  saveDataToFirebase();
 }
 
 // Adicionar nova despesa
@@ -602,10 +602,45 @@ function addExpense() {
   }
 }
 
+// Salvar dados no Firebase
+function saveDataToFirebase() {
+  database.ref('expenses').set(state.expenses)
+    .catch(error => console.error('Error saving data:', error));
+}
+
+// Carregar dados do Firebase
+function loadDataFromFirebase() {
+  database.ref('expenses').once('value')
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        state.expenses = data;
+        renderTopSection();
+        renderExpensesTable();
+        calculateTotals();
+      }
+    })
+    .catch(error => console.error('Error loading data:', error));
+}
+
+// Configurar listener para atualizações em tempo real
+function setupRealtimeSync() {
+  database.ref('expenses').on('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      state.expenses = data;
+      renderTopSection();
+      renderExpensesTable();
+      calculateTotals();
+    }
+  });
+}
+
 // Inicialização da aplicação
 function init() {
   // Inicializar a aplicação
-
+  loadDataFromFirebase();
+  setupRealtimeSync();
 
   // Renderizar componentes
   renderTopSection();
@@ -767,10 +802,11 @@ function deleteExpense(id, showConfirmation = true) {
   // Filtrar a despesa do array
   state.expenses = state.expenses.filter((expense) => expense.id !== id);
 
-  // Atualizar UI
+  // Atualizar UI e salvar no Firebase
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
+  saveDataToFirebase();
 
 }
 
@@ -862,7 +898,7 @@ function updateUIAfterDelete() {
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
-
+  saveDataToFirebase();
 }
 
 // Format currency for input
