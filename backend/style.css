@@ -402,15 +402,16 @@ td.text-right {
 .payment-options-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   align-items: center;
+  justify-items: left;
+  margin: 0px;
 }
 
 @media (min-width: 640px) {
   .payment-options-container {
     flex-direction: row;
-    align-items: center;
-    gap: 2.5rem;
+    align-items: LEFT;
+    gap: 0.5rem;
   }
 }
 

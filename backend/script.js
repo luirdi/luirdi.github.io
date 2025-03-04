@@ -664,7 +664,7 @@ function updateInstallmentOptions() {
   const recurringEndDateContainer =
     document.getElementById("recurring-end-date");
 
-  // Limpar opções existentes
+    // Limpar opções existentes
   paymentInstallments.innerHTML = '<option value="">Parcelas</option>';
 
   if (expenseType === "credit-card") {
@@ -672,11 +672,16 @@ function updateInstallmentOptions() {
     recurringEndDateContainer.style.display = "none";
     closedInvoiceContainer.style.display = "block";
 
-    // Adiciona opções de 1 a 12 parcelas para cartão de crédito
+    // Limpar e adicionar opções de 1 a 12 parcelas para cartão de crédito
+    paymentInstallments.innerHTML = '';
     for (let i = 1; i <= 12; i++) {
       const option = document.createElement("option");
       option.value = i;
       option.textContent = i + "x";
+      // Set the first option (1x) as selected by default
+      if (i === 1) {
+        option.selected = true;
+      }
       paymentInstallments.appendChild(option);
     }
   } else if (expenseType === "recurring") {
@@ -684,11 +689,16 @@ function updateInstallmentOptions() {
     recurringEndDateContainer.style.display = "none";
     closedInvoiceContainer.style.display = "none";
 
-    // Adiciona opções de 2 a 12 parcelas para despesas recorrentes
+    // Limpar e adicionar opções de 2 a 12 parcelas para despesas recorrentes (sem a palavra "Parcelas")
+    paymentInstallments.innerHTML = '';
     for (let i = 2; i <= 12; i++) {
       const option = document.createElement("option");
       option.value = i;
       option.textContent = i + "x";
+      // Set the first option (2x) as selected by default
+      if (i === 2) {
+        option.selected = true;
+      }
       paymentInstallments.appendChild(option);
     }
   } else if (expenseType === "single-payment") {
