@@ -416,10 +416,15 @@ function togglePaid(id) {
   state.expenses = state.expenses.map((expense) =>
     expense.id === id ? { ...expense, paid: !expense.paid } : expense
   );
+    // Salvar no Firebase
+    database.ref('expenses').set(state.expenses);
+
+  // Atualizar UI
   renderExpensesTable();
   renderTopSection(); // Atualizar também o top section com os novos valores
   calculateTotals();
 }
+
 
 // Adicionar nova despesa
 function addExpense() {
@@ -455,6 +460,9 @@ function addExpense() {
       return;
     }
   }
+
+   // Salvar no Firebase
+   database.ref('expenses').set(state.expenses);
 
   // Check if invoice is closed (only applies to credit card)
   const isClosedInvoice = isCreditCard
@@ -603,13 +611,20 @@ function addExpense() {
 
 // Inicialização da aplicação
 function init() {
-
-
-  // Renderizar componentes
-  renderTopSection();
-  renderCategories();
-  renderExpensesTable();
-  calculateTotals();
+  // Carregar dados do Firebase
+  database.ref('expenses').on('value', snapshot => {
+    const expensesObj = snapshot.val();
+    if (expensesObj) {
+      state.expenses = Object.values(expensesObj);
+    } else {
+      state.expenses = [];
+    }
+    // Renderizar componentes
+    renderTopSection();
+    renderCategories();
+    renderExpensesTable();
+    calculateTotals();
+  });
 
   // Inicializar o campo de valor com formato de moeda vazio
   const expenseAmountInput = document.getElementById("expense-amount");
@@ -772,6 +787,9 @@ function deleteExpense(id, showConfirmation = true) {
     return;
   }
 
+   // Salvar no Firebase
+   database.ref('expenses').set(state.expenses);
+
   // Filtrar a despesa do array
   state.expenses = state.expenses.filter((expense) => expense.id !== id);
 
@@ -869,6 +887,8 @@ function updateUIAfterDelete() {
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
+  // Salvar no Firebase
+  database.ref('expenses').set(state.expenses);
 }
 
 // Format currency for input
@@ -1059,3 +1079,5 @@ function closeModal() {
     modal.remove();
   }
 }
+// Iniciar a aplicação quando o DOM estiver pronto
+document.addEventListener("DOMContentLoaded", init);
