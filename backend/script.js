@@ -403,11 +403,29 @@ function updateCreditCardDueDate(newDueDate) {
     expense.dueDate = newDueDate;
   });
 
-  // Atualizar UI
+  // Atualizar UI e salvar no Firebase
   renderExpensesTable();
+  saveStateToFirebase();
 }
 
-// Função para salvar o estado no localStorage
+// Função para salvar o estado no Firebase
+function saveStateToFirebase() {
+  const expensesRef = database.ref('expenses');
+  const expensesData = {};
+  
+  state.expenses.forEach((expense) => {
+    expensesData[expense.id] = expense;
+  });
+  
+  expensesRef.set(expensesData);
+}
+
+// Função para carregar o estado do Firebase
+function loadStateFromFirebase() {
+  syncStateWithFirebase();
+}
+
+// Função para sincronizar o estado com o Firebase
 function syncStateWithFirebase() {
   const expensesRef = database.ref('expenses');
   
@@ -421,24 +439,63 @@ function syncStateWithFirebase() {
   });
 }
 
-function saveStateToFirebase() {
-  const expensesRef = database.ref('expenses');
-  const expensesData = {};
-  
-  state.expenses.forEach((expense) => {
-    expensesData[expense.id] = expense;
-  });
-  
-  expensesRef.set(expensesData);
-}
-
-// Replace localStorage functions with Firebase
-function saveStateToLocalStorage() {
-  saveStateToFirebase();
-}
-
+// Função para carregar o estado do localStorage
 function loadStateFromLocalStorage() {
-  syncStateWithFirebase();
+  const savedState = localStorage.getItem("financialPlannerState");
+
+  if (savedState) {
+    try {
+      // Converter a string JSON de volta para objeto
+      const parsedState = JSON.parse(savedState);
+
+      // Atualizar o estado com os dados salvos
+      state.expenses = parsedState.expenses || [];
+      state.selectedMonth = parsedState.selectedMonth || "JANEIRO";
+      state.selectedYear = parsedState.selectedYear || new Date().getFullYear();
+      state.totalAmount = parsedState.totalAmount || 0;
+      state.totalPaid = parsedState.totalPaid || 0;
+    } catch (error) {
+      console.error("Erro ao carregar dados do localStorage:", error);
+    }
+  }
+}
+
+// Alternar status de pago
+function togglePaid(id) {
+  state.expenses = state.expenses.map((expense) =>
+    expense.id === id ? { ...expense, paid: !expense.paid } : expense
+  );
+  renderExpensesTable();
+  renderTopSection(); // Atualizar também o top section com os novos valores
+  calculateTotals();
+  saveStateToFirebase(); // Salvar alterações no Firebase
+}
+
+// Inicialização da aplicação
+function init() {
+  // Carregar dados do Firebase
+  loadStateFromFirebase();
+
+  // Renderizar componentes
+  renderTopSection();
+  renderCategories();
+  renderExpensesTable();
+  calculateTotals();
+
+  // Inicializar o campo de valor com formato de moeda vazio
+  const expenseAmountInput = document.getElementById("expense-amount");
+  expenseAmountInput.value = "";
+
+  // Adicionar eventos usando delegação de eventos
+  const form = document.querySelector('.form-grid');
+  form.addEventListener('change', (e) => {
+    if (e.target.name === 'expense-type') {
+      updateInstallmentOptions();
+    }
+  });
+
+  // Adicionar evento ao botão de adicionar despesa
+  document.getElementById("add-expense-btn").addEventListener("click", addExpense);
 }
 
 // Adicionar nova despesa
@@ -465,7 +522,6 @@ function addExpense() {
     installmentSelect.style.display !== "none" ? installmentSelect.value : "1";
 
   // Para despesas recorrentes, usar o número de parcelas selecionado
-  // Não precisamos mais verificar a data final
   if (isRecurring) {
     // Verificar se um número de parcelas foi selecionado
     if (!installments || installments === "") {
@@ -582,8 +638,8 @@ function addExpense() {
           installments: installmentsCount,
           currentInstallment: 1,
           closedInvoice: isClosedInvoice,
-          originalDescription: description, // Guardar a descrição original para referência
-          originalCategory: category, // Guardar a categoria original para referência
+          originalDescription: description,
+          originalCategory: category,
         });
       }
 
@@ -609,10 +665,11 @@ function addExpense() {
       state.selectedMonth = expenseMonth;
       state.selectedYear = expenseYear;
 
-      // Atualizar UI
+      // Atualizar UI e salvar no Firebase
       renderExpensesTable();
       renderTopSection();
       calculateTotals();
+      saveStateToFirebase();
     }
   } else {
     alert(
@@ -623,6 +680,9 @@ function addExpense() {
 
 // Inicialização da aplicação
 function init() {
+  // Carregar dados do localStorage
+  loadStateFromLocalStorage();
+
   // Renderizar componentes
   renderTopSection();
   renderCategories();
@@ -1068,21 +1128,4 @@ function closeModal() {
   if (modal) {
     modal.remove();
   }
-}
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-  loadStateFromLocalStorage();
-  init();
-});
-
-// Update Firebase when state changes
-function togglePaid(id) {
-  state.expenses = state.expenses.map((expense) =>
-    expense.id === id ? { ...expense, paid: !expense.paid } : expense
-  );
-  renderExpensesTable();
-  renderTopSection();
-  calculateTotals();
-  saveStateToFirebase();
 }
