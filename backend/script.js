@@ -408,49 +408,37 @@ function updateCreditCardDueDate(newDueDate) {
 }
 
 // Função para salvar o estado no localStorage
+function syncStateWithFirebase() {
+  const expensesRef = database.ref('expenses');
+  
+  // Listen for changes in the expenses data
+  expensesRef.on('value', (snapshot) => {
+    const data = snapshot.val() || {};
+    state.expenses = Object.values(data);
+    renderExpensesTable();
+    renderTopSection();
+    calculateTotals();
+  });
+}
+
+function saveStateToFirebase() {
+  const expensesRef = database.ref('expenses');
+  const expensesData = {};
+  
+  state.expenses.forEach((expense) => {
+    expensesData[expense.id] = expense;
+  });
+  
+  expensesRef.set(expensesData);
+}
+
+// Replace localStorage functions with Firebase
 function saveStateToLocalStorage() {
-  // Criar uma cópia do estado para armazenar
-  const stateToSave = {
-    expenses: state.expenses,
-    selectedMonth: state.selectedMonth,
-    selectedYear: state.selectedYear,
-    totalAmount: state.totalAmount,
-    totalPaid: state.totalPaid,
-  };
-
-  // Salvar no localStorage como string JSON
-  localStorage.setItem("financialPlannerState", JSON.stringify(stateToSave));
+  saveStateToFirebase();
 }
 
-// Função para carregar o estado do localStorage
 function loadStateFromLocalStorage() {
-  const savedState = localStorage.getItem("financialPlannerState");
-
-  if (savedState) {
-    try {
-      // Converter a string JSON de volta para objeto
-      const parsedState = JSON.parse(savedState);
-
-      // Atualizar o estado com os dados salvos
-      state.expenses = parsedState.expenses || [];
-      state.selectedMonth = parsedState.selectedMonth || "JANEIRO";
-      state.selectedYear = parsedState.selectedYear || new Date().getFullYear();
-      state.totalAmount = parsedState.totalAmount || 0;
-      state.totalPaid = parsedState.totalPaid || 0;
-    } catch (error) {
-      console.error("Erro ao carregar dados do localStorage:", error);
-    }
-  }
-}
-
-// Alternar status de pago
-function togglePaid(id) {
-  state.expenses = state.expenses.map((expense) =>
-    expense.id === id ? { ...expense, paid: !expense.paid } : expense
-  );
-  renderExpensesTable();
-  renderTopSection(); // Atualizar também o top section com os novos valores
-  calculateTotals();
+  syncStateWithFirebase();
 }
 
 // Adicionar nova despesa
@@ -1080,4 +1068,21 @@ function closeModal() {
   if (modal) {
     modal.remove();
   }
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+  loadStateFromLocalStorage();
+  init();
+});
+
+// Update Firebase when state changes
+function togglePaid(id) {
+  state.expenses = state.expenses.map((expense) =>
+    expense.id === id ? { ...expense, paid: !expense.paid } : expense
+  );
+  renderExpensesTable();
+  renderTopSection();
+  calculateTotals();
+  saveStateToFirebase();
 }
