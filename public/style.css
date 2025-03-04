@@ -1,0 +1,27 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+#transacoes, #formulario-transacao {
+  margin-bottom: 20px;
+}
+
+#lista-transacoes {
+  list-style: none;
+  padding: 0;
+}
+
+#lista-transacoes li {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+#lista-transacoes li.receita {
+  background-color: #e0f7fa;
+}
+
+#lista-transacoes li.despesa {
+  background-color: #ffe0b2;
+}
