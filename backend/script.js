@@ -405,10 +405,43 @@ function updateCreditCardDueDate(newDueDate) {
 
   // Atualizar UI
   renderExpensesTable();
-
 }
 
+// Função para salvar o estado no localStorage
+function saveStateToLocalStorage() {
+  // Criar uma cópia do estado para armazenar
+  const stateToSave = {
+    expenses: state.expenses,
+    selectedMonth: state.selectedMonth,
+    selectedYear: state.selectedYear,
+    totalAmount: state.totalAmount,
+    totalPaid: state.totalPaid,
+  };
 
+  // Salvar no localStorage como string JSON
+  localStorage.setItem("financialPlannerState", JSON.stringify(stateToSave));
+}
+
+// Função para carregar o estado do localStorage
+function loadStateFromLocalStorage() {
+  const savedState = localStorage.getItem("financialPlannerState");
+
+  if (savedState) {
+    try {
+      // Converter a string JSON de volta para objeto
+      const parsedState = JSON.parse(savedState);
+
+      // Atualizar o estado com os dados salvos
+      state.expenses = parsedState.expenses || [];
+      state.selectedMonth = parsedState.selectedMonth || "JANEIRO";
+      state.selectedYear = parsedState.selectedYear || new Date().getFullYear();
+      state.totalAmount = parsedState.totalAmount || 0;
+      state.totalPaid = parsedState.totalPaid || 0;
+    } catch (error) {
+      console.error("Erro ao carregar dados do localStorage:", error);
+    }
+  }
+}
 
 // Alternar status de pago
 function togglePaid(id) {
@@ -418,7 +451,6 @@ function togglePaid(id) {
   renderExpensesTable();
   renderTopSection(); // Atualizar também o top section com os novos valores
   calculateTotals();
-  saveDataToFirebase();
 }
 
 // Adicionar nova despesa
@@ -593,7 +625,6 @@ function addExpense() {
       renderExpensesTable();
       renderTopSection();
       calculateTotals();
-    
     }
   } else {
     alert(
@@ -602,46 +633,8 @@ function addExpense() {
   }
 }
 
-// Salvar dados no Firebase
-function saveDataToFirebase() {
-  database.ref('expenses').set(state.expenses)
-    .catch(error => console.error('Error saving data:', error));
-}
-
-// Carregar dados do Firebase
-function loadDataFromFirebase() {
-  database.ref('expenses').once('value')
-    .then(snapshot => {
-      const data = snapshot.val();
-      if (data) {
-        state.expenses = data;
-        renderTopSection();
-        renderExpensesTable();
-        calculateTotals();
-      }
-    })
-    .catch(error => console.error('Error loading data:', error));
-}
-
-// Configurar listener para atualizações em tempo real
-function setupRealtimeSync() {
-  database.ref('expenses').on('value', snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      state.expenses = data;
-      renderTopSection();
-      renderExpensesTable();
-      calculateTotals();
-    }
-  });
-}
-
 // Inicialização da aplicação
 function init() {
-  // Inicializar a aplicação
-  loadDataFromFirebase();
-  setupRealtimeSync();
-
   // Renderizar componentes
   renderTopSection();
   renderCategories();
@@ -802,12 +795,11 @@ function deleteExpense(id, showConfirmation = true) {
   // Filtrar a despesa do array
   state.expenses = state.expenses.filter((expense) => expense.id !== id);
 
-  // Atualizar UI e salvar no Firebase
+  // Atualizar UI
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
-  saveDataToFirebase();
-
+  saveStateToLocalStorage(); // Salvar alterações no localStorage
 }
 
 function showDeleteModal(id, showConfirmation = true, onDelete = null) {
@@ -898,7 +890,7 @@ function updateUIAfterDelete() {
   renderExpensesTable();
   renderTopSection();
   calculateTotals();
-  saveDataToFirebase();
+  saveStateToLocalStorage();
 }
 
 // Format currency for input
