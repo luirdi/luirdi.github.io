@@ -113,7 +113,7 @@ function renderTransactions() {
         const formattedDate = date.toLocaleDateString('pt-BR');
         
         // Format amount
-        const formattedAmount = formatCurrency(transaction.amount);
+        const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
         
         // Translate category
         const categoryTranslations = {
@@ -128,7 +128,7 @@ function renderTransactions() {
             <td>${transaction.description}</td>
             <td>${categoryTranslations[transaction.category] || transaction.category}</td>
             <td class="transaction-expense">
-                - ${formattedAmount}
+                ${formattedAmount}
             </td>
             <td class="action-buttons">
                 <button class="btn btn-link p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir">🗑️</button>
@@ -177,5 +177,14 @@ function formatCurrency(value) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
+    }).format(value);
+}
+
+// Format number without currency symbol
+function formatNumberWithoutCurrency(value) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
     }).format(value);
 }
