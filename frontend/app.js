@@ -26,17 +26,41 @@ const totalIncome = document.getElementById('totalIncome');
 const totalExpenses = document.getElementById('totalExpenses');
 const totalCreditCard = document.getElementById('totalCreditCard');
 const totalOtherExpenses = document.getElementById('totalOtherExpenses');
-
+const currentMonthElement = document.getElementById('currentMonth');
+const currentYearElement = document.getElementById('currentYear');
 
 // State variables
 let transactions = [];
+let currentDate = new Date();
 
 // Event Listeners
 transactionForm.addEventListener('submit', addTransaction);
 
 // Initialize dashboard
 dashboardContainer.classList.remove('d-none');
+updateCurrentDate();
 loadTransactions();
+
+// Update current date display
+function updateCurrentDate() {
+    const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    currentMonthElement.textContent = months[currentDate.getMonth()];
+    currentYearElement.textContent = currentDate.getFullYear();
+}
+
+// Change month
+function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    updateCurrentDate();
+    loadTransactions();
+}
+
+// Change year
+function changeYear(delta) {
+    currentDate.setFullYear(currentDate.getFullYear() + delta);
+    updateCurrentDate();
+    loadTransactions();
+}
 
 // Load transactions from Firebase
 function loadTransactions() {
@@ -54,7 +78,13 @@ function loadTransactions() {
                     id: key,
                     ...data[key]
                 };
-                transactions.push(transaction);
+                const transactionDate = new Date(transaction.date);
+                
+                // Filter transactions by current month and year
+                if (transactionDate.getMonth() === currentDate.getMonth() && 
+                    transactionDate.getFullYear() === currentDate.getFullYear()) {
+                    transactions.push(transaction);
+                }
             });
             
             // Sort transactions by date (newest first)
