@@ -107,7 +107,7 @@ function loadTransactions() {
           timeZone: "America/Sao_Paulo",
           month: "numeric",
           year: "numeric",
-        };
+        }; 
         const currentLocalDateStr = currentDate.toLocaleDateString("pt-BR", options);
         const [currentMonth, currentYear] = currentLocalDateStr.split("/").map(Number);
         const transactionLocalDateStr = transactionDate.toLocaleDateString("pt-BR", options);
