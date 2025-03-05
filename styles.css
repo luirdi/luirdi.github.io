@@ -109,10 +109,19 @@ body {
         flex-wrap: wrap;
     }
     
-    #transactionForm .col-md-3:nth-child(3),
-    #transactionForm .col-md-3:nth-child(4) {
+    /* Target amount and date fields to be side by side */
+    #transactionForm .col-md-3:nth-child(2),
+    #transactionForm .col-md-3:nth-child(3) {
         width: 50%;
-        padding: 0 5px;
+        padding: 0 12px;
+        margin-bottom: 15px;
+    }
+    
+    /* Category and type fields */
+    #transactionForm .col-md-3:nth-child(4),
+    #transactionForm .col-md-3:nth-child(5) {
+        width: 50%;
+        padding: 0 12px;
         margin-bottom: 15px;
     }
     
