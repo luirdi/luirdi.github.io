@@ -20,11 +20,13 @@ const database = firebase.database();
 const dashboardContainer = document.getElementById('dashboardContainer');
 const transactionForm = document.getElementById('transactionForm');
 const transactionsList = document.getElementById('transactionsList');
+const creditCardTransactionsList = document.getElementById('creditCardTransactionsList');
 const totalBalance = document.getElementById('totalBalance');
 const totalIncome = document.getElementById('totalIncome');
 const totalExpenses = document.getElementById('totalExpenses');
 const totalCreditCard = document.getElementById('totalCreditCard');
-const totalOtherPayments = document.getElementById('totalOtherPayments');
+const totalOtherExpenses = document.getElementById('totalOtherExpenses');
+
 
 // State variables
 let transactions = [];
@@ -43,6 +45,7 @@ function loadTransactions() {
     transactionsRef.on('value', snapshot => {
         transactions = [];
         transactionsList.innerHTML = '';
+        creditCardTransactionsList.innerHTML = '';
         
         const data = snapshot.val();
         if (data) {
@@ -104,8 +107,21 @@ function addTransaction(e) {
 // Render transactions list
 function renderTransactions() {
     transactionsList.innerHTML = '';
+    creditCardTransactionsList.innerHTML = '';
     
-    transactions.forEach(transaction => {
+    // Translate category function
+    const getCategoryTranslation = (category) => {
+        const categoryTranslations = {
+            'food': 'Alimentação',
+            'transport': 'Transporte',
+            'housing': 'Moradia',
+            'others': 'Outros'
+        };
+        return categoryTranslations[category] || category;
+    };
+    
+    // Create transaction row function
+    const createTransactionRow = (transaction) => {
         const row = document.createElement('tr');
         
         // Format date
@@ -115,27 +131,30 @@ function renderTransactions() {
         // Format amount
         const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
         
-        // Translate category
-        const categoryTranslations = {
-            'food': 'Alimentação',
-            'transport': 'Transporte',
-            'housing': 'Moradia',
-            'others': 'Outros'
-        };
-        
         row.innerHTML = `
             <td>${formattedDate}</td>
             <td>${transaction.description}</td>
-            <td>${categoryTranslations[transaction.category] || transaction.category}</td>
+            <td>${getCategoryTranslation(transaction.category)}</td>
             <td class="transaction-expense">
                 ${formattedAmount}
             </td>
             <td class="action-buttons">
-                <button class="btn btn-link p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir">🗑️</button>
+                <button class="btn btn-link p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir">🗑</button>
             </td>
         `;
         
-        transactionsList.appendChild(row);
+        return row;
+    };
+    
+    // Filter and render transactions by type
+    transactions.forEach(transaction => {
+        const row = createTransactionRow(transaction);
+        
+        if (transaction.type === 'credit_card') {
+            creditCardTransactionsList.appendChild(row);
+        } else {
+            transactionsList.appendChild(row);
+        }
     });
 }
 
@@ -169,7 +188,7 @@ function updateFinancialSummary() {
     
     totalExpenses.textContent = formatCurrency(expenses);
     totalCreditCard.textContent = formatCurrency(creditCardTotal);
-    totalOtherPayments.textContent = formatCurrency(otherPaymentsTotal);
+    totalOtherExpenses.textContent = formatCurrency(otherPaymentsTotal);
 }
 
 // Format currency
