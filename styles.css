@@ -1,6 +1,14 @@
 body {
     background-color: #f8f9fa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Main container with max-width for desktop */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
 .card {
@@ -60,9 +68,57 @@ body {
     gap: 5px;
 }
 
+@media (max-width: 576px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .col-md-3 {
         margin-bottom: 15px;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.3rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .table th, .table td {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    
+    .action-buttons .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .table-responsive {
+        margin: 0 -0.5rem;
     }
 }
