@@ -23,6 +23,8 @@ const transactionsList = document.getElementById('transactionsList');
 const totalBalance = document.getElementById('totalBalance');
 const totalIncome = document.getElementById('totalIncome');
 const totalExpenses = document.getElementById('totalExpenses');
+const totalCreditCard = document.getElementById('totalCreditCard');
+const totalOtherPayments = document.getElementById('totalOtherPayments');
 
 // State variables
 let transactions = [];
@@ -149,27 +151,24 @@ function deleteTransaction(id) {
 
 // Update financial summary
 function updateFinancialSummary() {
-    let income = 0;
     let expenses = 0;
+    let creditCardTotal = 0;
+    let otherPaymentsTotal = 0;
     
     transactions.forEach(transaction => {
         expenses += transaction.amount;
+        
+        // Calculate totals by transaction type
+        if (transaction.type === 'credit_card') {
+            creditCardTotal += transaction.amount;
+        } else if (transaction.type === 'other_payments') {
+            otherPaymentsTotal += transaction.amount;
+        }
     });
     
-    const balance = income - expenses;
-    
-    totalIncome.textContent = formatCurrency(income);
     totalExpenses.textContent = formatCurrency(expenses);
-    totalBalance.textContent = formatCurrency(balance);
-    
-    // Add color to balance
-    if (balance > 0) {
-        totalBalance.className = 'text-success';
-    } else if (balance < 0) {
-        totalBalance.className = 'text-danger';
-    } else {
-        totalBalance.className = '';
-    }
+    totalCreditCard.textContent = formatCurrency(creditCardTotal);
+    totalOtherPayments.textContent = formatCurrency(otherPaymentsTotal);
 }
 
 // Format currency
