@@ -52,9 +52,16 @@
               <form id="transactionForm">
                 <div class="row">
                   <div class="col-md-3 mb-3">
-                    <label for="description" class="form-label"
-                      >Descrição</label
-                    >
+                    <label for="date" class="form-label">Data</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="date"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="description" class="form-label">Descrição</label>
                     <input
                       type="text"
                       class="form-control"
@@ -73,19 +80,19 @@
                     />
                   </div>
                   <div class="col-md-3 mb-3">
-                    <label for="type" class="form-label">Tipo</label>
-                    <select class="form-control" id="type" required>
-                      <option value="credit_card">Cartão de Crédito</option>
-                      <option value="other_payments">Outros Pagamentos</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3 mb-3">
                     <label for="category" class="form-label">Categoria</label>
                     <select class="form-control" id="category" required>
                       <option value="food">Alimentação</option>
                       <option value="transport">Transporte</option>
                       <option value="housing">Moradia</option>
                       <option value="others">Outros</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="type" class="form-label">Tipo</label>
+                    <select class="form-control" id="type" required>
+                      <option value="credit_card">Cartão de Crédito</option>
+                      <option value="other_payments">Outros Pagamentos</option>
                     </select>
                   </div>
                 </div>

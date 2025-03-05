@@ -76,8 +76,9 @@ function addTransaction(e) {
     const amount = parseFloat(document.getElementById('amount').value);
     const type = document.getElementById('type').value;
     const category = document.getElementById('category').value;
+    const date = document.getElementById('date').value;
     
-    if (!description || isNaN(amount) || amount <= 0) {
+    if (!description || isNaN(amount) || amount <= 0 || !date) {
         alert('Por favor, preencha todos os campos corretamente.');
         return;
     }
@@ -88,7 +89,7 @@ function addTransaction(e) {
         amount,
         type,
         category,
-        date: new Date().toISOString()
+        date: new Date(date).toISOString()
     };
     
     transactionsRef.push(newTransaction)
