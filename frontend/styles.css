@@ -4,6 +4,15 @@ body {
     overflow-x: hidden;
 }
 
+img {
+    display: flex;
+    line-height: 24px;
+    text-align: center;
+    align-items: flex-start;
+    border: none;
+
+}
+
 /* Main container with max-width for desktop */
 .container {
     max-width: 800px;
@@ -97,6 +106,16 @@ input[type="number"] {
     gap: 5px;
 }
 
+.action-buttons .btn {
+    width: 100%;
+
+}
+
+.btn-link-p-0 {
+    border-style: solid;
+    border-color: #fff;
+    background-color: #fff ;
+}
 @media (max-width: 576px) {
     .action-buttons {
         flex-direction: column;
@@ -157,10 +176,6 @@ input[type="number"] {
         font-size: 0.75rem;
     }
 }
-
-.year-selector {
-    align-items: center;
- }
 
 /* Small mobile devices */
 @media (max-width: 576px) {
