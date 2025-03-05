@@ -114,7 +114,6 @@ function renderTransactions() {
         
         // Translate category
         const categoryTranslations = {
-            'salary': 'Salário',
             'food': 'Alimentação',
             'transport': 'Transporte',
             'housing': 'Moradia',
@@ -125,8 +124,8 @@ function renderTransactions() {
             <td>${formattedDate}</td>
             <td>${transaction.description}</td>
             <td>${categoryTranslations[transaction.category] || transaction.category}</td>
-            <td class="${transaction.type === 'income' ? 'transaction-income' : 'transaction-expense'}">
-                ${transaction.type === 'income' ? '+' : '-'} ${formattedAmount}
+            <td class="transaction-expense">
+                - ${formattedAmount}
             </td>
             <td class="action-buttons">
                 <button class="btn btn-sm btn-danger" onclick="deleteTransaction('${transaction.id}')">Excluir</button>
@@ -154,11 +153,7 @@ function updateFinancialSummary() {
     let expenses = 0;
     
     transactions.forEach(transaction => {
-        if (transaction.type === 'income') {
-            income += transaction.amount;
-        } else {
-            expenses += transaction.amount;
-        }
+        expenses += transaction.amount;
     });
     
     const balance = income - expenses;
