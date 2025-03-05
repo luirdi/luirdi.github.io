@@ -158,6 +158,10 @@ input[type="number"] {
     }
 }
 
+.year-selector {
+    align-items: center;
+ }
+
 /* Small mobile devices */
 @media (max-width: 576px) {
     .container {
@@ -182,6 +186,7 @@ input[type="number"] {
 .month-selector,
 .year-selector {
     display: flex;
+    margin: 0px;
     flex-direction: column;
     align-items: center;
 }
@@ -204,3 +209,4 @@ input[type="number"] {
         margin-bottom: 0;
     }
 }
+

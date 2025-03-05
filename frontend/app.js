@@ -78,7 +78,8 @@ function loadTransactions() {
                     id: key,
                     ...data[key]
                 };
-                const transactionDate = new Date(transaction.date);
+                // Adjust date to GMT-3
+                const transactionDate = new Date(new Date(transaction.date).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
                 
                 // Filter transactions by current month and year
                 if (transactionDate.getMonth() === currentDate.getMonth() && 
@@ -87,8 +88,12 @@ function loadTransactions() {
                 }
             });
             
-            // Sort transactions by date (newest first)
-            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort transactions by date (newest first) using GMT-3 dates
+            transactions.sort((a, b) => {
+                const dateA = new Date(new Date(a.date).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+                const dateB = new Date(new Date(b.date).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+                return dateB - dateA;
+            });
             
             // Render transactions
             renderTransactions();
@@ -122,7 +127,7 @@ function addTransaction(e) {
         amount,
         type,
         category,
-        date: new Date(date).toISOString()
+        date: new Date(new Date(date).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })).toISOString()
     };
     
     transactionsRef.push(newTransaction)
@@ -154,8 +159,8 @@ function renderTransactions() {
     const createTransactionRow = (transaction) => {
         const row = document.createElement('tr');
         
-        // Format date
-        const date = new Date(transaction.date);
+        // Format date with GMT-3 timezone
+        const date = new Date(new Date(transaction.date).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
         const formattedDate = date.toLocaleDateString('pt-BR');
         
         // Format amount
@@ -169,7 +174,7 @@ function renderTransactions() {
                 ${formattedAmount}
             </td>
             <td class="action-buttons">
-                <button class="btn btn-link p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir"><img src="/icons/lixo_96-96.png" alt="Excluir" width="20" height="20"></button>
+                <button class="btn-link-p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir"><img src="/icons/lixo_96-96.png" alt="Excluir" width="20" height="20"></button>
             </td>
         `;
         
