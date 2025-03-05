@@ -103,6 +103,19 @@ body {
         margin-bottom: 15px;
     }
     
+    /* Adjust date and amount fields to be side by side */
+    #transactionForm .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    #transactionForm .col-md-3:nth-child(2),
+    #transactionForm .col-md-3:nth-child(3) {
+        width: 50%;
+        padding: 0 5px;
+        margin-bottom: 15px;
+    }
+    
     h2 {
         font-size: 1.5rem;
     }
