@@ -139,7 +139,7 @@ function renderTransactions() {
                 ${formattedAmount}
             </td>
             <td class="action-buttons">
-                <button class="btn btn-link p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir">🗑</button>
+                <button class="btn btn-link p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir"><img src="/icons/lixo_96-96.png" alt="Excluir" width="20" height="20"></button>
             </td>
         `;
         
