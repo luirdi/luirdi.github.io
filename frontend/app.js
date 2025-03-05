@@ -108,9 +108,9 @@ function loadTransactions() {
           month: "numeric",
           year: "numeric",
         };
-        const currentLocalDateStr = currentDate.toLocaleDateString("en-US", options);
+        const currentLocalDateStr = currentDate.toLocaleDateString("pt-BR", options);
         const [currentMonth, currentYear] = currentLocalDateStr.split("/").map(Number);
-        const transactionLocalDateStr = transactionDate.toLocaleDateString("en-US", options);
+        const transactionLocalDateStr = transactionDate.toLocaleDateString("pt-BR", options);
         const [month, year] = transactionLocalDateStr.split("/").map(Number);
         if (
           month === currentMonth &&
@@ -123,12 +123,12 @@ function loadTransactions() {
       // Sort transactions by date (newest first) using GMT-3 dates
       transactions.sort((a, b) => {
         const dateA = new Date(
-          new Date(a.date).toLocaleString("en-US", {
+          new Date(a.date).toLocaleString("pt-BR", {
             timeZone: "America/Sao_Paulo",
           })
         );
         const dateB = new Date(
-          new Date(b.date).toLocaleString("en-US", {
+          new Date(b.date).toLocaleString("pt-BR", {
             timeZone: "America/Sao_Paulo",
           })
         );
