@@ -171,7 +171,7 @@ function addTransaction(e) {
   const category = document.getElementById("category").value;
   const date = document.getElementById("date").value;
 
-  if (!description || isNaN(amount) || amount <= 0 || !date) {
+  if (!description || isNaN(amount) || amount <= 0 || !date || !category) {
     alert("Por favor, preencha todos os campos corretamente.");
     return;
   }
