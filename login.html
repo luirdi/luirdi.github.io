@@ -4,7 +4,20 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/frontend/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/frontend/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/frontend/favicon-16x16.png">
-<link rel="manifest" href="/frontend/site.webmanifest">
+<link rel="manifest" href="/manifest.json">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
 <link rel="mask-icon" href="/frontend/safari-pinned-tab.svg" color="#5bbad5">
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="theme-color" content="#ffffff">
