@@ -36,9 +36,16 @@ const currentYearElement = document.getElementById("currentYear");
 let transactions = [];
 let currentUserId = null;
 
-// Get current date in GMT-3 (UTC-3)
+// Constants
+const TIMEZONE = "America/Sao_Paulo";
+const LOCALE = "pt-BR";
+const MONTHS = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+
+// Get current date in local timezone (Brazil)
 let currentDate = new Date();
-currentDate.setUTCHours(currentDate.getUTCHours() - 3);
 
 // Auth state observer
 auth.onAuthStateChanged((user) => {
@@ -58,66 +65,52 @@ transactionForm.addEventListener("submit", addTransaction);
 // Add event listener to show/hide credit card fields based on transaction type
 document.getElementById("type").addEventListener("change", function() {
   const creditCardFields = document.querySelectorAll(".credit-card-fields");
-  
-  if (this.value === "credit_card") {
-    creditCardFields.forEach(field => field.style.display = "block");
-  } else {
-    creditCardFields.forEach(field => field.style.display = "none");
-  }
+  const isVisible = this.value === "credit_card";
+  creditCardFields.forEach(field => field.style.display = isVisible ? "block" : "none");
 });
 
-// Add event listeners to capitalize first letter of inputs
-function setupCapitalizeInputs() {
-  // Get the description input field
+// Setup input capitalization
+document.addEventListener("DOMContentLoaded", () => {
   const descriptionInput = document.getElementById("description");
-  
-  // Add input event listener to capitalize first letter as user types
   if (descriptionInput) {
-    descriptionInput.addEventListener("input", function(e) {
+    descriptionInput.addEventListener("input", function() {
       if (this.value.length > 0) {
         this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
       }
     });
   }
-}
+});
 
-// Call the setup function when the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", setupCapitalizeInputs);
-
-// Update current date display
+// Date handling functions
 function updateCurrentDate() {
-  const months = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ];
-  currentMonthElement.textContent = months[currentDate.getMonth()];
+  currentMonthElement.textContent = MONTHS[currentDate.getMonth()];
   currentYearElement.textContent = currentDate.getFullYear();
 }
 
-// Change month
 function changeMonth(delta) {
-  currentDate.setUTCMonth(currentDate.getUTCMonth() + delta);
-  currentDate.setUTCHours(currentDate.getUTCHours() - 3);
+  currentDate.setMonth(currentDate.getMonth() + delta);
   updateCurrentDate();
   loadTransactions();
 }
 
-// Change year
 function changeYear(delta) {
-  currentDate.setUTCFullYear(currentDate.getUTCFullYear() + delta);
-  currentDate.setUTCHours(currentDate.getUTCHours() - 3);
+  currentDate.setFullYear(currentDate.getFullYear() + delta);
   updateCurrentDate();
   loadTransactions();
+}
+
+// Format date to local string
+function formatLocalDate(date) {
+  return new Date(date).toLocaleDateString(LOCALE, {
+    timeZone: TIMEZONE
+  });
+}
+
+// Get current month and year as numbers
+function getCurrentMonthYear() {
+  const options = { timeZone: TIMEZONE, month: "numeric", year: "numeric" };
+  const dateStr = currentDate.toLocaleDateString(LOCALE, options);
+  return dateStr.split("/").map(Number);
 }
 
 // Load transactions from Firebase
@@ -133,58 +126,31 @@ function loadTransactions() {
 
     const data = snapshot.val();
     if (data) {
+      const [currentMonth, currentYear] = getCurrentMonthYear();
+      
       Object.keys(data).forEach((key) => {
-        const transaction = {
-          id: key,
-          ...data[key],
-        };
-        // Adjust date to GMT-3
-        const transactionDate = new Date(transaction.date);
-
-        // Filter transactions by current month and year
-        const options = {
-          timeZone: "America/Sao_Paulo",
-          month: "numeric",
-          year: "numeric",
-        };
-        const currentLocalDateStr = currentDate.toLocaleDateString("pt-BR", options);
-        const [currentMonth, currentYear] = currentLocalDateStr.split("/").map(Number);
+        const transaction = { id: key, ...data[key] };
         
         // For credit card installments, use displayDate for filtering if available
-        let dateToFilter = transactionDate;
-        if (transaction.type === "credit_card" && transaction.displayDate) {
-          dateToFilter = new Date(transaction.displayDate);
-        }
+        let dateToFilter = transaction.displayDate ? new Date(transaction.displayDate) : new Date(transaction.date);
         
-        const transactionLocalDateStr = dateToFilter.toLocaleDateString("pt-BR", options);
-        const [month, year] = transactionLocalDateStr.split("/").map(Number);
-        if (
-          month === currentMonth &&
-          year === currentYear
-        ) {
+        const options = { timeZone: TIMEZONE, month: "numeric", year: "numeric" };
+        const transactionDateStr = dateToFilter.toLocaleDateString(LOCALE, options);
+        const [month, year] = transactionDateStr.split("/").map(Number);
+        
+        if (month === currentMonth && year === currentYear) {
           transactions.push(transaction);
         }
       });
 
-      // Sort transactions by date (newest first) using GMT-3 dates
+      // Sort transactions by date (newest first)
       transactions.sort((a, b) => {
-        const dateA = new Date(
-          new Date(a.date).toLocaleString("pt-BR", {
-            timeZone: "America/Sao_Paulo",
-          })
-        );
-        const dateB = new Date(
-          new Date(b.date).toLocaleString("pt-BR", {
-            timeZone: "America/Sao_Paulo",
-          })
-        );
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
         return dateB - dateA;
       });
 
-      // Render transactions
       renderTransactions();
-
-      // Update summary
       updateFinancialSummary();
     } else {
       updateFinancialSummary();
@@ -201,84 +167,97 @@ function addTransaction(e) {
     return;
   }
 
-  const description = document.getElementById("description").value;
-  const amount = parseFloat(document.getElementById("amount").value);
-  const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
-  const date = document.getElementById("date").value;
+  const formData = {
+    description: document.getElementById("description").value,
+    amount: parseFloat(document.getElementById("amount").value),
+    type: document.getElementById("type").value,
+    category: document.getElementById("category").value,
+    date: document.getElementById("date").value
+  };
 
-  if (!description || isNaN(amount) || amount <= 0 || !date || !category) {
-    alert("Por favor, preencha todos os campos corretamente.");
+  if (!validateTransactionForm(formData)) {
     return;
   }
 
   const transactionsRef = database.ref(`users/${currentUserId}/transactions`);
   
-  // Handle credit card installments
-  if (type === "credit_card") {
-    const installments = parseInt(document.getElementById("installments").value);
-    const invoiceClosed = document.getElementById("invoiceClosed").checked;
-    const installmentAmount = amount / installments;
-    
-    // Create a batch of promises for all installment transactions
-    const installmentPromises = [];
-    
-    // Create a transaction for each installment
-    for (let i = 0; i < installments; i++) {
-      // Use the original purchase date for all installments
-      const originalDate = new Date(date + "T00:00:00-03:00");
-      
-      // For display purposes in the invoice, we still need to track which month this installment belongs to
-      // This is only used for filtering transactions by month/year in the UI
-      const displayDate = new Date(date + "T00:00:00-03:00");
-      const monthsToAdd = invoiceClosed ? i + 1 : i;
-      displayDate.setMonth(displayDate.getMonth() + monthsToAdd);
-      
-      const installmentTransaction = {
-        description: `${description}`,
-        amount: installmentAmount,
-        type: "credit_card",
-        category,
-        date: originalDate.toISOString(), // Always use the original purchase date
-        displayDate: displayDate.toISOString(), // Store the display date for filtering
-        isInstallment: true,
-        installmentNumber: i + 1,
-        totalInstallments: installments,
-        invoiceClosed
-      };
-      
-      // Add to promises array
-      installmentPromises.push(transactionsRef.push(installmentTransaction));
-    }
-    
-    // Wait for all transactions to be added
-    Promise.all(installmentPromises)
-      .then(() => {
-        transactionForm.reset();
-        alert(`Transação adicionada com sucesso em ${installments} parcelas.`);
-      })
-      .catch((error) => {
-        alert("Erro ao adicionar transação: " + error.message);
-      });
+  if (formData.type === "credit_card") {
+    addCreditCardTransaction(formData, transactionsRef);
   } else {
-    // Regular transaction (not credit card or single installment)
-    const newTransaction = {
-      description,
-      amount,
-      type,
-      category,
-      date: new Date(date + "T00:00:00-03:00").toISOString() // Store with GMT-3 offset
+    addRegularTransaction(formData, transactionsRef);
+  }
+}
+
+// Validate transaction form
+function validateTransactionForm(formData) {
+  if (!formData.description || isNaN(formData.amount) || formData.amount <= 0 || !formData.date || !formData.category) {
+    alert("Por favor, preencha todos os campos corretamente.");
+    return false;
+  }
+  return true;
+}
+
+// Add credit card transaction with installments
+function addCreditCardTransaction(formData, transactionsRef) {
+  const installments = parseInt(document.getElementById("installments").value);
+  const invoiceClosed = document.getElementById("invoiceClosed").checked;
+  const installmentAmount = formData.amount / installments;
+  
+  const installmentPromises = [];
+  
+  for (let i = 0; i < installments; i++) {
+    // Original purchase date
+    const originalDate = new Date(formData.date + "T00:00:00-03:00");
+    
+    // Display date for filtering in UI
+    const displayDate = new Date(formData.date + "T00:00:00-03:00");
+    const monthsToAdd = invoiceClosed ? i + 1 : i;
+    displayDate.setMonth(displayDate.getMonth() + monthsToAdd);
+    
+    const installmentTransaction = {
+      description: formData.description,
+      amount: installmentAmount,
+      type: "credit_card",
+      category: formData.category,
+      date: originalDate.toISOString(),
+      displayDate: displayDate.toISOString(),
+      isInstallment: true,
+      installmentNumber: i + 1,
+      totalInstallments: installments,
+      invoiceClosed
     };
     
-    transactionsRef
-      .push(newTransaction)
-      .then(() => {
-        transactionForm.reset();
-      })
-      .catch((error) => {
-        alert("Erro ao adicionar transação: " + error.message);
-      });
+    installmentPromises.push(transactionsRef.push(installmentTransaction));
   }
+  
+  Promise.all(installmentPromises)
+    .then(() => {
+      transactionForm.reset();
+      alert(`Transação adicionada com sucesso em ${installments} parcelas.`);
+    })
+    .catch((error) => {
+      alert("Erro ao adicionar transação: " + error.message);
+    });
+}
+
+// Add regular transaction
+function addRegularTransaction(formData, transactionsRef) {
+  const newTransaction = {
+    description: formData.description,
+    amount: formData.amount,
+    type: formData.type,
+    category: formData.category,
+    date: new Date(formData.date + "T00:00:00-03:00").toISOString()
+  };
+  
+  transactionsRef
+    .push(newTransaction)
+    .then(() => {
+      transactionForm.reset();
+    })
+    .catch((error) => {
+      alert("Erro ao adicionar transação: " + error.message);
+    });
 }
 
 // Delete transaction
@@ -301,66 +280,6 @@ function renderTransactions() {
   transactionsList.innerHTML = "";
   creditCardTransactionsList.innerHTML = "";
 
-  // Translate category function
-  const getCategoryTranslation = (category) => {
-    const categoryTranslations = {
-      combustivel_estacionamento: "Combustível/Estacionamento",
-      cuidados_pessoais: "Cuidados Pessoais",
-      educacao_qualificacao: "Educação/Qualificação",
-      eletronicos_brinquedos: "Eletrônicos/Brinquedos",
-      estorno_pagamento: "Estorno/Pagamento",
-      farmacia: "Farmácia",
-      manutencao_carro_moto: "Manutenção Carro/Moto",
-      mercado_refeicao: "Mercado/Refeição",
-      outros: "Outros",
-      presente: "Presente",
-      uber: "Uber",
-      utensilios_casa: "Utensílios p/ Casa",
-      vestuario: "Vestuário"
-    };
-    return categoryTranslations[category] || category;
-  };
-
-  // Create transaction row function
-  const createTransactionRow = (transaction) => {
-    const row = document.createElement("tr");
-
-    // Format date with GMT-3 timezone
-    const date = new Date(transaction.date);
-    const formattedDate = date.toLocaleDateString("pt-BR", {
-      timeZone: "America/Sao_Paulo",
-    });
-
-    // Format amount
-    const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
-    
-    // Get description - for credit card installments, use the base description and current installment number
-    let displayDescription = transaction.description;
-    if (transaction.isInstallment && transaction.displayDate) {
-      // Extract base description without the installment info
-      const baseDescription = transaction.description.split(" (")[0];
-      // Use the stored installment information
-      displayDescription = `${baseDescription} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
-    }
-
-    row.innerHTML = `
-            <td>${formattedDate}</td>
-            <td>${displayDescription}</td>
-            <td>${getCategoryTranslation(transaction.category)}</td>
-            <td class="transaction-expense">
-                ${formattedAmount}
-            </td>
-            <td class="action-buttons">
-                <button class="btn-link-p-0" onclick="deleteTransaction('${
-                  transaction.id
-                }')" title="Excluir"><img src="/icons/lixo_96-96.png" alt="Excluir" width="20" height="20"></button>
-            </td>
-        `;
-
-    return row;
-  };
-
-  // Filter and render transactions by type
   transactions.forEach((transaction) => {
     const row = createTransactionRow(transaction);
 
@@ -372,6 +291,56 @@ function renderTransactions() {
   });
 }
 
+// Create transaction row
+function createTransactionRow(transaction) {
+  const row = document.createElement("tr");
+  const formattedDate = formatLocalDate(transaction.date);
+  const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
+  
+  // Get description with installment info if applicable
+  let displayDescription = transaction.description;
+  if (transaction.isInstallment) {
+    const baseDescription = transaction.description.split(" (")[0];
+    displayDescription = `${baseDescription} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
+  }
+
+  row.innerHTML = `
+    <td>${formattedDate}</td>
+    <td>${displayDescription}</td>
+    <td>${getCategoryTranslation(transaction.category)}</td>
+    <td class="transaction-expense">
+        ${formattedAmount}
+    </td>
+    <td class="action-buttons">
+        <button class="btn-link-p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir">
+          <img src="/icons/lixo_96-96.png" alt="Excluir" width="20" height="20">
+        </button>
+    </td>
+  `;
+
+  return row;
+}
+
+// Translate category
+function getCategoryTranslation(category) {
+  const categoryTranslations = {
+    combustivel_estacionamento: "Combustível/Estacionamento",
+    cuidados_pessoais: "Cuidados Pessoais",
+    educacao_qualificacao: "Educação/Qualificação",
+    eletronicos_brinquedos: "Eletrônicos/Brinquedos",
+    estorno_pagamento: "Estorno/Pagamento",
+    farmacia: "Farmácia",
+    manutencao_carro_moto: "Manutenção Carro/Moto",
+    mercado_refeicao: "Mercado/Refeição",
+    outros: "Outros",
+    presente: "Presente",
+    uber: "Uber",
+    utensilios_casa: "Utensílios p/ Casa",
+    vestuario: "Vestuário"
+  };
+  return categoryTranslations[category] || category;
+}
+
 // Update financial summary
 function updateFinancialSummary() {
   let expenses = 0;
@@ -381,7 +350,6 @@ function updateFinancialSummary() {
   transactions.forEach((transaction) => {
     expenses += transaction.amount;
 
-    // Calculate totals by transaction type
     if (transaction.type === "credit_card") {
       creditCardTotal += transaction.amount;
     } else if (transaction.type === "other_payments") {
@@ -396,7 +364,7 @@ function updateFinancialSummary() {
 
 // Format currency
 function formatCurrency(value) {
-  return new Intl.NumberFormat("pt-BR", {
+  return new Intl.NumberFormat(LOCALE, {
     style: "currency",
     currency: "BRL",
   }).format(value);
@@ -404,7 +372,7 @@ function formatCurrency(value) {
 
 // Format number without currency symbol
 function formatNumberWithoutCurrency(value) {
-  return new Intl.NumberFormat("pt-BR", {
+  return new Intl.NumberFormat(LOCALE, {
     style: "decimal",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
