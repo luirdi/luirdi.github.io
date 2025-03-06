@@ -12,10 +12,10 @@ img {
     border: none;
 
 }
-#logoutbutton {
+/* #logoutbutton {
     display: flex;
     width: 15%;
-}
+} */
 /* Main container with max-width for desktop */
 .container {
     max-width: 800px;
@@ -81,8 +81,11 @@ img {
 }
 
 .btn-danger {
+    display: flex;
+    margin-bottom: 20px;
     background-color: #dc3545;
-    border-color: #dc3545;
+    border-color: #440099;
+    width: 15%;
 }
 
 /* Hide spinner buttons for number inputs */
