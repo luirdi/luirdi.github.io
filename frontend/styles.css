@@ -12,10 +12,12 @@ img {
     border: none;
 
 }
-/* #logoutbutton {
-    display: flex;
-    width: 15%;
-} */
+#logoutButton {
+    display: block;
+    width: 120px;
+    margin: 0 auto 15px auto;
+    font-size: 0.9rem;
+}
 /* Main container with max-width for desktop */
 .container {
     max-width: 800px;
@@ -85,11 +87,7 @@ img {
     background-color: #dc3545;
     border-color: #fd4556;
 }
-#logoutbutton {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    width: 10%;
-}
+
 
 /* Hide spinner buttons for number inputs */
 input[type="number"]::-webkit-inner-spin-button,
