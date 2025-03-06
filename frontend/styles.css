@@ -12,7 +12,10 @@ img {
     border: none;
 
 }
-
+#logoutbutton {
+    display: flex;
+    width: 15%;
+}
 /* Main container with max-width for desktop */
 .container {
     max-width: 800px;
