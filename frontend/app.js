@@ -55,6 +55,24 @@ auth.onAuthStateChanged((user) => {
 // Event Listeners
 transactionForm.addEventListener("submit", addTransaction);
 
+// Add event listeners to capitalize first letter of inputs
+function setupCapitalizeInputs() {
+  // Get the description input field
+  const descriptionInput = document.getElementById("description");
+  
+  // Add input event listener to capitalize first letter as user types
+  if (descriptionInput) {
+    descriptionInput.addEventListener("input", function(e) {
+      if (this.value.length > 0) {
+        this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+      }
+    });
+  }
+}
+
+// Call the setup function when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", setupCapitalizeInputs);
+
 // Update current date display
 function updateCurrentDate() {
   const months = [
