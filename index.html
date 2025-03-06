@@ -133,9 +133,35 @@
                 <div class="col-md-3 mb-3">
                   <label for="type" class="form-label">Tipo</label>
                   <select class="form-control" id="type" required>
+                    <option value="paymentType">Forma de Pagamento</option>
                     <option value="credit_card">Cartão de Crédito</option>
                     <option value="other_payments">Outras Despesas</option>
                   </select>
+                </div>
+                <div class="col-md-3 mb-3 credit-card-fields" style="display: none;">
+                  <label for="installments" class="form-label">Parcelas</label>
+                  <select class="form-control" id="installments">
+                    <option value="1">1x</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="7">7x</option>
+                    <option value="8">8x</option>
+                    <option value="9">9x</option>
+                    <option value="10">10x</option>
+                    <option value="11">11x</option>
+                    <option value="12">12x</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-3 credit-card-fields" style="display: none;">
+                  <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" id="invoiceClosed">
+                    <label class="form-check-label" for="invoiceClosed">
+                      Fatura Fechada
+                    </label>
+                  </div>
                 </div>
               </div>
               <button type="submit" class="btn btn-primary">

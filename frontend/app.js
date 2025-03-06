@@ -55,6 +55,17 @@ auth.onAuthStateChanged((user) => {
 // Event Listeners
 transactionForm.addEventListener("submit", addTransaction);
 
+// Add event listener to show/hide credit card fields based on transaction type
+document.getElementById("type").addEventListener("change", function() {
+  const creditCardFields = document.querySelectorAll(".credit-card-fields");
+  
+  if (this.value === "credit_card") {
+    creditCardFields.forEach(field => field.style.display = "block");
+  } else {
+    creditCardFields.forEach(field => field.style.display = "none");
+  }
+});
+
 // Add event listeners to capitalize first letter of inputs
 function setupCapitalizeInputs() {
   // Get the description input field
@@ -202,6 +213,15 @@ function addTransaction(e) {
     category,
     date: new Date(date + "T00:00:00-03:00").toISOString(), // Store with GMT-3 offset
   };
+  
+  // Add credit card specific fields if transaction type is credit card
+  if (type === "credit_card") {
+    const installments = parseInt(document.getElementById("installments").value);
+    const invoiceClosed = document.getElementById("invoiceClosed").checked;
+    
+    newTransaction.installments = installments;
+    newTransaction.invoiceClosed = invoiceClosed;
+  }
 
   transactionsRef
     .push(newTransaction)
