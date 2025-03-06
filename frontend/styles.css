@@ -86,8 +86,9 @@ img {
     border-color: #fd4556;
 }
 #logoutbutton {
-margin-bottom: 20px;
-width: 15%;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    width: 10%;
 }
 
 /* Hide spinner buttons for number inputs */
