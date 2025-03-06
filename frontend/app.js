@@ -149,7 +149,14 @@ function loadTransactions() {
         };
         const currentLocalDateStr = currentDate.toLocaleDateString("pt-BR", options);
         const [currentMonth, currentYear] = currentLocalDateStr.split("/").map(Number);
-        const transactionLocalDateStr = transactionDate.toLocaleDateString("pt-BR", options);
+        
+        // For credit card installments, use displayDate for filtering if available
+        let dateToFilter = transactionDate;
+        if (transaction.type === "credit_card" && transaction.displayDate) {
+          dateToFilter = new Date(transaction.displayDate);
+        }
+        
+        const transactionLocalDateStr = dateToFilter.toLocaleDateString("pt-BR", options);
         const [month, year] = transactionLocalDateStr.split("/").map(Number);
         if (
           month === currentMonth &&
@@ -206,31 +213,72 @@ function addTransaction(e) {
   }
 
   const transactionsRef = database.ref(`users/${currentUserId}/transactions`);
-  const newTransaction = {
-    description,
-    amount,
-    type,
-    category,
-    date: new Date(date + "T00:00:00-03:00").toISOString(), // Store with GMT-3 offset
-  };
   
-  // Add credit card specific fields if transaction type is credit card
+  // Handle credit card installments
   if (type === "credit_card") {
     const installments = parseInt(document.getElementById("installments").value);
     const invoiceClosed = document.getElementById("invoiceClosed").checked;
+    const installmentAmount = amount / installments;
     
-    newTransaction.installments = installments;
-    newTransaction.invoiceClosed = invoiceClosed;
+    // Create a batch of promises for all installment transactions
+    const installmentPromises = [];
+    
+    // Create a transaction for each installment
+    for (let i = 0; i < installments; i++) {
+      // Use the original purchase date for all installments
+      const originalDate = new Date(date + "T00:00:00-03:00");
+      
+      // For display purposes in the invoice, we still need to track which month this installment belongs to
+      // This is only used for filtering transactions by month/year in the UI
+      const displayDate = new Date(date + "T00:00:00-03:00");
+      const monthsToAdd = invoiceClosed ? i + 1 : i;
+      displayDate.setMonth(displayDate.getMonth() + monthsToAdd);
+      
+      const installmentTransaction = {
+        description: `${description}`,
+        amount: installmentAmount,
+        type: "credit_card",
+        category,
+        date: originalDate.toISOString(), // Always use the original purchase date
+        displayDate: displayDate.toISOString(), // Store the display date for filtering
+        isInstallment: true,
+        installmentNumber: i + 1,
+        totalInstallments: installments,
+        invoiceClosed
+      };
+      
+      // Add to promises array
+      installmentPromises.push(transactionsRef.push(installmentTransaction));
+    }
+    
+    // Wait for all transactions to be added
+    Promise.all(installmentPromises)
+      .then(() => {
+        transactionForm.reset();
+        alert(`Transação adicionada com sucesso em ${installments} parcelas.`);
+      })
+      .catch((error) => {
+        alert("Erro ao adicionar transação: " + error.message);
+      });
+  } else {
+    // Regular transaction (not credit card or single installment)
+    const newTransaction = {
+      description,
+      amount,
+      type,
+      category,
+      date: new Date(date + "T00:00:00-03:00").toISOString() // Store with GMT-3 offset
+    };
+    
+    transactionsRef
+      .push(newTransaction)
+      .then(() => {
+        transactionForm.reset();
+      })
+      .catch((error) => {
+        alert("Erro ao adicionar transação: " + error.message);
+      });
   }
-
-  transactionsRef
-    .push(newTransaction)
-    .then(() => {
-      transactionForm.reset();
-    })
-    .catch((error) => {
-      alert("Erro ao adicionar transação: " + error.message);
-    });
 }
 
 // Delete transaction
@@ -285,10 +333,19 @@ function renderTransactions() {
 
     // Format amount
     const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
+    
+    // Get description - for credit card installments, use the base description and current installment number
+    let displayDescription = transaction.description;
+    if (transaction.isInstallment && transaction.displayDate) {
+      // Extract base description without the installment info
+      const baseDescription = transaction.description.split(" (")[0];
+      // Use the stored installment information
+      displayDescription = `${baseDescription} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
+    }
 
     row.innerHTML = `
             <td>${formattedDate}</td>
-            <td>${transaction.description}</td>
+            <td>${displayDescription}</td>
             <td>${getCategoryTranslation(transaction.category)}</td>
             <td class="transaction-expense">
                 ${formattedAmount}
