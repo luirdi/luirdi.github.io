@@ -15,6 +15,7 @@ firebase.initializeApp(firebaseConfig);
 
 // References
 const database = firebase.database();
+const auth = firebase.auth();
 
 // DOM Elements
 const dashboardContainer = document.getElementById("dashboardContainer");
@@ -33,17 +34,26 @@ const currentYearElement = document.getElementById("currentYear");
 
 // State variables
 let transactions = [];
+let currentUserId = null;
+
 // Get current date in GMT-3 (UTC-3)
 let currentDate = new Date();
 currentDate.setUTCHours(currentDate.getUTCHours() - 3);
 
+// Auth state observer
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    currentUserId = user.uid;
+    dashboardContainer.classList.remove("d-none");
+    updateCurrentDate();
+    loadTransactions();
+  } else {
+    window.location.href = '/login.html';
+  }
+});
+
 // Event Listeners
 transactionForm.addEventListener("submit", addTransaction);
-
-// Initialize dashboard
-dashboardContainer.classList.remove("d-none");
-updateCurrentDate();
-loadTransactions();
 
 // Update current date display
 function updateCurrentDate() {
@@ -67,7 +77,6 @@ function updateCurrentDate() {
 
 // Change month
 function changeMonth(delta) {
-  // Change month with UTC adjustment
   currentDate.setUTCMonth(currentDate.getUTCMonth() + delta);
   currentDate.setUTCHours(currentDate.getUTCHours() - 3);
   updateCurrentDate();
@@ -76,7 +85,6 @@ function changeMonth(delta) {
 
 // Change year
 function changeYear(delta) {
-  // Change year with UTC adjustment
   currentDate.setUTCFullYear(currentDate.getUTCFullYear() + delta);
   currentDate.setUTCHours(currentDate.getUTCHours() - 3);
   updateCurrentDate();
@@ -85,7 +93,9 @@ function changeYear(delta) {
 
 // Load transactions from Firebase
 function loadTransactions() {
-  const transactionsRef = database.ref("transactions");
+  if (!currentUserId) return;
+  
+  const transactionsRef = database.ref(`users/${currentUserId}/transactions`);
 
   transactionsRef.on("value", (snapshot) => {
     transactions = [];
@@ -100,14 +110,14 @@ function loadTransactions() {
           ...data[key],
         };
         // Adjust date to GMT-3
-        const transactionDate = new Date(transaction.date); // Parse ISO string with correct timezone
+        const transactionDate = new Date(transaction.date);
 
         // Filter transactions by current month and year
         const options = {
           timeZone: "America/Sao_Paulo",
           month: "numeric",
           year: "numeric",
-        }; 
+        };
         const currentLocalDateStr = currentDate.toLocaleDateString("pt-BR", options);
         const [currentMonth, currentYear] = currentLocalDateStr.split("/").map(Number);
         const transactionLocalDateStr = transactionDate.toLocaleDateString("pt-BR", options);
@@ -150,6 +160,11 @@ function loadTransactions() {
 function addTransaction(e) {
   e.preventDefault();
 
+  if (!currentUserId) {
+    alert("Por favor, faça login para adicionar transações.");
+    return;
+  }
+
   const description = document.getElementById("description").value;
   const amount = parseFloat(document.getElementById("amount").value);
   const type = document.getElementById("type").value;
@@ -161,7 +176,7 @@ function addTransaction(e) {
     return;
   }
 
-  const transactionsRef = database.ref("transactions");
+  const transactionsRef = database.ref(`users/${currentUserId}/transactions`);
   const newTransaction = {
     description,
     amount,
@@ -178,6 +193,21 @@ function addTransaction(e) {
     .catch((error) => {
       alert("Erro ao adicionar transação: " + error.message);
     });
+}
+
+// Delete transaction
+function deleteTransaction(id) {
+  if (!currentUserId) {
+    alert("Por favor, faça login para excluir transações.");
+    return;
+  }
+
+  if (confirm("Tem certeza que deseja excluir esta transação?")) {
+    const transactionRef = database.ref(`users/${currentUserId}/transactions/${id}`);
+    transactionRef.remove().catch((error) => {
+      alert("Erro ao excluir transação: " + error.message);
+    });
+  }
 }
 
 // Render transactions list
@@ -236,16 +266,6 @@ function renderTransactions() {
       transactionsList.appendChild(row);
     }
   });
-}
-
-// Delete transaction
-function deleteTransaction(id) {
-  if (confirm("Tem certeza que deseja excluir esta transação?")) {
-    const transactionRef = database.ref(`transactions/${id}`);
-    transactionRef.remove().catch((error) => {
-      alert("Erro ao excluir transação: " + error.message);
-    });
-  }
 }
 
 // Update financial summary
