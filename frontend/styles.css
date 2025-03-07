@@ -123,6 +123,9 @@ input[type="number"] {
     border-color: #fff;
     background-color: #fff ;
 }
+#arrow-down1, #arrow-down2 {
+    vertical-align: top;
+  }
 
 .rounded-circle.p-2 {
     border-style: solid;
