@@ -70,6 +70,9 @@ document.getElementById('type').addEventListener('change', function(e) {
   if (e.target.value === 'credit_card') {
     creditCardFields.forEach(field => field.style.display = 'block');
     recurringPaymentFields.forEach(field => field.style.display = 'none');
+    // Set default values for credit card payments
+    document.getElementById('installments').value = '1';
+    // Removed automatic checking of invoiceClosed
   } else if (e.target.value === 'other_payments') {
     creditCardFields.forEach(field => field.style.display = 'none');
     recurringPaymentFields.forEach(field => field.style.display = 'block');
@@ -81,7 +84,7 @@ document.getElementById('type').addEventListener('change', function(e) {
 
 // No longer needed expiration date picker functions as we're using dropdown for recurring payments
 
-// Setup input capitalization
+// Setup input capitalization and form defaults
 document.addEventListener("DOMContentLoaded", () => {
   const descriptionInput = document.getElementById("description");
   if (descriptionInput) {
@@ -91,7 +94,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  
+  // Set default values for credit card if it's pre-selected
+  const paymentTypeSelect = document.getElementById('type');
+  if (paymentTypeSelect && paymentTypeSelect.value === 'credit_card') {
+    document.getElementById('installments').value = '1';
+    // Removed automatic checking of invoiceClosed
+    document.querySelectorAll('.credit-card-fields').forEach(field => field.style.display = 'block');
+  }
 });
+
 
 // Date handling functions
 function updateCurrentDate() {
@@ -301,7 +313,104 @@ function addRegularTransaction(formData, transactionsRef) {
 }
 
 
-// Delete transaction
+// Variables to track selected transactions
+let selectedTransactions = [];
+// Map to track transaction types by ID
+let transactionTypesMap = {};
+
+// Select transaction
+function selectTransaction(id) {
+  // Find the transaction
+  const transaction = transactions.find(t => t.id === id);
+  if (!transaction) return;
+  
+  // Store transaction type in the map for quick access
+  transactionTypesMap[id] = transaction.type;
+  
+  // Toggle selection
+  const index = selectedTransactions.indexOf(id);
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  
+  if (index === -1) {
+    // Add to selection
+    selectedTransactions.push(id);
+    if (row) {
+      row.classList.add('selected-row');
+    }
+  } else {
+    // Remove from selection
+    selectedTransactions.splice(index, 1);
+    if (row) {
+      row.classList.remove('selected-row');
+    }
+  }
+  
+  // Update delete buttons based on selections
+  updateDeleteButtons();
+}
+
+// Update delete buttons based on current selections
+function updateDeleteButtons() {
+  const hasRegularTransactions = selectedTransactions.some(id => transactionTypesMap[id] !== 'credit_card');
+  const hasCreditCardTransactions = selectedTransactions.some(id => transactionTypesMap[id] === 'credit_card');
+  
+  document.getElementById('deleteRegularTransactionBtn').disabled = !hasRegularTransactions;
+  document.getElementById('deleteCreditCardTransactionBtn').disabled = !hasCreditCardTransactions;
+  
+  const regularBtn = document.getElementById('deleteRegularTransactionBtn');
+  const creditBtn = document.getElementById('deleteCreditCardTransactionBtn');
+  
+  regularBtn.textContent = 'Excluir Selecionado';
+  creditBtn.textContent = 'Excluir Selecionado';
+}
+
+// Delete selected transactions
+function deleteSelectedTransaction(event) {
+  if (selectedTransactions.length === 0 || !currentUserId) {
+    alert("Nenhuma transação selecionada ou usuário não está logado.");
+    return;
+  }
+  
+  // Determine which button was clicked
+  const buttonId = event.currentTarget.id;
+  let transactionsToDelete = [];
+  
+  // Filter transactions based on the button clicked
+  if (buttonId === 'deleteRegularTransactionBtn') {
+    transactionsToDelete = selectedTransactions.filter(id => transactionTypesMap[id] !== 'credit_card');
+  } else if (buttonId === 'deleteCreditCardTransactionBtn') {
+    transactionsToDelete = selectedTransactions.filter(id => transactionTypesMap[id] === 'credit_card');
+  }
+  
+  if (transactionsToDelete.length === 0) {
+    return;
+  }
+
+  const confirmMessage = transactionsToDelete.length > 1 
+    ? `Tem certeza que deseja excluir estas ${transactionsToDelete.length} transações?` 
+    : "Tem certeza que deseja excluir esta transação?";
+
+  if (confirm(confirmMessage)) {
+    const deletePromises = transactionsToDelete.map(id => {
+      return database.ref(`users/${currentUserId}/transactions/${id}`).remove();
+    });
+    
+    Promise.all(deletePromises)
+      .then(() => {
+        // Remove deleted transactions from selection
+        selectedTransactions = selectedTransactions.filter(id => !transactionsToDelete.includes(id));
+        
+        // Update delete buttons
+        updateDeleteButtons();
+      })
+      .catch(error => {
+        alert("Erro ao excluir transações: " + error.message);
+        console.error('Failed to delete transactions:', error);
+      });
+  }
+}
+
+// Legacy delete transaction function (kept for compatibility)
 function deleteTransaction(id) {
   if (!currentUserId) {
     alert("Por favor, faça login para excluir transações.");
@@ -323,8 +432,19 @@ function renderTransactions() {
   transactionsList.innerHTML = "";
   creditCardTransactionsList.innerHTML = "";
 
+  // Build transaction types map for quick access
+  transactionTypesMap = {};
+  transactions.forEach(transaction => {
+    transactionTypesMap[transaction.id] = transaction.type;
+  });
+
   transactions.forEach(transaction => {
     const row = createTransactionRow(transaction);
+
+    // Maintain selected state when re-rendering
+    if (selectedTransactions.includes(transaction.id)) {
+      row.classList.add('selected-row');
+    }
 
     if (transaction.type === "credit_card") {
       creditCardTransactionsList.appendChild(row);
@@ -332,11 +452,48 @@ function renderTransactions() {
       transactionsList.appendChild(row);
     }
   });
+  
+  // Clear any existing delete buttons
+  const existingRegularDeleteBtn = document.getElementById('deleteRegularTransactionBtn');
+  const existingCreditDeleteBtn = document.getElementById('deleteCreditCardTransactionBtn');
+  
+  if (existingRegularDeleteBtn) existingRegularDeleteBtn.remove();
+  if (existingCreditDeleteBtn) existingCreditDeleteBtn.remove();
+  
+  // Add delete button for regular transactions
+  const regularTableContainer = document.querySelector('#transactionsList').closest('.card-body');
+  const regularDeleteBtn = document.createElement('button');
+  regularDeleteBtn.id = 'deleteRegularTransactionBtn';
+  regularDeleteBtn.className = 'btn btn-danger mt-3';
+  regularDeleteBtn.textContent = 'Excluir Selecionado';
+  regularDeleteBtn.disabled = true;
+  regularDeleteBtn.addEventListener('click', function(event) {
+    deleteSelectedTransaction(event);
+  });
+  regularTableContainer.appendChild(regularDeleteBtn);
+  
+  // Add delete button for credit card transactions
+  const creditCardTableContainer = document.querySelector('#creditCardTransactionsList').closest('.card-body');
+  const creditCardDeleteBtn = document.createElement('button');
+  creditCardDeleteBtn.id = 'deleteCreditCardTransactionBtn';
+  creditCardDeleteBtn.className = 'btn btn-danger mt-3';
+  creditCardDeleteBtn.textContent = 'Excluir Selecionado';
+  creditCardDeleteBtn.disabled = true;
+  creditCardDeleteBtn.addEventListener('click', function(event) {
+    deleteSelectedTransaction(event);
+  });
+  creditCardTableContainer.appendChild(creditCardDeleteBtn);
+  
+  // Update delete buttons to reflect current selections
+  updateDeleteButtons();
 }
+
 
 // Create transaction row
 function createTransactionRow(transaction) {
   const row = document.createElement("tr");
+  row.dataset.id = transaction.id;
+  row.classList.add('transaction-row');
   const formattedDate = formatLocalDate(transaction.date);
   const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
   
@@ -349,21 +506,22 @@ function createTransactionRow(transaction) {
   }
 
   row.innerHTML = `
-    <td>${formattedDate}</td>
-    <td>${displayDescription}</td>
-    <td>${getCategoryTranslation(transaction.category)}</td>
-    <td class="transaction-expense">
+    <td data-id="${transaction.id}">${formattedDate}</td>
+    <td data-id="${transaction.id}">${displayDescription}</td>
+    <td data-id="${transaction.id}">${getCategoryTranslation(transaction.category)}</td>
+    <td class="transaction-expense" data-id="${transaction.id}" data-value="${transaction.amount}">
         ${formattedAmount}
     </td>
-    <td class="action-buttons">
-        <button class="btn-link-p-0" onclick="deleteTransaction('${transaction.id}')" title="Excluir">
-          <img src="/icons/lixo_96-96.png" alt="Excluir" width="20" height="20">
-        </button>
-    </td>
   `;
-
+  
+  // Add click event to select the row
+  row.addEventListener('click', function() {
+    selectTransaction(transaction.id);
+  });
+  
   return row;
 }
+
 
 // Translate category
 function getCategoryTranslation(category) {
