@@ -70,46 +70,16 @@ document.getElementById('type').addEventListener('change', function(e) {
   if (e.target.value === 'credit_card') {
     creditCardFields.forEach(field => field.style.display = 'block');
     recurringPaymentFields.forEach(field => field.style.display = 'none');
-    document.getElementById('expirationDate').removeAttribute('required');
   } else if (e.target.value === 'other_payments') {
     creditCardFields.forEach(field => field.style.display = 'none');
     recurringPaymentFields.forEach(field => field.style.display = 'block');
-    document.getElementById('expirationDate').setAttribute('required', 'required');
-    // Initialize expiration date picker with current date + 1 year
-    const nextYear = new Date();
-    nextYear.setFullYear(nextYear.getFullYear() + 1);
-    document.getElementById('expirationMonth').textContent = MONTHS[nextYear.getMonth()];
-    document.getElementById('expirationYear').textContent = nextYear.getFullYear();
-    updateExpirationDateValue();
   } else {
     creditCardFields.forEach(field => field.style.display = 'none');
     recurringPaymentFields.forEach(field => field.style.display = 'none');
-    document.getElementById('expirationDate').removeAttribute('required');
   }
 });
 
-// Expiration date picker functions
-let expirationDate = new Date();
-expirationDate.setFullYear(expirationDate.getFullYear() + 1); // Default to next year
-
-function changeExpirationMonth(delta) {
-  expirationDate.setMonth(expirationDate.getMonth() + delta);
-  document.getElementById('expirationMonth').textContent = MONTHS[expirationDate.getMonth()];
-  updateExpirationDateValue();
-}
-
-function changeExpirationYear(delta) {
-  expirationDate.setFullYear(expirationDate.getFullYear() + delta);
-  document.getElementById('expirationYear').textContent = expirationDate.getFullYear();
-  updateExpirationDateValue();
-}
-
-function updateExpirationDateValue() {
-  // Format as YYYY-MM for the hidden input
-  const month = (expirationDate.getMonth() + 1).toString().padStart(2, '0');
-  const year = expirationDate.getFullYear();
-  document.getElementById('expirationDate').value = `${year}-${month}`;
-}
+// No longer needed expiration date picker functions as we're using dropdown for recurring payments
 
 // Setup input capitalization
 document.addEventListener("DOMContentLoaded", () => {
@@ -287,33 +257,24 @@ function addRegularTransaction(formData, transactionsRef) {
   };
   
   if (formData.type === 'other_payments') {
-    const expirationDateValue = document.getElementById('expirationDate').value;
-    if (expirationDateValue) {
+    const recurringInstallments = parseInt(document.getElementById('recurringInstallments').value);
+    if (recurringInstallments > 0) {
       const startDate = new Date(formData.date + "T00:00:00-03:00");
-      const endDate = new Date(expirationDateValue + "-01T00:00:00-03:00");
       const transactionPromises = [];
       
-      let currentDate = new Date(startDate);
-      let installmentNumber = 1;
-      
-      // Calculate total number of installments
-      const totalInstallments = Math.floor(
-        (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-        (endDate.getMonth() - startDate.getMonth()) + 1
-      );
-      
-      while (currentDate <= endDate) {
+      // Create a transaction for each installment
+      for (let i = 0; i < recurringInstallments; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setMonth(currentDate.getMonth() + i);
+        
         const transactionCopy = {
           ...newTransaction,
           date: new Date(currentDate).toISOString(),
-          expirationDate: expirationDateValue,
           isRecurring: true,
-          installmentNumber: installmentNumber,
-          totalInstallments: totalInstallments
+          installmentNumber: i + 1,
+          totalInstallments: recurringInstallments
         };
         transactionPromises.push(transactionsRef.push(transactionCopy));
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        installmentNumber++;
       }
       
       Promise.all(transactionPromises)

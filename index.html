@@ -154,21 +154,21 @@
                   </select>
                 </div>
                 <div class="col-md-3 mb-3 recurring-payment-fields" style="display: none;">
-                  <label for="expirationDate" class="form-label">Data de Expiração</label>
-                  <div class="date-picker-container">
-                    <div class="month-year-picker">
-                      <div class="month-selector me-2">
-                        <button type="button" class="btn btn-link p-0" onclick="changeExpirationMonth(1)" title="Próximo mês"><img src="/icons/arrow-up.png" alt="Próximo mês" width="15" height="15"></button>
-                        <div id="expirationMonth" class="current-date">Janeiro</div>
-                        <button type="button" class="btn btn-link p-0" onclick="changeExpirationMonth(-1)" title="Mês anterior"><img src="/icons/arrow-down.png" alt="Mês anterior" width="15" height="15"></button>
-                      </div>
-                      <div class="year-selector">
-                        <button type="button" class="btn btn-link p-0" onclick="changeExpirationYear(1)" title="Próximo ano"><img src="/icons/arrow-up.png" alt="Próximo ano" width="15" height="15"></button>
-                        <div id="expirationYear" class="current-date">2025</div>
-                        <button type="button" class="btn btn-link p-0" onclick="changeExpirationYear(-1)" title="Ano anterior"><img src="/icons/arrow-down.png" alt="Ano anterior" width="15" height="15"></button>
-                      </div>
-                    </div>
-                    <input type="hidden" id="expirationDate" required />
+                  <label for="recurringInstallments" class="form-label">Parcelas</label>
+                  <select class="form-control" id="recurringInstallments">
+                    <option value="1">1x</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="7">7x</option>
+                    <option value="8">8x</option>
+                    <option value="9">9x</option>
+                    <option value="10">10x</option>
+                    <option value="11">11x</option>
+                    <option value="12">12x</option>
+                  </select>
                   </div>
                 </div>
                 <div class="col-md-3 credit-card-fields" style="display: none;">
