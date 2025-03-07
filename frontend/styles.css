@@ -239,3 +239,14 @@ input[type="number"] {
     }
 }
 
+.social-login img {
+    width: 32px;
+    height: 32px;
+    
+  }
+  
+  /* Centralização do botão de login do Google */
+  #googleLogin {
+    display: block;
+    margin: 0 auto;
+  }
