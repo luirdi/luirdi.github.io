@@ -10,8 +10,8 @@ img {
     text-align: center;
     /* align-items: flex-start; */
     border: none;
-
 }
+
 #logoutButton {
     display: block;
     width: 120px;
@@ -243,10 +243,4 @@ input[type="number"] {
     width: 32px;
     height: 32px;
     
-  }
-  
-  /* Centralização do botão de login do Google */
-  #googleLogin {
-    display: block;
-    margin: 0 auto;
   }
