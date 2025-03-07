@@ -324,18 +324,16 @@ function createTransactionRow(transaction) {
 // Translate category
 function getCategoryTranslation(category) {
   const categoryTranslations = {
-    combustivel_estacionamento: "Combustível/Estacionamento",
+    alimentacao: "Alimentação",
+    man_parking_fuel: "Carro/Moto",
     cuidados_pessoais: "Cuidados Pessoais",
-    educacao_qualificacao: "Educação/Qualificação",
-    eletronicos_brinquedos: "Eletrônicos/Brinquedos",
+    educacao_qualificacao: "Educação",
     estorno_pagamento: "Estorno/Pagamento",
     farmacia: "Farmácia",
-    manutencao_carro_moto: "Manutenção Carro/Moto",
-    mercado_refeicao: "Mercado/Refeição",
     outros: "Outros",
     presente: "Presente",
     uber: "Uber",
-    utensilios_casa: "Utensílios p/ Casa",
+    utensilios_casa: "Casa",
     vestuario: "Vestuário"
   };
   return categoryTranslations[category] || category;
