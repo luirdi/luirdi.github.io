@@ -25,6 +25,7 @@ self.addEventListener('install', event => {
         console.log('Cache opened');
         return cache.addAll(urlsToCache);
       })
+      .catch(err => console.error('Failed to open cache:', err))
   );
 });
 
@@ -35,12 +36,13 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (!cacheWhitelist.includes(cacheName)) {
             return caches.delete(cacheName);
           }
         })
       );
     })
+    .catch(err => console.error('Failed to delete old caches:', err))
   );
 });
 
@@ -66,11 +68,13 @@ self.addEventListener('fetch', event => {
             caches.open(CACHE_NAME)
               .then(cache => {
                 cache.put(event.request, responseToCache);
-              });
+              })
+              .catch(err => console.error('Failed to cache response:', err));
 
             return response;
           }
         );
       })
+      .catch(err => console.error('Fetch failed:', err))
   );
 });

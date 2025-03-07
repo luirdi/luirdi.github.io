@@ -48,7 +48,7 @@ const MONTHS = [
 let currentDate = new Date();
 
 // Auth state observer
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(user => {
   if (user) {
     currentUserId = user.uid;
     dashboardContainer.classList.remove("d-none");
@@ -119,7 +119,7 @@ function loadTransactions() {
   
   const transactionsRef = database.ref(`users/${currentUserId}/transactions`);
 
-  transactionsRef.on("value", (snapshot) => {
+  transactionsRef.on("value", snapshot => {
     transactions = [];
     transactionsList.innerHTML = "";
     creditCardTransactionsList.innerHTML = "";
@@ -128,10 +128,9 @@ function loadTransactions() {
     if (data) {
       const [currentMonth, currentYear] = getCurrentMonthYear();
       
-      Object.keys(data).forEach((key) => {
+      Object.keys(data).forEach(key => {
         const transaction = { id: key, ...data[key] };
         
-        // For credit card installments, use displayDate for filtering if available
         let dateToFilter = transaction.displayDate ? new Date(transaction.displayDate) : new Date(transaction.date);
         
         const options = { timeZone: TIMEZONE, month: "numeric", year: "numeric" };
@@ -143,18 +142,15 @@ function loadTransactions() {
         }
       });
 
-      // Sort transactions by date (newest first)
-      transactions.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return dateB - dateA;
-      });
+      transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       renderTransactions();
       updateFinancialSummary();
     } else {
       updateFinancialSummary();
     }
+  }, error => {
+    console.error('Failed to load transactions:', error);
   });
 }
 
@@ -206,10 +202,7 @@ function addCreditCardTransaction(formData, transactionsRef) {
   const installmentPromises = [];
   
   for (let i = 0; i < installments; i++) {
-    // Original purchase date
     const originalDate = new Date(formData.date + "T00:00:00-03:00");
-    
-    // Display date for filtering in UI
     const displayDate = new Date(formData.date + "T00:00:00-03:00");
     const monthsToAdd = invoiceClosed ? i + 1 : i;
     displayDate.setMonth(displayDate.getMonth() + monthsToAdd);
@@ -235,8 +228,9 @@ function addCreditCardTransaction(formData, transactionsRef) {
       transactionForm.reset();
       alert(`Transação adicionada com sucesso em ${installments} parcelas.`);
     })
-    .catch((error) => {
+    .catch(error => {
       alert("Erro ao adicionar transação: " + error.message);
+      console.error('Failed to add credit card transaction:', error);
     });
 }
 
@@ -255,8 +249,9 @@ function addRegularTransaction(formData, transactionsRef) {
     .then(() => {
       transactionForm.reset();
     })
-    .catch((error) => {
+    .catch(error => {
       alert("Erro ao adicionar transação: " + error.message);
+      console.error('Failed to add regular transaction:', error);
     });
 }
 
@@ -269,9 +264,11 @@ function deleteTransaction(id) {
 
   if (confirm("Tem certeza que deseja excluir esta transação?")) {
     const transactionRef = database.ref(`users/${currentUserId}/transactions/${id}`);
-    transactionRef.remove().catch((error) => {
-      alert("Erro ao excluir transação: " + error.message);
-    });
+    transactionRef.remove()
+      .catch(error => {
+        alert("Erro ao excluir transação: " + error.message);
+        console.error('Failed to delete transaction:', error);
+      });
   }
 }
 
@@ -280,7 +277,7 @@ function renderTransactions() {
   transactionsList.innerHTML = "";
   creditCardTransactionsList.innerHTML = "";
 
-  transactions.forEach((transaction) => {
+  transactions.forEach(transaction => {
     const row = createTransactionRow(transaction);
 
     if (transaction.type === "credit_card") {
@@ -297,7 +294,6 @@ function createTransactionRow(transaction) {
   const formattedDate = formatLocalDate(transaction.date);
   const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
   
-  // Get description with installment info if applicable
   let displayDescription = transaction.description;
   if (transaction.isInstallment) {
     const baseDescription = transaction.description.split(" (")[0];
@@ -345,7 +341,7 @@ function updateFinancialSummary() {
   let creditCardTotal = 0;
   let otherPaymentsTotal = 0;
 
-  transactions.forEach((transaction) => {
+  transactions.forEach(transaction => {
     expenses += transaction.amount;
 
     if (transaction.type === "credit_card") {
