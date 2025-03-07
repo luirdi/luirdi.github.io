@@ -62,12 +62,54 @@ auth.onAuthStateChanged(user => {
 // Event Listeners
 transactionForm.addEventListener("submit", addTransaction);
 
-// Add event listener to show/hide credit card fields based on transaction type
-document.getElementById("type").addEventListener("change", function() {
-  const creditCardFields = document.querySelectorAll(".credit-card-fields");
-  const isVisible = this.value === "credit_card";
-  creditCardFields.forEach(field => field.style.display = isVisible ? "block" : "none");
+// Event listener for payment type changes
+document.getElementById('type').addEventListener('change', function(e) {
+  const creditCardFields = document.querySelectorAll('.credit-card-fields');
+  const recurringPaymentFields = document.querySelectorAll('.recurring-payment-fields');
+  
+  if (e.target.value === 'credit_card') {
+    creditCardFields.forEach(field => field.style.display = 'block');
+    recurringPaymentFields.forEach(field => field.style.display = 'none');
+    document.getElementById('expirationDate').removeAttribute('required');
+  } else if (e.target.value === 'other_payments') {
+    creditCardFields.forEach(field => field.style.display = 'none');
+    recurringPaymentFields.forEach(field => field.style.display = 'block');
+    document.getElementById('expirationDate').setAttribute('required', 'required');
+    // Initialize expiration date picker with current date + 1 year
+    const nextYear = new Date();
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    document.getElementById('expirationMonth').textContent = MONTHS[nextYear.getMonth()];
+    document.getElementById('expirationYear').textContent = nextYear.getFullYear();
+    updateExpirationDateValue();
+  } else {
+    creditCardFields.forEach(field => field.style.display = 'none');
+    recurringPaymentFields.forEach(field => field.style.display = 'none');
+    document.getElementById('expirationDate').removeAttribute('required');
+  }
 });
+
+// Expiration date picker functions
+let expirationDate = new Date();
+expirationDate.setFullYear(expirationDate.getFullYear() + 1); // Default to next year
+
+function changeExpirationMonth(delta) {
+  expirationDate.setMonth(expirationDate.getMonth() + delta);
+  document.getElementById('expirationMonth').textContent = MONTHS[expirationDate.getMonth()];
+  updateExpirationDateValue();
+}
+
+function changeExpirationYear(delta) {
+  expirationDate.setFullYear(expirationDate.getFullYear() + delta);
+  document.getElementById('expirationYear').textContent = expirationDate.getFullYear();
+  updateExpirationDateValue();
+}
+
+function updateExpirationDateValue() {
+  // Format as YYYY-MM for the hidden input
+  const month = (expirationDate.getMonth() + 1).toString().padStart(2, '0');
+  const year = expirationDate.getFullYear();
+  document.getElementById('expirationDate').value = `${year}-${month}`;
+}
 
 // Setup input capitalization
 document.addEventListener("DOMContentLoaded", () => {
@@ -244,6 +286,48 @@ function addRegularTransaction(formData, transactionsRef) {
     date: new Date(formData.date + "T00:00:00-03:00").toISOString()
   };
   
+  if (formData.type === 'other_payments') {
+    const expirationDateValue = document.getElementById('expirationDate').value;
+    if (expirationDateValue) {
+      const startDate = new Date(formData.date + "T00:00:00-03:00");
+      const endDate = new Date(expirationDateValue + "-01T00:00:00-03:00");
+      const transactionPromises = [];
+      
+      let currentDate = new Date(startDate);
+      let installmentNumber = 1;
+      
+      // Calculate total number of installments
+      const totalInstallments = Math.floor(
+        (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+        (endDate.getMonth() - startDate.getMonth()) + 1
+      );
+      
+      while (currentDate <= endDate) {
+        const transactionCopy = {
+          ...newTransaction,
+          date: new Date(currentDate).toISOString(),
+          expirationDate: expirationDateValue,
+          isRecurring: true,
+          installmentNumber: installmentNumber,
+          totalInstallments: totalInstallments
+        };
+        transactionPromises.push(transactionsRef.push(transactionCopy));
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        installmentNumber++;
+      }
+      
+      Promise.all(transactionPromises)
+        .then(() => {
+          transactionForm.reset();
+        })
+        .catch(error => {
+          alert("Erro ao adicionar transações recorrentes: " + error.message);
+          console.error('Failed to add recurring transactions:', error);
+        });
+      return;
+    }
+  }
+  
   transactionsRef
     .push(newTransaction)
     .then(() => {
@@ -254,6 +338,7 @@ function addRegularTransaction(formData, transactionsRef) {
       console.error('Failed to add regular transaction:', error);
     });
 }
+
 
 // Delete transaction
 function deleteTransaction(id) {
@@ -298,6 +383,8 @@ function createTransactionRow(transaction) {
   if (transaction.isInstallment) {
     const baseDescription = transaction.description.split(" (")[0];
     displayDescription = `${baseDescription} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
+  } else if (transaction.isRecurring && transaction.installmentNumber && transaction.totalInstallments) {
+    displayDescription = `${transaction.description} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
   }
 
   row.innerHTML = `
