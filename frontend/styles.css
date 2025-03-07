@@ -209,7 +209,7 @@ input[type="number"] {
 /* Month and Year Navigation Styles */
 .date-navigation {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .month-selector,
@@ -217,7 +217,7 @@ input[type="number"] {
     display: flex;
     margin: 0px;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .current-date {
