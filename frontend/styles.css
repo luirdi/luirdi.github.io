@@ -5,7 +5,7 @@ body {
   height: 100%;
   overscroll-behavior: none;
   touch-action: pan-y;
-  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
   background-color: #f8f9fa;
 }
 
@@ -19,12 +19,12 @@ html {
   padding: 0px;
   max-width: 768px;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .container {
@@ -54,7 +54,7 @@ html {
 .btn-primary:hover {
   background-color: #0b5ed7;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #deleteRegularTransactionBtn,
@@ -113,16 +113,15 @@ html {
 }
 .bg-white {
   padding: 0px;
-  background-color: #6c9fff!important;
+  background-color: #6c9fff !important;
 }
 
-
 .p-2 {
-  padding: 2px!important;
+  padding: 2px !important;
 }
 
 .shadow-sm {
-  box-shadow:none!important;
+  box-shadow: none !important;
   /* box-shadow: var(--bs-box-shadow-sm)!important; */
 }
 
@@ -155,10 +154,10 @@ table td {
 }
 
 #currentMonth {
-padding: 0px;
+  padding: 0px;
 }
 #currentYear {
-padding: 0px;;
+  padding: 0px;
 }
 
 #logoutButton {
@@ -168,21 +167,48 @@ padding: 0px;;
   margin: 10px auto;
   border: solid 1px #ff0000;
   background-color: #fff;
-  color: #ff0000!important;
+  color: #ff0000 !important;
 }
 
 #logoutButton:hover {
   background-color: #ff0000;
-  color: #fff!important;
+  color: #fff !important;
 }
 
-@media (min-width:768px){
-.col-md-3 {
-flex: 0 0 auto;
-width: 25%;
-align-content: center;
-}}
+@media (min-width: 768px) {
+  .col-md-3 {
+    flex: 0 0 auto;
+    width: 25%;
+    align-content: center;
+  }
+  #installments {
+    width: 160px;
+    margin-right: 0px;
+  }
+}
+@media (max-width: 768px) {
+  .col-md-3 {
+    /* flex: 0 0 auto; */
+    width: 50%;
+    align-content: center;
+  }
+  #installments {
+    width: 178%;
+  }
+}
 
 #faturaFech {
   margin-bottom: 16px;
+  padding-top: 0px;
+  display: block; 
+  width: 160px; 
+  position: relative; 
+  left: 0px; 
+  top: 0px; 
+  transition: none; 
+  cursor: move;
+}
+
+#fatF {
+  width: 160px;
 }
