@@ -30,21 +30,23 @@
 
 <body>
   <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <nav class="navbar navbar-light bg-light rounded shadow-sm mb-4">
+      <div class="container-fluid">
+        <div class="navbar-brand mb-0 h1 fs-2">FinPlanner</div>
       <div class="d-flex align-items-center">
-        <h1>FinPlanner_test1</h1>
-      </div>
-      <div class="date-navigation d-flex align-items-center">
-        <div class="month-selector me-3">
-          <button class="btn btn-link p-0" onclick="changeMonth(1)" title="Próximo mês"><img src="/icons/arrow-up.png" alt="Próximo mês" width="20" height="20"></button>
-          <div id="currentMonth" class="current-date">Janeiro</div>
-          <button class="btn btn-link p-0" onclick="changeMonth(-1)" title="Mês anterior" id="arrow-down1"><img src="/icons/arrow-down.png" alt="Mês anterior" width="20" height="20"></button>
-        </div>
-        <div class="year-selector">
-          <button class="btn btn-link p-0" onclick="changeYear(1)" title="Próximo ano"><img src="/icons/arrow-up.png" alt="Próximo ano" width="20" height="20"></button>
-          <div id="currentYear" class="current-date">2025</div>
-          <button class="btn btn-link p-0" onclick="changeYear(-1)" title="Ano anterior" id="arrow-down2"><img src="/icons/arrow-down.png" alt="Ano anterior" width="20" height="20"></button>
-        </div>
+          <div class="date-navigation d-flex align-items-center bg-white rounded p-2 shadow-sm">
+            <div class="month-selector me-3 text-center">
+              <button class="btn btn-link p-1" onclick="changeMonth(1)" title="Próximo mês"><img src="/icons/arrow-up.png" alt="Próximo mês" width="24" height="24"></button>
+              <div id="currentMonth" class="current-date fw-bold">Janeiro</div>
+              <button class="btn btn-link p-1" onclick="changeMonth(-1)" title="Mês anterior" id="arrow-down1"><img src="/icons/arrow-down.png" alt="Mês anterior" width="24" height="24"></button>
+            </div>
+            <div class="year-selector text-center">
+              <button class="btn btn-link p-1" onclick="changeYear(1)" title="Próximo ano"><img src="/icons/arrow-up.png" alt="Próximo ano" width="24" height="24"></button>
+              <div id="currentYear" class="current-date fw-bold">2025</div>
+              <button class="btn btn-link p-1" onclick="changeYear(-1)" title="Ano anterior" id="arrow-down2"><img src="/icons/arrow-down.png" alt="Ano anterior" width="24" height="24"></button>
+            </div>
+          </div>
+          <button onclick="firebase.auth().signOut().then(() => window.location.href = '/login.html')" class="btn btn-outline-danger ms-3" id="logoutButton">Sair</button>
       </div>
     </div>
   </div>
@@ -52,26 +54,26 @@
   <div id="dashboardContainer" class="container mt-5">
     <div class="row">
       <div class="col-md-4">
-        <div class="card mb-3 summary-card expenses">
-          <div class="card-body" id="despesas">
-            <h5 class="card-title">Despesas</h5>
-            <h3 id="totalExpenses" class="text-danger">R$ 0,00</h3>
+        <div class="card mb-3 summary-card expenses shadow-sm">
+          <div class="card-body text-center" id="despesas">
+            <h5 class="card-title text-muted mb-3">Despesas</h5>
+            <h3 id="totalExpenses" class="text-danger fw-bold mb-0">R$ 0,00</h3>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card mb-3 summary-card credit-card">
-          <div class="card-body" id="cartaodecredito">
-            <h5 class="card-title">Cartão de Crédito</h5>
-            <h3 id="totalCreditCard" class="text-danger">R$ 0,00</h3>
+        <div class="card mb-3 summary-card credit-card shadow-sm">
+          <div class="card-body text-center" id="cartaodecredito">
+            <h5 class="card-title text-muted mb-3">Cartão de Crédito</h5>
+            <h3 id="totalCreditCard" class="text-danger fw-bold mb-0">R$ 0,00</h3>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card mb-3 summary-card other-payments">
-          <div class="card-body" id="recorrente">
-            <h5 class="card-title">Recorrente</h5>
-            <h3 id="totalOtherExpenses" class="text-danger">R$ 0,00</h3>
+        <div class="card mb-3 summary-card other-payments shadow-sm">
+          <div class="card-body text-center" id="recorrente">
+            <h5 class="card-title text-muted mb-3">Recorrente</h5>
+            <h3 id="totalOtherExpenses" class="text-danger fw-bold mb-0">R$ 0,00</h3>
           </div>
         </div>
       </div>
