@@ -21,8 +21,8 @@ const urlsToCache = [
 ];
 
 const thirdPartyUrlsToCache = [
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
   'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
   'https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/11.4.0/firebase-auth-compat.js'

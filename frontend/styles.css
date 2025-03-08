@@ -43,7 +43,7 @@ html {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 15px;
-  background-color: #ff9900;
+  background-color: #0d6efd;
   border: none;
   border-radius: 5px;
   padding: 8px 16px;
@@ -52,7 +52,7 @@ html {
 }
 
 .btn-primary:hover {
-  background-color: #e68a00;
+  background-color: #0b5ed7;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
@@ -61,7 +61,7 @@ html {
 #deleteCreditCardTransactionBtn {
   display: block;
   margin: auto;
-  background-color: #ff9900;
+  background-color: #0d6efd;
   border: none;
   border-radius: 5px;
   padding: 8px 16px;
@@ -71,13 +71,13 @@ html {
 
 #deleteRegularTransactionBtn:hover,
 #deleteCreditCardTransactionBtn:hover {
-  background-color: #e68a00;
+  background-color: #0b5ed7;
   transform: translateY(-2px);
 }
 
 #deleteRegularTransactionBtn:disabled,
 #deleteCreditCardTransactionBtn:disabled {
-  background-color: #f8c78a;
+  background-color: #6c9fff;
   cursor: not-allowed;
   transform: none;
 }
@@ -91,10 +91,6 @@ html {
   background-color: #f5f5f5;
 }
 
-.selected-row {
-  background-color: #e9ecef !important;
-}
-
 .summary-card {
   transition: all 0.3s ease;
 }
@@ -106,10 +102,28 @@ html {
 .navbar {
   border-radius: 10px;
   margin-top: 15px;
+  margin-bottom: 0px;
+  background-color: #6c9fff !important;
+  color: #fff;
 }
 
-.date-navigation {
-  border-radius: 8px;
+.navbar-brand {
+  background-color: #6c9fff;
+  color: #fff !important;
+}
+.bg-white {
+  padding: 0px;
+  background-color: #6c9fff!important;
+}
+
+
+.p-2 {
+  padding: 2px!important;
+}
+
+.shadow-sm {
+  box-shadow:none!important;
+  /* box-shadow: var(--bs-box-shadow-sm)!important; */
 }
 
 .current-date {
@@ -136,6 +150,13 @@ table td {
 }
 
 .form-control:focus {
-  border-color: #ffc107;
-  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+#currentMonth {
+padding: 0px;
+}
+#currentYear {
+padding: 0px;;
 }
