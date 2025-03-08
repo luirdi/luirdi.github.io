@@ -16,6 +16,7 @@ body {
   height: 100%;
   overscroll-behavior: none;
   touch-action: pan-y;
+  padding: .75rem;
 }
 
 html {
@@ -148,7 +149,7 @@ h5 {
 
 .card-body {
   flex: 1 1 auto;
-  padding: 1.25rem;
+  padding: .75rem;
 }
 
 .card-title {
@@ -176,16 +177,16 @@ h5 {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 15px;
   width: 25%;
   color: #fff;
-  background-color: #ff9900;
-  border-color: #ff9900;
+  background-color: #6ca9ff;
+  border-color: #6ca9ff;
 }
 
+
 .btn-primary:hover {
-  background-color: #e68a00;
-  border-color: #e68a00;
+  background-color: #6c9cff;
+  border-color: #6c9cff;
 }
 
 .btn-link {
@@ -263,6 +264,7 @@ h5 {
   position: relative;
   display: block;
   padding-left: 1.25rem;
+  margin-top: 0px;
 }
 
 .form-check-input {
@@ -346,8 +348,8 @@ h5 {
 #deleteCreditCardTransactionBtn {
   display: block;
   margin: auto;
-  background-color: #ff9900;
-  border-color: #ff9900;
+  background-color: #6ca9ff;
+  border-color: #6ca9ff;
 }
 
 /* Login page specific styles */
@@ -364,7 +366,7 @@ h5 {
 .login-container .card-body {
   background-color: #f9f9f9;
   display: flex;
-  padding: 20px;
+  padding: 0.75rem;
   flex-direction: column;
   align-items: center;
   border: solid 1px #c9c9c9;
@@ -398,6 +400,12 @@ h5 {
   }
   
   .btn-primary {
-    width: 50%;
+    width: auto;
+    margin:auto;
+    margin-bottom: 0px;
   }
 }
+
+/* .col-md-3.credit-card-fields {
+  padding-left: 0px;
+} */
