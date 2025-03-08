@@ -33,23 +33,22 @@ html {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 15px;
-
   background-color: #ff9900;
-  border-color: #ff9900;
+  border:none
 }
 
 #deleteRegularTransactionBtn {
   display: block;
   margin: auto;
   background-color: #ff9900;
-  border-color: #ff9900;
+  border:none;
 }
 
 #deleteCreditCardTransactionBtn {
   display: block;
   margin: auto;
   background-color: #ff9900;
-  border-color: #ff9900;
+ border: none;
 }
 
 .transaction-row {
