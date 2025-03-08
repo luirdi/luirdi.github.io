@@ -160,3 +160,18 @@ padding: 0px;
 #currentYear {
 padding: 0px;;
 }
+
+#logoutButton {
+  display: block;
+  width: 15%;
+  padding: auto;
+  margin: 10px auto;
+  border: solid 1px #ff0000;
+  background-color: #fff;
+  color: #ff0000!important;
+}
+
+#logoutButton:hover {
+  background-color: #ff0000;
+  color: #fff!important;
+}
