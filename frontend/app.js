@@ -335,13 +335,13 @@ function selectTransaction(id) {
     // Add to selection
     selectedTransactions.push(id);
     if (row) {
-      row.classList.add('selected-row');
+      row.classList.add('selected-row'); // Adiciona a classe para fundo cinza
     }
   } else {
     // Remove from selection
     selectedTransactions.splice(index, 1);
     if (row) {
-      row.classList.remove('selected-row');
+      row.classList.remove('selected-row'); // Remove a classe para fundo cinza
     }
   }
   
@@ -444,6 +444,7 @@ function renderTransactions() {
     // Maintain selected state when re-rendering
     if (selectedTransactions.includes(transaction.id)) {
       row.classList.add('selected-row');
+      row.style.backgroundColor = '#c9c9c9'; // Add background color for selected rows
     }
 
     if (transaction.type === "credit_card") {

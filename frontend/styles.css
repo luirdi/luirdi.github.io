@@ -1,15 +1,53 @@
+.card {
+  display: block;
+  margin: 0 auto;
+  padding: 0px;
+  max-width: 768px;
+}
+.container {
+  max-width: 768px;
+}
+
+.containerFim {
+  display: block;
+  padding: 0px;
+  margin: 0 auto;
+  max-width: 744px;
+}
+
+.btn-primary {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px;
+    width: 25%;
+    background-color: #ff9900;
+  border-color: #ff9900;
+}
+
+#deleteRegularTransactionBtn {
+  display: block;
+  margin: auto;
+  background-color: #ff9900;  
+  border-color: #ff9900;
+}
+
+#deleteCreditCardTransactionBtn {
+  display: block;
+  margin: auto;
+  background-color: #ff9900;  
+  border-color: #ff9900;
+}
+
 .transaction-row {
   cursor: pointer;
 }
 
-.transaction-row:hover {
-  background-color: #f8f9fa;
+
+#transactionsList:active{
+  color: #ff0000;
 }
 
-table tbody tr.selected-row {
-  background-color: #e2e6ea !important;
-}
-
-table tbody tr.selected-row:hover {
-  background-color: #c9c9c9 !important;
+#transactionsList:checked{
+  color: #ff0000;
 }
