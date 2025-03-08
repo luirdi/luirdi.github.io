@@ -17,24 +17,20 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-// DOM Elements - Cache all DOM elements for better performance
+// DOM Elements
 const dashboardContainer = document.getElementById("dashboardContainer");
 const transactionForm = document.getElementById("transactionForm");
 const transactionsList = document.getElementById("transactionsList");
-const creditCardTransactionsList = document.getElementById("creditCardTransactionsList");
+const creditCardTransactionsList = document.getElementById(
+  "creditCardTransactionsList"
+);
+const totalBalance = document.getElementById("totalBalance");
+const totalIncome = document.getElementById("totalIncome");
 const totalExpenses = document.getElementById("totalExpenses");
 const totalCreditCard = document.getElementById("totalCreditCard");
 const totalOtherExpenses = document.getElementById("totalOtherExpenses");
 const currentMonthElement = document.getElementById("currentMonth");
 const currentYearElement = document.getElementById("currentYear");
-const typeSelect = document.getElementById('type');
-const descriptionInput = document.getElementById("description");
-const dateInput = document.getElementById("date");
-const amountInput = document.getElementById("amount");
-const categorySelect = document.getElementById("category");
-const installmentsSelect = document.getElementById("installments");
-const recurringInstallmentsSelect = document.getElementById("recurringInstallments");
-const invoiceClosedCheckbox = document.getElementById("invoiceClosed");
 
 // State variables
 let transactions = [];
