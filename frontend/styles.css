@@ -16,7 +16,7 @@ body {
   height: 100%;
   overscroll-behavior: none;
   touch-action: pan-y;
-  padding: .75rem;
+  padding: .75rem .75rem .25rem .75rem;
 }
 
 html {
@@ -406,6 +406,24 @@ h5 {
   }
 }
 
-/* .col-md-3.credit-card-fields {
-  padding-left: 0px;
-} */
+.logoutButton {
+  display: block;
+  margin: 15px auto;
+  padding: 5px 10px;
+  background-color: #ffffff;
+  border: solid 1px #ff0000;
+  color: #ff0000;  
+  border-radius: 5px;
+}
+
+  #arrow-down1,
+  #arrow-down2 {
+    padding: 0px;
+
+  }
+
+  .btn-link {
+    padding: 0px;
+  
+  }
+
