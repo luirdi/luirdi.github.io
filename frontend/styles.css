@@ -182,3 +182,7 @@ flex: 0 0 auto;
 width: 25%;
 align-content: center;
 }}
+
+#faturaFech {
+  margin-bottom: 16px;
+}
