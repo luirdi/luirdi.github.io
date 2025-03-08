@@ -12,9 +12,7 @@ const urlsToCache = [
   '/icons/icon-512x512.png',
   '/icons/arrow-up.png',
   '/icons/arrow-down.png',
-  '/icons/lixo_96-96.png',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'
+  '/icons/lixo_96-96.png'
 ];
 
 // Install event - cache assets
