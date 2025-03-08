@@ -175,3 +175,10 @@ padding: 0px;;
   background-color: #ff0000;
   color: #fff!important;
 }
+
+@media (min-width:768px){
+.col-md-3 {
+flex: 0 0 auto;
+width: 25%;
+align-content: center;
+}}
