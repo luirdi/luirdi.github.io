@@ -71,13 +71,7 @@ html {
   cursor: pointer;
 }
 
-#transactionsList:active {
-  color: #ff0000;
-}
 
-#transactionsList:checked {
-  color: #ff0000;
-}
 
 /* Custom button styles */
 #deleteRegularTransactionBtn,
