@@ -28,14 +28,11 @@ html {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 25%;
-  background-color: #6ca9ff;
-  border-color: #6ca9ff;
 }
 
 .btn-primary:hover {
-  background-color: #6c9cff;
-  border-color: #6c9cff;
+  background-color: var(--bs-btn-hover-bg);
+  border-color:var(--bs-btn-hover-bg);
 }
 
 /* Custom form styles */
@@ -87,8 +84,8 @@ html {
 #deleteCreditCardTransactionBtn {
   display: block;
   margin: auto;
-  background-color: #6ca9ff;
-  border-color: #6ca9ff;
+  background-color: var(--bs-btn-hover-bg);
+  border-color:var(--bs-btn-hover-bg);
 }
 
 /* Login page specific styles */
@@ -123,15 +120,6 @@ html {
   }
 }
 
-.logoutButton {
-  display: block;
-  margin: 15px auto;
-  padding: 5px 10px;
-  background-color: #ffffff;
-  border: solid 1px #ff0000;
-  color: #ff0000;  
-  border-radius: 5px;
-}
 
 #arrow-down1,
 #arrow-down2 {
@@ -143,3 +131,7 @@ html {
   display: flex;
 }
 
+.mt-4 {
+  display: block;
+  margin: 15px auto 15px auto;
+}
