@@ -6,7 +6,7 @@ body {
   overscroll-behavior: none;
   touch-action: pan-y;
   margin: 0px;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: #333;
   background-color: #f8f9fa;
 }
@@ -21,17 +21,16 @@ html {
 /* Custom container */
 .containerFim {
   display: block;
-  padding: 15px;
-  margin: 0 auto;
-  max-width: 768px;
+  padding: 0px;
+  margin: 0px;
 }
-
+.col-lg-6 {
+  margin-top: 1rem;
+}
 .card {
-  margin-bottom: 1.5rem;
   border-radius: 0.75rem;
   border: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
 }
 
 /* .card:hover {
@@ -39,9 +38,9 @@ html {
 } */
 
 .card-body {
-  padding: 1.5rem;
+  padding: 0.9rem;
   background-color: #fff;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
 }
 
 .card-title {
@@ -148,7 +147,6 @@ html {
 
 .transaction-row {
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 /* Custom button styles */
@@ -171,13 +169,9 @@ html {
   box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
 }
 
-.mt-auto .mb-0 .text-danger .fw-bold{
+.mt-auto .mb-0 .text-danger .fw-bold {
   font-weight: 100;
 }
-
-
-
-
 
 /* Login page specific styles */
 .login-container {
@@ -188,8 +182,14 @@ html {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .social-login {
@@ -211,25 +211,26 @@ html {
 
 /* Responsive utilities */
 @media (max-width: 767.98px) {
-  .container, .containerFim {
+  .container,
+  .containerFim {
     padding-left: 15px;
     padding-right: 15px;
   }
-  
+
   .btn-primary {
     width: auto;
     margin: auto;
     margin-bottom: 10px;
   }
-  
+
   .card {
     margin-bottom: 1rem;
   }
-  
+
   .card-body {
     padding: 1rem;
   }
-  
+
   .table th,
   .table td {
     padding: 0.5rem;
@@ -255,46 +256,43 @@ html {
   transform: scale(1.1);
 }
 
-.mt-4 {
+.row .mt-4 {
   display: block;
-  margin: 20px auto;
+  padding: 1rem;
 }
 
 .selected-row {
   background-color: var(--bs-gray-200) !important;
 }
 
-#totalExpenses{
+#totalExpenses {
   color: var(--bs-danger) !important;
-  margin-top: 0px!important;
-  font-weight: 100!important;
-  font-size: calc(0.70rem + 2vw);
+  margin-top: 0px !important;
+  font-weight: 100 !important;
+  font-size: calc(0.7rem + 2vw);
 }
 
 #totalPaidExpenses {
   color: var(--bs-success) !important;
-  margin-top: 0px!important;
-  font-weight: 100!important;
-  font-size: calc(0.70rem + 2vw);
+  margin-top: 0px !important;
+  font-weight: 100 !important;
+  font-size: calc(0.7rem + 2vw);
 }
 
 #totalCreditCard {
   color: var(--bs-warning) !important;
-  margin-top: 0px!important;
-  font-weight: 100!important;
+  margin-top: 0px !important;
+  font-weight: 100 !important;
   font-size: calc(0.7rem + 2vw);
 }
 
 #totalOtherExpenses {
   color: var(--bs-primary) !important;
-  margin-top: 0px!important;
-  font-weight: 100!important;
+  margin-top: 0px !important;
+  font-weight: 100 !important;
   font-size: calc(0.7rem + 2vw);
 }
 
-@media (min-width:992px){
-  .col-lg-6 {
-flex: 0 0 auto;
-width: auto;
-}
+.mt-4c {
+  margin-top: 0px !important;
 }
