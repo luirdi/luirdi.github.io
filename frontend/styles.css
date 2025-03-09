@@ -1,4 +1,4 @@
-Custom styles that complement Bootstrap
+/* Custom styles that complement Bootstrap */
 body {
   overflow-x: hidden;
   position: fixed;
@@ -6,21 +6,75 @@ body {
   height: 100%;
   overscroll-behavior: none;
   touch-action: pan-y;
-margin: 0px;
+  margin: 0px;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #333;
+  background-color: #f8f9fa;
 }
 
 html {
   overflow-x: hidden;
   overscroll-behavior: none;
   margin: 0px;
+  scroll-behavior: smooth;
 }
 
 /* Custom container */
 .containerFim {
   display: block;
-  padding: 0px;
+  padding: 15px;
   margin: 0 auto;
   max-width: 744px;
+}
+
+.card {
+  margin-bottom: 1.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 255, 0.12);
+}
+
+.card-body {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 0.75rem;
+}
+
+.card-title {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.75rem;
+}
+
+.table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  font-weight: 600;
+  border-top: none;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  border-top: 1px solid #f0f0f0;
 }
 
 /* Custom button styles */
@@ -28,11 +82,17 @@ html {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
   background-color: var(--bs-btn-hover-bg);
-  border-color:var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Custom form styles */
@@ -44,6 +104,7 @@ html {
 .date-navigation {
   display: flex;
   align-items: center;
+  margin: 1.5rem 0;
 }
 
 .month-selector,
@@ -51,35 +112,59 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0 1rem;
 }
 
 .current-date {
-  margin: 0.25rem 0;
+  margin: 0.5rem 0;
   font-weight: bold;
+  color: #333;
 }
 
 .summary-card {
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  background-color: #fff;
 }
 
-.summary-card:hover {
+.summary-card.paid-expenses:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 18px rgba(0, 255, 0, 0.25);
 }
 
 /* Transaction row styles */
 .transaction-row {
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
+.transaction-row:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
 
+.selected-row {
+  background-color: #e9ecef !important;
+}
 
 /* Custom button styles */
 #deleteRegularTransactionBtn,
 #deleteCreditCardTransactionBtn {
   display: block;
-  margin: auto;
+  margin: 1rem auto;
   background-color: var(--bs-btn-hover-bg);
-  border-color:var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-bg);
+  border-radius: 6px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+#deleteRegularTransactionBtn:hover,
+#deleteCreditCardTransactionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Login page specific styles */
@@ -87,33 +172,58 @@ html {
   min-width: 350px;
   max-width: 400px;
   margin: 100px auto;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .social-login {
   display: block;
   margin: 1.5rem 0;
   padding: 0.75rem !important;
+  text-align: center;
 }
 
 .social-login img {
   width: 32px;
   height: 32px;
+  transition: transform 0.2s ease;
+}
+
+.social-login img:hover {
+  transform: scale(1.1);
 }
 
 /* Responsive utilities */
 @media (max-width: 767.98px) {
   .container, .containerFim {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
   
   .btn-primary {
     width: auto;
-    margin:auto;
-    margin-bottom: 0px;
+    margin: auto;
+    margin-bottom: 10px;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
   }
 }
-
 
 #arrow-down1,
 #arrow-down2 {
@@ -123,10 +233,18 @@ html {
 .btn-link {
   padding: 0px;
   display: flex;
+  color: #007bff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+  color: #0056b3;
+  transform: scale(1.1);
 }
 
 .mt-4 {
   display: block;
-  margin: 15px auto 15px auto;
+  margin: 20px auto;
 }
 
