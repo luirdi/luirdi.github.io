@@ -21,8 +21,16 @@ A personal financial planning web application that helps users track expenses, m
 - Firebase (Authentication and Realtime Database)
 - Progressive Web App (PWA) capabilities
 
-## Installation
+## NPM LIST
+$ npm list -g --depth=0
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/finplanner.git
+$ npm list -g --depth=0 (pacotes instalados na máquina)
+/usr/local/lib
+├── corepack@0.31.0
+├── expo-cli@6.3.12
+├── npm@11.2.0
+├── react-native-cli@2.0.1
+├── serve@14.2.4
+├── typescript@5.8.2
+├── vite@6.2.0
+└── yarn@1.22.22
