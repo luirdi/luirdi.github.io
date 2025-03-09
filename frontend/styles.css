@@ -211,13 +211,16 @@ html {
 
 /* Responsive utilities */
 @media (max-width: 768px) {
-  .container,
-  .containerFim {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
+.containerFim {
+  display: block;
+  padding: 0px;
+  margin: 0px;
+}
+
 .mt-4c {
   width: 100%;
+  margin-left: 0px;
+    margin-right: 0px;
 }
   .btn-primary {
     width: auto;
@@ -233,11 +236,17 @@ html {
     padding: 1rem;
   }
 
+  .col-lg-6 {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+
   .table th,
   .table td {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
+
 }
 @media (max-width: 576px) {
   .container,
@@ -247,8 +256,17 @@ html {
   }
   .mt-4c {
     width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
   }
 
+  .col-lg-6 {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+  .form-check-mt-4-ff {
+    margin-top: 0px;
+  }
 
   .btn-primary {
     width: auto;
