@@ -29,6 +29,7 @@ const totalIncome = document.getElementById("totalIncome");
 const totalExpenses = document.getElementById("totalExpenses");
 const totalCreditCard = document.getElementById("totalCreditCard");
 const totalOtherExpenses = document.getElementById("totalOtherExpenses");
+const totalPaidExpenses = document.getElementById("totalPaidExpenses");
 const currentMonthElement = document.getElementById("currentMonth");
 const currentYearElement = document.getElementById("currentYear");
 
@@ -192,7 +193,8 @@ function addTransaction(e) {
     amount: parseFloat(document.getElementById("amount").value),
     type: document.getElementById("type").value,
     category: document.getElementById("category").value,
-    date: document.getElementById("date").value
+    date: document.getElementById("date").value,
+    isPaid: false // Default payment status is false (not paid)
   };
 
   if (!validateTransactionForm(formData)) {
@@ -241,7 +243,8 @@ function addCreditCardTransaction(formData, transactionsRef) {
       isInstallment: true,
       installmentNumber: i + 1,
       totalInstallments: installments,
-      invoiceClosed
+      invoiceClosed,
+      isPaid: false // Default payment status is false (not paid)
     };
     
     installmentPromises.push(transactionsRef.push(installmentTransaction));
@@ -265,7 +268,8 @@ function addRegularTransaction(formData, transactionsRef) {
     amount: formData.amount,
     type: formData.type,
     category: formData.category,
-    date: new Date(formData.date + "T00:00:00-03:00").toISOString()
+    date: new Date(formData.date + "T00:00:00-03:00").toISOString(),
+    isPaid: false // Default payment status is false (not paid)
   };
   
   if (formData.type === 'other_payments') {
@@ -284,7 +288,8 @@ function addRegularTransaction(formData, transactionsRef) {
           date: new Date(currentDate).toISOString(),
           isRecurring: true,
           installmentNumber: i + 1,
-          totalInstallments: recurringInstallments
+          totalInstallments: recurringInstallments,
+          isPaid: false // Default payment status is false (not paid)
         };
         transactionPromises.push(transactionsRef.push(transactionCopy));
       }
@@ -313,10 +318,30 @@ function addRegularTransaction(formData, transactionsRef) {
 }
 
 
+// Update payment status
+function updatePaymentStatus(transactionId, isPaid) {
+  if (!currentUserId) {
+    alert("Por favor, faça login para atualizar o status de pagamento.");
+    return;
+  }
+  
+  const transactionRef = database.ref(`users/${currentUserId}/transactions/${transactionId}`);
+  
+  transactionRef.update({ isPaid })
+    .then(() => {
+      console.log(`Status de pagamento atualizado: ${isPaid ? 'Pago' : 'Não pago'}`);
+    })
+    .catch(error => {
+      alert("Erro ao atualizar status de pagamento: " + error.message);
+      console.error('Failed to update payment status:', error);
+    });
+}
+
 // Variables to track selected transactions
 let selectedTransactions = [];
 // Map to track transaction types by ID
 let transactionTypesMap = {};
+
 
 // Select transaction
 function selectTransaction(id) {
@@ -513,11 +538,29 @@ function createTransactionRow(transaction) {
     <td class="transaction-expense" data-id="${transaction.id}" data-value="${transaction.amount}">
         ${formattedAmount}
     </td>
+    <td data-id="${transaction.id}" class="text-center">
+      <div class="form-check d-inline-block">
+        <input class="form-check-input payment-checkbox" type="checkbox" id="payment-${transaction.id}" 
+          ${transaction.isPaid ? 'checked' : ''} data-id="${transaction.id}">
+      </div>
+    </td>
   `;
   
   // Add click event to select the row
-  row.addEventListener('click', function() {
+  row.addEventListener('click', function(e) {
+    // Don't select the row if clicking on the checkbox
+    if (e.target.classList.contains('payment-checkbox')) {
+      e.stopPropagation();
+      return;
+    }
     selectTransaction(transaction.id);
+  });
+  
+  // Add event listener for the payment checkbox
+  const checkbox = row.querySelector('.payment-checkbox');
+  checkbox.addEventListener('change', function(e) {
+    e.stopPropagation(); // Prevent row selection
+    updatePaymentStatus(transaction.id, this.checked);
   });
   
   return row;
@@ -531,7 +574,8 @@ function getCategoryTranslation(category) {
     man_parking_fuel: "Carro/Moto",
     cuidados_pessoais: "Cuidados Pessoais",
     educacao_qualificacao: "Educação",
-    estorno_pagamento: "Estorno/Pagamento",
+    loan: "Empréstimo",
+    estorno_pagamento: "Estorno/Pagamento", 
     farmacia: "Farmácia",
     outros: "Outros",
     presente: "Presente",
@@ -547,18 +591,26 @@ function updateFinancialSummary() {
   let expenses = 0;
   let creditCardTotal = 0;
   let otherPaymentsTotal = 0;
+  let paidExpenses = 0;
 
   transactions.forEach(transaction => {
     expenses += transaction.amount;
 
     if (transaction.type === "credit_card") {
       creditCardTotal += transaction.amount;
+      if (transaction.isPaid) {
+        paidExpenses += transaction.amount;
+      }
     } else if (transaction.type === "other_payments") {
       otherPaymentsTotal += transaction.amount;
+      if (transaction.isPaid) {
+        paidExpenses += transaction.amount;
+      }
     }
   });
 
-  totalExpenses.textContent = formatCurrency(expenses);
+  totalExpenses.textContent = formatCurrency(expenses - paidExpenses);
+  totalPaidExpenses.textContent = formatCurrency(paidExpenses);
   totalCreditCard.textContent = formatCurrency(creditCardTotal);
   totalOtherExpenses.textContent = formatCurrency(otherPaymentsTotal);
 }

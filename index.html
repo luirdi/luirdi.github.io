@@ -68,15 +68,23 @@
 
   <div id="dashboardContainer" class="container mt-5">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card mb-3 summary-card expenses">
           <div class="card-body" id="despesas">
-            <h5 class="card-title">Despesas</h5>
+            <h5 class="card-title">Dívida Atual</h5>
             <h3 id="totalExpenses" class="text-danger">R$ 0,00</h3>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
+        <div class="card mb-3 summary-card paid-expenses">
+          <div class="card-body" id="pagamentosRealizados">
+            <h5 class="card-title">Pag. Realizados</h5>
+            <h3 id="totalPaidExpenses" class="text-success">R$ 0,00</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
         <div class="card mb-3 summary-card credit-card">
           <div class="card-body" id="cartaodecredito">
             <h5 class="card-title">Cartão de Crédito</h5>
@@ -84,7 +92,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card mb-3 summary-card other-payments">
           <div class="card-body" id="recorrente">
             <h5 class="card-title">Recorrente</h5>
@@ -121,6 +129,7 @@
                     <option value="man_parking_fuel">Carro-Moto</option>
                     <option value="cuidados_pessoais">Cuidados Pessoais</option>
                     <option value="educacao_qualificacao">Educação</option>
+                    <option value="loan">Empréstimo</option>
                     <option value="estorno_pagamento">Estorno/Pagamento</option>
                     <option value="farmacia">Farmácia</option>
                     <option value="outros">Outros</option>
@@ -206,6 +215,7 @@
                     <th>Descrição</th>
                     <th>Categoria</th>
                     <th>Valor</th>
+                    <th>Pagamento</th>
                   </tr>
                 </thead>
                 <tbody id="transactionsList"></tbody>
@@ -230,6 +240,7 @@
                     <th>Descrição</th>
                     <th>Categoria</th>
                     <th>Valor</th>
+                    <th>Pagamento</th>
                   </tr>
                 </thead>
                 <tbody id="creditCardTransactionsList"></tbody>
