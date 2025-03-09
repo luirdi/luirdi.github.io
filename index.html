@@ -9,7 +9,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="icon" href="/frontend/logo.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/frontend/logo.ico" type="image/x-icon">
- 
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom styles that override Bootstrap -->
@@ -28,60 +28,83 @@
       });
     }
   </script>
+  <style>
+    body {
+      overflow-x: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overscroll-behavior: none;
+      touch-action: pan-y;
+    }
+
+    html {
+      overflow-x: hidden;
+      overscroll-behavior: none;
+    }
+  </style>
   <title>FinPlanner - Planejamento Financeiro</title>
 
 <body>
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="d-flex align-items-center">
-        <h1>FinPlanner_</h1>
+        <h1 class="fw-bold text-primary mb-0">FinPlanner</h1>
       </div>
       <div class="date-navigation d-flex align-items-center">
-        <div class="month-selector me-3">
-          <button class="btn btn-link p-0" onclick="changeMonth(1)" title="Próximo mês"><img src="/icons/arrow-up.png" alt="Próximo mês" width="20" height="20"></button>
-          <div id="currentMonth" class="current-date">Janeiro</div>
-          <button class="btn btn-link p-0" onclick="changeMonth(-1)" title="Mês anterior" id="arrow-down1"><img src="/icons/arrow-down.png" alt="Mês anterior" width="20" height="20"></button>
+        <div class="month-selector me-3 text-center">
+          <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeMonth(1)" title="Próximo mês">
+            <img src="/icons/arrow-up.png" alt="Próximo mês" width="20" height="20" class="img-fluid">
+          </button>
+          <div id="currentMonth" class="current-date fw-bold my-1">Janeiro</div>
+          <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeMonth(-1)" title="Mês anterior">
+            <img src="/icons/arrow-down.png" alt="Mês anterior" width="20" height="20" class="img-fluid">
+          </button>
         </div>
-        <div class="year-selector">
-          <button class="btn btn-link p-0" onclick="changeYear(1)" title="Próximo ano"><img src="/icons/arrow-up.png" alt="Próximo ano" width="20" height="20"></button>
-          <div id="currentYear" class="current-date">2025</div>
-          <button class="btn btn-link p-0" onclick="changeYear(-1)" title="Ano anterior" id="arrow-down2"><img src="/icons/arrow-down.png" alt="Ano anterior" width="20" height="20"></button>
+        <div class="year-selector text-center">
+          <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeYear(1)" title="Próximo ano">
+            <img src="/icons/arrow-up.png" alt="Próximo ano" width="20" height="20" class="img-fluid">
+          </button>
+          <div id="currentYear" class="current-date fw-bold my-1">2025</div>
+          <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeYear(-1)" title="Ano anterior">
+            <img src="/icons/arrow-down.png" alt="Ano anterior" width="20" height="20" class="img-fluid">
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <div id="dashboardContainer" class="container mt-5">
-    <div class="row">
-      <div class="col-md-3">
-        <div class="card mb-3 summary-card expenses">
-          <div class="card-body" id="despesas">
-            <h5 class="card-title">Dívida Atual</h5>
-            <h3 id="totalExpenses" class="text-danger">R$ 0,00</h3>
+  <div id="dashboardContainer" class="container mt-4">
+    <div class="row g-3">
+      <div class="col-sm-6 col-md-3">
+        <div class="card h-100 summary-card expenses">
+          <div class="card-body d-flex flex-column" id="despesas">
+            <h5 class="card-title fw-bold mb-3">Dívida Atual</h5>
+            <h3 id="totalExpenses" class="mt-auto mb-0 text-danger fw-bold">R$ 0,00</h3>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card mb-3 summary-card paid-expenses">
-          <div class="card-body" id="pagamentosRealizados">
-            <h5 class="card-title">Pag. Realizados</h5>
-            <h3 id="totalPaidExpenses" class="text-success">R$ 0,00</h3>
+      <div class="col-sm-6 col-md-3">
+        <div class="card h-100 summary-card paid-expenses">
+          <div class="card-body d-flex flex-column" id="pagamentosRealizados">
+            <h5 class="card-title fw-bold mb-3">Pag. Realizados</h5>
+            <h3 id="totalPaidExpenses" class="mt-auto mb-0 text-success fw-bold">R$ 0,00</h3>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card mb-3 summary-card credit-card">
-          <div class="card-body" id="cartaodecredito">
-            <h5 class="card-title">Cartão de Crédito</h5>
-            <h3 id="totalCreditCard" class="text-danger">R$ 0,00</h3>
+      <div class="col-sm-6 col-md-3">
+        <div class="card h-100 summary-card credit-card">
+          <div class="card-body d-flex flex-column" id="cartaodecredito">
+            <h5 class="card-title fw-bold mb-3">Cartão de Crédito</h5>
+            <h3 id="totalCreditCard" class="mt-auto mb-0 fw-bold">R$ 0,00</h3>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card mb-3 summary-card other-payments">
-          <div class="card-body" id="recorrente">
-            <h5 class="card-title">Recorrente</h5>
-            <h3 id="totalOtherExpenses" class="text-danger">R$ 0,00</h3>
+      <div class="col-sm-6 col-md-3">
+        <div class="card h-100 summary-card other-payments">
+          <div class="card-body d-flex flex-column" id="recorrente">
+            <h5 class="card-title fw-bold mb-3">Recorrente</h5>
+            <h3 id="totalOtherExpenses" class="mt-auto mb-0 fw-bold">R$ 0,00</h3>
           </div>
         </div>
       </div>
@@ -92,23 +115,29 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Adicionar Transação</h5>
-            <form id="transactionForm">
-              <div class="row">
-                <div class="col-md-3 mb-3">
+            <form id="transactionForm" class="needs-validation" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
                   <label for="description" class="form-label">Descrição</label>
                   <input type="text" class="form-control" id="description" required />
+                  <div class="invalid-feedback">Por favor, informe uma descrição.</div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 col-lg-3">
                   <label for="amount" class="form-label">Valor</label>
-                  <input type="number" class="form-control" id="amount" step="0.01" required />
+                  <div class="input-group">
+                    <span class="input-group-text">R$</span>
+                    <input type="number" class="form-control" id="amount" step="0.01" required />
+                    <div class="invalid-feedback">Por favor, informe um valor válido.</div>
+                  </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 col-lg-3">
                   <label for="date" class="form-label">Data</label>
                   <input type="date" class="form-control" id="date" required />
+                  <div class="invalid-feedback">Por favor, selecione uma data.</div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 col-lg-3">
                   <label for="category" class="form-label">Categoria</label>
-                  <select class="form-control" id="category" required>
+                  <select class="form-select" id="category" required>
                     <option value="" disabled selected>Selecione</option>
                     <option value="alimentacao">Alimentação</option>
                     <option value="man_parking_fuel">Carro-Moto</option>
@@ -123,18 +152,19 @@
                     <option value="utensilios_casa">Casa</option>
                     <option value="vestuario">Vestuário</option>
                   </select>
+                  <div class="invalid-feedback">Por favor, selecione uma categoria.</div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 col-lg-3">
                   <label for="type" class="form-label">Tipo de Pagamento</label>
-                  <select class="form-control" id="type" required>
-
-                    <option value="credit_card">Credit card</option>
+                  <select class="form-select" id="type" required>
+                    <option value="credit_card">Cartão de Crédito</option>
                     <option value="other_payments">Recorrente</option>
                   </select>
+                  <div class="invalid-feedback">Por favor, selecione um tipo de pagamento.</div>
                 </div>
-                <div class="col-md-3 mb-3 credit-card-fields" style="display: none;">
+                <div class="col-md-6 col-lg-3 credit-card-fields" style="display: none;">
                   <label for="installments" class="form-label">Parcelas</label>
-                  <select class="form-control" id="installments">
+                  <select class="form-select" id="installments">
                     <option value="1">1x</option>
                     <option value="2">2x</option>
                     <option value="3">3x</option>
@@ -149,9 +179,9 @@
                     <option value="12">12x</option>
                   </select>
                 </div>
-                <div class="col-md-3 mb-3 recurring-payment-fields" style="display: none;">
+                <div class="col-md-6 col-lg-3 recurring-payment-fields" style="display: none;">
                   <label for="recurringInstallments" class="form-label">Parcelas</label>
-                  <select class="form-control" id="recurringInstallments">
+                  <select class="form-select" id="recurringInstallments">
                     <option value="1">1x</option>
                     <option value="2">2x</option>
                     <option value="3">3x</option>
@@ -165,9 +195,8 @@
                     <option value="11">11x</option>
                     <option value="12">12x</option>
                   </select>
-                  </div>
                 </div>
-                <div class="col-md-3 credit-card-fields" style="display: block; padding:0px; margin-bottom:15px">
+                <div class="col-md-6 col-lg-3 credit-card-fields" style="display: none;">
                   <div class="form-check mt-4">
                     <input class="form-check-input" type="checkbox" id="invoiceClosed">
                     <label class="form-check-label" for="invoiceClosed">
@@ -175,75 +204,81 @@
                     </label>
                   </div>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                  Adicionar Transação
-                </button>
               </div>
-             
+              <div class="row mt-3">
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-plus-circle me-2"></i>Adicionar Transação
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
         </div>
       </div>
     </div>
-<div class="containerFim">
-    <!-- Recurring Transactions Table -->
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Recorrente</h5>
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Pagamento</th>
-                  </tr>
-                </thead>
-                <tbody id="transactionsList"></tbody>
-              </table>
+    <div class="containerFim">
+      <div class="row mt-4">
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title d-flex align-items-center">
+                <span class="me-2">Recorrente</span>
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Data</th>
+                      <th scope="col">Descrição</th>
+                      <th scope="col">Categoria</th>
+                      <th scope="col">Valor</th>
+                      <th scope="col" class="text-center">Pago</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactionsList" class="align-middle"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Credit Card Transactions Table -->
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Cartão de Crédito</h5>
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Pagamento</th>
-                  </tr>
-                </thead>
-                <tbody id="creditCardTransactionsList"></tbody>
-              </table>
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title d-flex align-items-center">
+                <span class="me-2">Cartão de Crédito</span>
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Data</th>
+                      <th scope="col">Descrição</th>
+                      <th scope="col">Categoria</th>
+                      <th scope="col">Valor</th>
+                      <th scope="col" class="text-center">Pago</th>
+                    </tr>
+                  </thead>
+                  <tbody id="creditCardTransactionsList" class="align-middle"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
   <button onclick="firebase.auth().signOut().then(() => window.location.href = '/login.html')" class="btn btn-danger mt-4">Sair</button>
+
   <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-database-compat.js"></script>
+  <!-- Custom Scripts -->
   <script src="/frontend/app.js"></script>
 </body>
 

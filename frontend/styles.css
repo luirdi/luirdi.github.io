@@ -150,21 +150,18 @@ html {
   color: #0056b3;
 }
 
-.transaction-row{
+.transaction-row {
   cursor: pointer;
   transition: background-color 0.2s ease;
-  background-color: aquamarine;
 }
-
-
 
 /* Custom button styles */
 #deleteRegularTransactionBtn,
 #deleteCreditCardTransactionBtn {
   display: block;
   margin: 1rem auto;
-  background-color: var(--bs-btn-bg);
-  border-color: var(--bs-btn-bg);
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
   border-radius: 6px;
   padding: 8px 16px;
   transition: all 0.3s ease;
@@ -173,8 +170,8 @@ html {
 #deleteRegularTransactionBtn:hover,
 #deleteCreditCardTransactionBtn:hover {
   transform: translateY(-2px);
-  background-color: var(--bs-btn-hover-bg);
-  border-color: var(--bs-btn-hover-bg);
+  background-color: var(--bs-danger-hover);
+  border-color: var(--bs-danger-hover);
   box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
 }
 
@@ -262,23 +259,25 @@ html {
 }
 
 .selected-row {
-  background-color: #ff4444 !important;
-  color: white;
+  background-color: var(--bs-gray-200) !important;
 }
-
 
 #totalExpenses {
-  color: red!important;
-  font-weight: bold;
+  color: var(--bs-danger) !important;
+  margin-top: 0px!important;
 }
+
 #totalPaidExpenses {
-  color: green!important;
+  color: var(--bs-success) !important;
+  margin-top: 0px!important;
 }
 
 #totalCreditCard {
-  color: orange!important;
+  color: var(--bs-warning) !important;
+  margin-top: 0px!important;
 }
 
 #totalOtherExpenses {
-  color: blue!important;
+  color: var(--bs-primary) !important;
+  margin-top: 0px!important;
 }

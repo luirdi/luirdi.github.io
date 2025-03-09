@@ -490,8 +490,8 @@ function renderTransactions() {
   const regularTableContainer = document.querySelector('#transactionsList').closest('.card-body');
   const regularDeleteBtn = document.createElement('button');
   regularDeleteBtn.id = 'deleteRegularTransactionBtn';
-  regularDeleteBtn.className = 'btn btn-danger mt-3';
-  regularDeleteBtn.textContent = 'Excluir Selecionado';
+  regularDeleteBtn.className = 'btn btn-danger mt-3 d-flex align-items-center mx-auto';
+  regularDeleteBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir Selecionado';
   regularDeleteBtn.disabled = true;
   regularDeleteBtn.addEventListener('click', function(event) {
     deleteSelectedTransaction(event);
@@ -502,8 +502,8 @@ function renderTransactions() {
   const creditCardTableContainer = document.querySelector('#creditCardTransactionsList').closest('.card-body');
   const creditCardDeleteBtn = document.createElement('button');
   creditCardDeleteBtn.id = 'deleteCreditCardTransactionBtn';
-  creditCardDeleteBtn.className = 'btn btn-danger mt-3';
-  creditCardDeleteBtn.textContent = 'Excluir Selecionado';
+  creditCardDeleteBtn.className = 'btn btn-danger mt-3 d-flex align-items-center mx-auto';
+  creditCardDeleteBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir Selecionado';
   creditCardDeleteBtn.disabled = true;
   creditCardDeleteBtn.addEventListener('click', function(event) {
     deleteSelectedTransaction(event);
@@ -531,16 +531,17 @@ function createTransactionRow(transaction) {
     displayDescription = `${transaction.description} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
   }
 
+  // Add Bootstrap classes for better styling
   row.innerHTML = `
     <td data-id="${transaction.id}">${formattedDate}</td>
-    <td data-id="${transaction.id}">${displayDescription}</td>
+    <td data-id="${transaction.id}" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
     <td data-id="${transaction.id}">${getCategoryTranslation(transaction.category)}</td>
-    <td class="transaction-expense" data-id="${transaction.id}" data-value="${transaction.amount}">
+    <td class="transaction-expense fw-medium" data-id="${transaction.id}" data-value="${transaction.amount}">
         ${formattedAmount}
     </td>
     <td data-id="${transaction.id}" class="text-center">
-      <div class="form-check d-inline-block">
-        <input class="form-check-input payment-checkbox" type="checkbox" id="payment-${transaction.id}" 
+      <div class="form-check form-switch d-inline-block">
+        <input class="form-check-input payment-checkbox" type="checkbox" role="switch" id="payment-${transaction.id}" 
           ${transaction.isPaid ? 'checked' : ''} data-id="${transaction.id}">
       </div>
     </td>
