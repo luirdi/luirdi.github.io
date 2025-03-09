@@ -248,46 +248,7 @@ html {
   }
 
 }
-@media (max-width: 576px) {
-  .container,
-  .containerFim {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  .mt-4c {
-    width: 100%;
-    margin-left: 0px;
-    margin-right: 0px;
-  }
 
-  .col-lg-6 {
-    padding-right: 0px;
-    padding-left: 0px;
-  }
-  .form-check-mt-4-ff {
-    margin-top: 0px;
-  }
-
-  .btn-primary {
-    width: auto;
-    margin: auto;
-    margin-bottom: 10px;
-  }
-
-  .card {
-    margin-bottom: 1rem;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .table th,
-  .table td {
-    padding: 0.5rem;
-    font-size: 0.9rem;
-  }
-}
 
 #arrow-down1,
 #arrow-down2 {
