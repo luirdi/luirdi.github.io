@@ -527,6 +527,15 @@ function renderTransactions() {
 
 
 // Create transaction row
+// Function to capitalize the first letter of each word in a string
+function capitalizeWords(str) {
+  if (!str) return '';
+  return str.split(' ').map(word => {
+    if (word.length === 0) return word;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 function createTransactionRow(transaction) {
   const row = document.createElement("tr");
   row.dataset.id = transaction.id;
@@ -534,12 +543,13 @@ function createTransactionRow(transaction) {
   const formattedDate = formatLocalDate(transaction.date);
   const formattedAmount = formatNumberWithoutCurrency(transaction.amount);
   
-  let displayDescription = transaction.description;
+  // Capitalize the description
+  let displayDescription = capitalizeWords(transaction.description);
   if (transaction.isInstallment) {
-    const baseDescription = transaction.description.split(" (")[0];
+    const baseDescription = displayDescription.split(" (")[0];
     displayDescription = `${baseDescription} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
   } else if (transaction.isRecurring && transaction.installmentNumber && transaction.totalInstallments) {
-    displayDescription = `${transaction.description} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
+    displayDescription = `${displayDescription} (${transaction.installmentNumber}/${transaction.totalInstallments})`;
   }
 
   // Add Bootstrap classes for better styling
