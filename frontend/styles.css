@@ -208,6 +208,10 @@ html {
 .social-login img:hover {
   transform: scale(1.1);
 }
+.col-md-6 {
+  flex: 0 0 auto;
+  width: 33%;
+  }
 
 /* Responsive utilities */
 @media (max-width: 768px) {
@@ -246,6 +250,10 @@ html {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
+  .col-md-6 {
+    flex: 0 0 auto;
+    width: 33%;
+    }
 
 }
 
@@ -308,3 +316,4 @@ html {
 .mt-4c {
   margin-top: 0px !important;
 }
+
