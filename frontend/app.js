@@ -231,7 +231,18 @@ function addCreditCardTransaction(formData, transactionsRef) {
     const originalDate = new Date(formData.date + "T00:00:00-03:00");
     const displayDate = new Date(formData.date + "T00:00:00-03:00");
     const monthsToAdd = invoiceClosed ? i + 1 : i;
+    
+    // Store the original day before modifying the date
+    const originalDay = displayDate.getDate();
+    
+    // Add months to the display date
     displayDate.setMonth(displayDate.getMonth() + monthsToAdd);
+    
+    // Check if the day changed (indicating the month doesn't have that day)
+    if (displayDate.getDate() !== originalDay) {
+      // Set to the last day of the previous month
+      displayDate.setDate(0);
+    }
     
     const installmentTransaction = {
       description: formData.description,
