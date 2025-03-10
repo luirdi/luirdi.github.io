@@ -577,9 +577,12 @@ function getCategoryTranslation(category) {
     educacao_qualificacao: "Educação",
     loan: "Empréstimo",
     estorno_pagamento: "Estorno/Pagamento", 
-    farmacia: "Farmácia",
+    health: "Saúde",
     outros: "Outros",
     presente: "Presente",
+    servicos: "Servicos Essenciais",
+    servicos_not: "Serviços",
+    streaming_internet_tv: "Streaming/Internet/TV",   
     uber: "Uber",
     utensilios_casa: "Casa",
     vestuario: "Vestuário"
