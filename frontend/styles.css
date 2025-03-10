@@ -315,7 +315,7 @@ html {
 .table tbody tr.selected-row td {
   background-color: rgba(0, 0, 0, 0.05) !important;
   text-decoration: line-through !important;
-  /* font-weight: bold!important; */
+  color: var(--bs-danger) !important;
 }
 
 
