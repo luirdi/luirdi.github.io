@@ -73,7 +73,7 @@ html {
 .table th {
   font-weight: 600;
   border-top: none;
-  padding: 0.75rem;
+  padding: 0.5rem;
   background-color: #f8f9fa;
   color: #495057;
   text-transform: uppercase;
@@ -81,11 +81,6 @@ html {
   letter-spacing: 0.5px;
 }
 
-.table td {
-  padding: 0.75rem;
-  vertical-align: middle;
-  border-top: 1px solid #f0f0f0;
-}
 
 /* Custom button styles */
 .btn-primary {
@@ -189,6 +184,11 @@ html {
   flex: 0 0 auto;
   width: 33%;
   }
+  .table td {
+    padding: 0.25rem;
+    vertical-align: middle;
+    border-top: 1px solid #f0f0f0;
+}
 
 /* Responsive utilities */
 @media (max-width: 768px) {
@@ -227,15 +227,16 @@ html {
 
   .table th,
   .table td {
-    padding: 0.5rem;
+    padding: 0.25rem;
     font-size: 0.9rem;
   }
   .col-md-6 {
     flex: 0 0 auto;
     width: 33%;
     }
+    
 
-}
+  }
 @media (max-width:448px) {
 .col-sm-6 {
 flex: 0 0 auto;
