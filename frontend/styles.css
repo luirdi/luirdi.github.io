@@ -6,7 +6,7 @@ body {
   overscroll-behavior: none;
   touch-action: pan-y;
   margin: 0px;
-  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "PT Sans Narrow";
   color: #333;
   background-color: #f8f9fa;
 }
@@ -17,6 +17,18 @@ html {
   margin: 0px;
   scroll-behavior: smooth;
 }
+.pt-sans-narrow-regular {
+  font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.pt-sans-narrow-bold {
+  font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
 
 /* Custom container */
 .containerFim {
@@ -173,41 +185,6 @@ html {
   font-weight: 100;
 }
 
-/* Login page specific styles */
-.login-container {
-  min-width: 350px;
-  max-width: 400px;
-  margin: 100px auto;
-  animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.social-login {
-  display: block;
-  margin: 1.5rem 0;
-  padding: 0.75rem !important;
-  text-align: center;
-}
-
-.social-login img {
-  width: 32px;
-  height: 32px;
-  transition: transform 0.2s ease;
-}
-
-.social-login img:hover {
-  transform: scale(1.1);
-}
 .col-md-6 {
   flex: 0 0 auto;
   width: 33%;
@@ -220,11 +197,14 @@ html {
   padding: 0px;
   margin: 0px;
 }
+.col-sm-6 {
+  flex: 0 0 auto;
+  width: 25%; }
 
 .mt-4c {
   width: 100%;
   margin-left: 0px;
-    margin-right: 0px;
+  margin-right: 0px;
 }
   .btn-primary {
     width: auto;
@@ -256,8 +236,11 @@ html {
     }
 
 }
-
-
+@media (max-width:448px) {
+.col-sm-6 {
+flex: 0 0 auto;
+width: 50%; }
+}
 #arrow-down1,
 #arrow-down2 {
   padding: 0px;
