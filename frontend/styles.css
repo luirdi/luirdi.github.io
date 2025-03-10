@@ -102,8 +102,9 @@ html {
 
 /* Custom form styles */
 .form-check {
-  margin-top: 0px;
-}
+    margin-top: .3rem;
+    min-height: 0px;
+    }
 
 /* Custom components */
 .date-navigation {
