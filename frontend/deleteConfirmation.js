@@ -20,8 +20,8 @@ function createDeleteConfirmationModal() {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-danger" id="deleteCurrentOnlyBtn">Excluir apenas este</button>
-            <button type="button" class="btn btn-danger" id="deleteAllRelatedBtn">Excluir este e futuros</button>
+            <button type="button" class="btn btn-danger" id="deleteCurrentOnlyBtn">Excluir</button>
+            <button type="button" class="btn btn-outline-danger" id="deleteAllRelatedBtn">Excluir TUDO!</button>
           </div>
         </div>
       </div>

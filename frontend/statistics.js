@@ -24,23 +24,31 @@ function createStatisticsModal() {
           <div class="modal-header">
             <h5 class="modal-title" id="statisticsModalLabel">Estatísticas por Categoria</h5>
             <div class="date-navigation d-flex align-items-center ms-auto me-3">
-              <div class="month-selector me-3 text-center">
-                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsMonth(1)" title="Próximo mês">
-                  <i class="bi bi-chevron-up" style="font-size: 1.25rem;"></i>
-                </button>
-                <div id="statisticsCurrentMonth" class="current-date fw-bold my-1">Janeiro</div>
-                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsMonth(-1)" title="Mês anterior">
-                  <i class="bi bi-chevron-down" style="font-size: 1.25rem;"></i>
-                </button>
-              </div>
-              <div class="year-selector text-center">
-                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsYear(1)" title="Próximo ano">
-                  <i class="bi bi-chevron-up" style="font-size: 1.25rem;"></i>
-                </button>
-                <div id="statisticsCurrentYear" class="current-date fw-bold my-1">2025</div>
-                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsYear(-1)" title="Ano anterior">
-                  <i class="bi bi-chevron-down" style="font-size: 1.25rem;"></i>
-                </button>
+              <div class="date-selector-container d-flex align-items-center bg-light rounded-pill px-3 py-2 shadow-sm">
+                <!-- Month Selector -->
+                <div class="month-selector d-flex align-items-center me-3">
+                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 me-2" onclick="changeStatisticsMonth(-1)" title="Mês anterior">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <span id="statisticsCurrentMonth" class="current-date fw-bold text-primary">Janeiro</span>
+                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-2" onclick="changeStatisticsMonth(1)" title="Próximo mês">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+                
+                <!-- Divider -->
+                <div class="vr mx-2"></div>
+                
+                <!-- Year Selector -->
+                <div class="year-selector d-flex align-items-center">
+                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 me-2" onclick="changeStatisticsYear(-1)" title="Ano anterior">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <span id="statisticsCurrentYear" class="current-date fw-bold text-primary">2025</span>
+                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-2" onclick="changeStatisticsYear(1)" title="Próximo ano">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
