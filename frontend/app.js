@@ -163,8 +163,9 @@ function loadTransactions() {
     "value",
     (snapshot) => {
       transactions = [];
-      transactionsList.innerHTML = "";
-      creditCardTransactionsList.innerHTML = "";
+      
+      // Transaction lists are now in modals, no need to clear them here
+      // They will be updated in updateModalData()
 
       const data = snapshot.val();
       if (data) {
@@ -435,16 +436,19 @@ function updateDeleteButtons() {
     (id) => transactionTypesMap[id] === "credit_card"
   );
 
-  document.getElementById("deleteRegularTransactionBtn").disabled =
-    !hasRegularTransactions;
-  document.getElementById("deleteCreditCardTransactionBtn").disabled =
-    !hasCreditCardTransactions;
-
-  const regularBtn = document.getElementById("deleteRegularTransactionBtn");
-  const creditBtn = document.getElementById("deleteCreditCardTransactionBtn");
-
-  regularBtn.textContent = "Excluir Selecionado";
-  creditBtn.textContent = "Excluir Selecionado";
+  // Update modal delete buttons
+  const modalRegularBtn = document.getElementById("deleteRegularTransactionBtn");
+  const modalCreditBtn = document.getElementById("deleteCreditCardTransactionBtn");
+  
+  if (modalRegularBtn) {
+    modalRegularBtn.disabled = !hasRegularTransactions;
+    modalRegularBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir';
+  }
+  
+  if (modalCreditBtn) {
+    modalCreditBtn.disabled = !hasCreditCardTransactions;
+    modalCreditBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir';
+  }
 }
 
 // Delete selected transactions
@@ -473,30 +477,22 @@ function deleteSelectedTransaction(event) {
     return;
   }
 
-  const confirmMessage =
-    transactionsToDelete.length > 1
-      ? `Tem certeza que deseja excluir estas ${transactionsToDelete.length} transações?`
-      : "Tem certeza que deseja excluir esta transação?";
-
-  if (confirm(confirmMessage)) {
-    const deletePromises = transactionsToDelete.map((id) => {
-      return database.ref(`users/${currentUserId}/transactions/${id}`).remove();
-    });
-
-    Promise.all(deletePromises)
-      .then(() => {
-        // Remove deleted transactions from selection
-        selectedTransactions = selectedTransactions.filter(
-          (id) => !transactionsToDelete.includes(id)
-        );
-
-        // Update delete buttons
-        updateDeleteButtons();
-      })
-      .catch((error) => {
-        alert("Erro ao excluir transações: " + error.message);
-        console.error("Failed to delete transactions:", error);
-      });
+  // If there's only one transaction to delete, use the delete confirmation modal
+  if (transactionsToDelete.length === 1) {
+    // Use the existing delete confirmation modal
+    showDeleteConfirmation(transactionsToDelete[0]);
+  } else {
+    // For multiple transactions, show a simple confirmation
+    const confirmMessage = `Tem certeza que deseja excluir estas ${transactionsToDelete.length} transações?`;
+    
+    if (confirm(confirmMessage)) {
+      // Get the type of the first transaction (assuming all are the same type)
+      const firstTransaction = transactions.find(t => t.id === transactionsToDelete[0]);
+      const transactionType = firstTransaction ? firstTransaction.type : null;
+      
+      // Use the performDelete function from deleteConfirmation.js
+      performDelete(transactionsToDelete, transactionType);
+    }
   }
 }
 
@@ -509,74 +505,15 @@ function deleteTransaction(id) {
 
 // Render transactions list
 function renderTransactions() {
-  transactionsList.innerHTML = "";
-  creditCardTransactionsList.innerHTML = "";
-
   // Build transaction types map for quick access
   transactionTypesMap = {};
   transactions.forEach((transaction) => {
     transactionTypesMap[transaction.id] = transaction.type;
   });
 
-  transactions.forEach((transaction) => {
-    const row = createTransactionRow(transaction);
-
-    // Maintain selected state when re-rendering
-    if (selectedTransactions.includes(transaction.id)) {
-      row.classList.add("selected-row");
-      row.style.backgroundColor = "#c9c9c9"; // Add background color for selected rows
-    }
-
-    if (transaction.type === "credit_card") {
-      creditCardTransactionsList.appendChild(row);
-    } else {
-      transactionsList.appendChild(row);
-    }
-  });
-
-  // Clear any existing delete buttons
-  const existingRegularDeleteBtn = document.getElementById(
-    "deleteRegularTransactionBtn"
-  );
-  const existingCreditDeleteBtn = document.getElementById(
-    "deleteCreditCardTransactionBtn"
-  );
-
-  if (existingRegularDeleteBtn) existingRegularDeleteBtn.remove();
-  if (existingCreditDeleteBtn) existingCreditDeleteBtn.remove();
-
-  // Add delete button for regular transactions
-  const regularTableContainer = document
-    .querySelector("#transactionsList")
-    .closest(".card-body");
-  const regularDeleteBtn = document.createElement("button");
-  regularDeleteBtn.id = "deleteRegularTransactionBtn";
-  regularDeleteBtn.className =
-    "btn btn-danger mt-3 d-flex align-items-center mx-auto";
-  regularDeleteBtn.innerHTML =
-    '<i class="bi bi-trash me-2"></i>Excluir Selecionado';
-  regularDeleteBtn.disabled = true;
-  regularDeleteBtn.addEventListener("click", function (event) {
-    deleteSelectedTransaction(event);
-  });
-  regularTableContainer.appendChild(regularDeleteBtn);
-
-  // Add delete button for credit card transactions
-  const creditCardTableContainer = document
-    .querySelector("#creditCardTransactionsList")
-    .closest(".card-body");
-  const creditCardDeleteBtn = document.createElement("button");
-  creditCardDeleteBtn.id = "deleteCreditCardTransactionBtn";
-  creditCardDeleteBtn.className =
-    "btn btn-danger mt-3 d-flex align-items-center mx-auto";
-  creditCardDeleteBtn.innerHTML =
-    '<i class="bi bi-trash me-2"></i>Excluir Selecionado';
-  creditCardDeleteBtn.disabled = true;
-  creditCardDeleteBtn.addEventListener("click", function (event) {
-    deleteSelectedTransaction(event);
-  });
-  creditCardTableContainer.appendChild(creditCardDeleteBtn);
-
+  // Update modal data to refresh the transaction lists in modals
+  updateModalData();
+  
   // Update delete buttons to reflect current selections
   updateDeleteButtons();
 }

@@ -66,33 +66,62 @@ function createDeleteConfirmationModal() {
 // Find related transactions (future installments or recurring payments)
 function findRelatedTransactions(transaction) {
   if (!transaction) return [transaction.id];
-
-  // For installment transactions
-  if (transaction.isInstallment && transaction.totalInstallments > 1) {
-    return transactions
-      .filter(t => 
-        t.description === transaction.description && 
-        t.isInstallment && 
-        t.totalInstallments === transaction.totalInstallments &&
-        t.installmentNumber >= transaction.installmentNumber
-      )
-      .map(t => t.id);
+  
+  // Initialize with the current transaction ID
+  let relatedIds = [transaction.id];
+  
+  // For installment or recurring transactions, query the database directly
+  if ((transaction.isInstallment || transaction.isRecurring) && transaction.totalInstallments > 1) {
+    // Return the current ID immediately, but also start an async process to delete future transactions
+    // This ensures the current transaction is deleted right away
+    
+    // Create a query to find all related transactions across all months
+    const transactionsRef = database.ref(`users/${currentUserId}/transactions`);
+    
+    // Query parameters to match related transactions
+    const queryParams = {
+      description: transaction.description,
+      totalInstallments: transaction.totalInstallments
+    };
+    
+    // Determine if we're dealing with installment or recurring transactions
+    if (transaction.isInstallment) {
+      queryParams.isInstallment = true;
+    } else {
+      queryParams.isRecurring = true;
+    }
+    
+    // Execute the query to find all related transactions
+    transactionsRef.once('value', (snapshot) => {
+      const allTransactions = snapshot.val();
+      if (!allTransactions) return;
+      
+      const relatedTransactionIds = [];
+      
+      // Filter transactions that match our criteria
+      Object.keys(allTransactions).forEach(key => {
+        const t = allTransactions[key];
+        
+        // Check if this is a related transaction with an installment number >= the current one
+        if (t.description === queryParams.description && 
+            ((queryParams.isInstallment && t.isInstallment) || 
+             (queryParams.isRecurring && t.isRecurring)) && 
+            t.totalInstallments === queryParams.totalInstallments && 
+            t.installmentNumber >= transaction.installmentNumber) {
+          
+          relatedTransactionIds.push(key);
+        }
+      });
+      
+      // If we found related transactions, delete them
+      if (relatedTransactionIds.length > 0) {
+        performDelete(relatedTransactionIds, transaction.type);
+      }
+    });
   }
   
-  // For recurring transactions
-  if (transaction.isRecurring && transaction.totalInstallments > 1) {
-    return transactions
-      .filter(t => 
-        t.description === transaction.description && 
-        t.isRecurring && 
-        t.totalInstallments === transaction.totalInstallments &&
-        t.installmentNumber >= transaction.installmentNumber
-      )
-      .map(t => t.id);
-  }
-
-  // If not part of a series, just return the current transaction ID
-  return [transaction.id];
+  // Return the current transaction ID so it gets deleted immediately
+  return relatedIds;
 }
 
 // Show the delete confirmation modal

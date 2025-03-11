@@ -75,12 +75,12 @@ function createStatisticsModal() {
       </div>
     </div>
   `;
-  
+
   // Append the modal to the body
   const modalContainer = document.createElement('div');
   modalContainer.innerHTML = modalHTML;
   document.body.appendChild(modalContainer.firstElementChild);
-  
+
   // Initialize the modal
   statisticsModal = new bootstrap.Modal(document.getElementById('statisticsModal'));
 }
@@ -91,11 +91,11 @@ function showStatistics() {
     createStatisticsModal();
     statisticsModal = new bootstrap.Modal(document.getElementById('statisticsModal'));
   }
-  
+
   // Sync statistics date with main app date
   statisticsDate = new Date(currentDate);
   updateStatisticsDate();
-  
+
   // Calculate statistics and show modal
   calculateCategoryStatistics();
   statisticsModal.show();
@@ -105,7 +105,7 @@ function showStatistics() {
 function updateStatisticsDate() {
   const statisticsMonthElement = document.getElementById('statisticsCurrentMonth');
   const statisticsYearElement = document.getElementById('statisticsCurrentYear');
-  
+
   if (statisticsMonthElement && statisticsYearElement) {
     statisticsMonthElement.textContent = MONTHS[statisticsDate.getMonth()];
     statisticsYearElement.textContent = statisticsDate.getFullYear();
@@ -131,43 +131,43 @@ function calculateCategoryStatistics() {
   // Get current user ID
   const currentUserId = firebase.auth().currentUser?.uid;
   if (!currentUserId) return;
-  
+
   // Use the statistics date for calculations
-  
+
   // Get transactions for the current month and year
   const transactionsRef = firebase.database().ref(`users/${currentUserId}/transactions`);
-  
+
   transactionsRef.once("value", snapshot => {
     const data = snapshot.val();
     if (!data) {
       showNoDataMessage();
       return;
     }
-    
+
     // Process transactions
     const categoryTotals = {};
     let totalAmount = 0;
-    
+
     // Get current month and year as numbers for filtering
     const options = { timeZone: TIMEZONE, month: "numeric", year: "numeric" };
     const dateStr = statisticsDate.toLocaleDateString(LOCALE, options);
     const [currentMonth, currentYear] = dateStr.split("/").map(Number);
-    
+
     Object.keys(data).forEach(key => {
       const transaction = { id: key, ...data[key] };
-      
+
       // Use displayDate if available, otherwise use date
       let dateToFilter = transaction.displayDate ? new Date(transaction.displayDate) : new Date(transaction.date);
-      
+
       const options = { timeZone: TIMEZONE, month: "numeric", year: "numeric" };
       const transactionDateStr = dateToFilter.toLocaleDateString(LOCALE, options);
       const [month, year] = transactionDateStr.split("/").map(Number);
-      
+
       // Only include transactions from the current month/year
       if (month === currentMonth && year === currentYear) {
         const category = transaction.category;
         const amount = transaction.amount;
-        
+
         // Add to category total
         if (!categoryTotals[category]) {
           categoryTotals[category] = 0;
@@ -176,16 +176,16 @@ function calculateCategoryStatistics() {
         totalAmount += amount;
       }
     });
-    
+
     // If no transactions found for the current month
     if (totalAmount === 0) {
       showNoDataMessage();
       return;
     }
-    
+
     // Generate chart data
     generateCategoryChart(categoryTotals, totalAmount);
-    
+
     // Generate statistics table
     generateStatisticsTable(categoryTotals, totalAmount);
   });
@@ -195,21 +195,21 @@ function calculateCategoryStatistics() {
 function showNoDataMessage() {
   const chartCanvas = document.getElementById('categoryChart');
   const ctx = chartCanvas.getContext('2d');
-  
+
   // Clear any existing chart
   if (statisticsChart) {
     statisticsChart.destroy();
   }
-  
+
   // Clear the canvas
   ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-  
+
   // Display no data message
   ctx.font = '16px "PT Sans Narrow"';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#666';
   ctx.fillText('Nenhuma transação encontrada para o mês atual', chartCanvas.width / 2, chartCanvas.height / 2);
-  
+
   // Clear the statistics table
   document.getElementById('statisticsTableBody').innerHTML = '';
 }
@@ -217,27 +217,27 @@ function showNoDataMessage() {
 // Generate pie chart for category distribution
 function generateCategoryChart(categoryTotals, totalAmount) {
   const chartCanvas = document.getElementById('categoryChart');
-  
+
   // Clear any existing chart
   if (statisticsChart) {
     statisticsChart.destroy();
   }
-  
+
   // Prepare data for chart
   const categories = Object.keys(categoryTotals);
   const amounts = categories.map(category => categoryTotals[category]);
   const percentages = amounts.map(amount => ((amount / totalAmount) * 100).toFixed(1));
-  
+
   // Translate category names
   const translatedCategories = categories.map(category => getCategoryTranslation(category));
-  
+
   // Define colors for chart
   const backgroundColors = [
     '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16',
     '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9',
     '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF'
   ];
-  
+
   // Create chart
   const ctx = chartCanvas.getContext('2d');
   statisticsChart = new Chart(ctx, {
@@ -255,7 +255,7 @@ function generateCategoryChart(categoryTotals, totalAmount) {
       maintainAspectRatio: false,
       tooltips: {
         callbacks: {
-          label: function(tooltipItem, data) {
+          label: function (tooltipItem, data) {
             const dataset = data.datasets[tooltipItem.datasetIndex];
             const currentValue = dataset.data[tooltipItem.index];
             const percentage = percentages[tooltipItem.index];
@@ -274,7 +274,7 @@ function generateCategoryChart(categoryTotals, totalAmount) {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               const label = context.label || '';
               const value = context.raw || 0;
               const percentage = ((value / totalAmount) * 100).toFixed(1);
@@ -291,27 +291,27 @@ function generateCategoryChart(categoryTotals, totalAmount) {
 function generateStatisticsTable(categoryTotals, totalAmount) {
   const tableBody = document.getElementById('statisticsTableBody');
   tableBody.innerHTML = '';
-  
+
   // Sort categories by amount (descending)
   const sortedCategories = Object.keys(categoryTotals).sort((a, b) => {
     return categoryTotals[b] - categoryTotals[a];
   });
-  
+
   // Create table rows
   sortedCategories.forEach(category => {
     const amount = categoryTotals[category];
     const percentage = ((amount / totalAmount) * 100).toFixed(1);
-    
+
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${getCategoryTranslation(category)}</td>
       <td>${formatCurrency(amount)}</td>
       <td>${percentage}%</td>
     `;
-    
+
     tableBody.appendChild(row);
   });
-  
+
   // Add total row
   const totalRow = document.createElement('tr');
   totalRow.classList.add('fw-bold');
@@ -320,6 +320,6 @@ function generateStatisticsTable(categoryTotals, totalAmount) {
     <td>${formatCurrency(totalAmount)}</td>
     <td>100%</td>
   `;
-  
+
   tableBody.appendChild(totalRow);
 }
