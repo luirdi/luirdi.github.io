@@ -747,3 +747,70 @@ function formatNumberWithoutCurrency(value) {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+// Sort state variables
+let currentSortColumn = null;
+let isAscending = true;
+
+// Function to sort transactions
+function sortTransactions(column) {
+  if (currentSortColumn === column) {
+    isAscending = !isAscending;
+  } else {
+    currentSortColumn = column;
+    isAscending = true;
+  }
+
+  transactions.sort((a, b) => {
+    let valueA, valueB;
+
+    switch (column) {
+      case 'date':
+        valueA = new Date(a.date);
+        valueB = new Date(b.date);
+        break;
+      case 'description':
+        valueA = a.description.toLowerCase();
+        valueB = b.description.toLowerCase();
+        break;
+      case 'category':
+        valueA = getCategoryTranslation(a.category).toLowerCase();
+        valueB = getCategoryTranslation(b.category).toLowerCase();
+        break;
+      case 'amount':
+        valueA = a.amount;
+        valueB = b.amount;
+        break;
+      default:
+        return 0;
+    }
+
+    if (valueA < valueB) return isAscending ? -1 : 1;
+    if (valueA > valueB) return isAscending ? 1 : -1;
+    return 0;
+  });
+
+  renderTransactions();
+}
+
+// Function to add sort event listeners to table headers
+function addSortEventListeners() {
+  const tables = document.querySelectorAll('.table');
+  tables.forEach(table => {
+    const headers = table.querySelectorAll('th');
+    headers.forEach((header, index) => {
+      if (index < 4) { // Skip the 'Pago' column
+        header.style.cursor = 'pointer';
+        header.addEventListener('dblclick', () => {
+          const column = ['date', 'description', 'category', 'amount'][index];
+          sortTransactions(column);
+        });
+      }
+    });
+  });
+}
+
+// Add event listeners after DOM content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  addSortEventListeners();
+});
