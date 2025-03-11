@@ -87,7 +87,7 @@ document.getElementById("type").addEventListener("change", function (e) {
     document.getElementById("installments").value = "1";
     document.getElementById("cardType").value = "titular";
     // Removed automatic checking of invoiceClosed
-  } else if (e.target.value === "other_payments") {
+  } else if (e.target.value === "conta_corrente") {
     creditCardFields.forEach((field) => (field.style.display = "none"));
     recurringPaymentFields.forEach((field) => (field.style.display = "block"));
   } else {
@@ -319,7 +319,7 @@ function addRegularTransaction(formData, transactionsRef) {
     isPaid: false, // Default payment status is false (not paid)
   };
 
-  if (formData.type === "other_payments") {
+  if (formData.type === "conta_corrente") {
     const recurringInstallments = parseInt(
       document.getElementById("recurringInstallments").value
     );
@@ -711,7 +711,7 @@ function updateFinancialSummary() {
       if (transaction.isPaid) {
         paidExpenses += transaction.amount;
       }
-    } else if (transaction.type === "other_payments") {
+    } else if (transaction.type === "conta_corrente") {
       otherPaymentsTotal += transaction.amount;
       if (transaction.isPaid) {
         paidExpenses += transaction.amount;
