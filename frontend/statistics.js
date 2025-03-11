@@ -189,9 +189,9 @@ function generateCategoryChart(categoryTotals, totalAmount) {
   
   // Define colors for chart
   const backgroundColors = [
-    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
-    '#6f42c1', '#fd7e14', '#20c9a6', '#5a5c69', '#858796',
-    '#5a5c69', '#2c9faf'
+    '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16',
+    '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9',
+    '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF'
   ];
   
   // Create chart

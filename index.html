@@ -151,23 +151,25 @@
 
                 <div class="col-md-6 col-lg-3">
                   <label for="category" class="form-label">Categoria</label>
-                  <select class="form-select" id="category" required>
-                    <option value="" disabled selected>Selecione</option>
-                    <option value="alimentacao">Alimentação</option>
-                    <option value="man_parking_fuel">Carro-Moto</option>
-                    <option value="utensilios_casa">Casa</option>
-                    <option value="cuidados_pessoais">Cuidados Pessoais</option>
-                    <option value="educacao_qualificacao">Educação</option>
-                    <option value="loan">Empréstimo</option>
-                    <option value="estorno_pagamento">Estorno/Pagamento</option>
-                    <option value="outros">Outros</option>
-                    <option value="presente">Presente</option>
-                    <option value="health">Saúde</option>
-                    <option value="servicos">Serviços Essenciais</option>
-                    <option value="servicos_not">Serviços</option>
-                    <option value="streaming_internet_tv">Streaming/Internet/TV</option>
-                    <option value="uber">Uber</option>
-                    <option value="vestuario">Vestuário</option>
+        <select class="form-select" id="category" required>
+        <option value="" disabled selected>Selecione</option>
+
+        <option value="alimentacao">Alimentação</option>
+        <option value="man_parking_fuel">Carro-Moto</option>
+        <option value="utensilios_casa">Casa</option>
+        <option value="cuidados_pessoais">Cuidados Pessoais</option>
+        <option value="educacao_qualificacao">Educação</option>
+        <option value="loan">Empréstimo</option>
+        <option value="estorno_pagamento">Estorno/Pagamento</option>
+        <option value="outros">Outros</option>
+        <option value="presente">Presente</option>
+        <option value="health">Saúde</option>
+        <option value="servicos">Serviços Essenciais</option>
+        <option value="servicos_not">Serviços</option>
+        <option value="streaming_internet_tv">Streaming/Internet/TV</option>
+        <option value="uber">Uber</option>
+        <option value="vestuario">Vestuário</option>
+        
                   </select>
                   <div class="invalid-feedback">Por favor, selecione uma categoria.</div>
                 </div>
@@ -256,7 +258,7 @@
                     <tr>
                       <th scope="col">Data</th>
                       <th scope="col">Descrição</th>
-                      <th scope="col">Categoria</th>
+                      <th scope="col">Categoria</th>  
                       <th scope="col">Valor</th>
                       <th scope="col" class="text-center">Pago</th>
                     </tr>
@@ -270,9 +272,16 @@
         <div class="col-lg-6">
           <div class="card h-100">
             <div class="card-body">
-              <h5 class="card-title d-flex align-items-center">
+              <h5 class="card-title d-flex align-items-center justify-content-between">
                 <span class="me-2">Cartão de Crédito</span>
+                <div class="btn-group" role="group" aria-label="Filtro de cartões">
+                  <button type="button" class="btn btn-sm btn-outline-danger active" id="cardFilterAll">Todos</button>
+                  <button type="button" class="btn btn-sm btn-outline-success" id="cardFilterTitular">Titular</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" id="cardFilterAdicional1">Adicional #1</button>
+                  <button type="button" class="btn btn-sm btn-outline-primary" id="cardFilterAdicional2">Adicional #2</button>
+                </div>
               </h5>
+              <div id="cardTypeSubtotal" class="mb-2 text-end fw-bold"></div>
               <div class="table-responsive">
                 <table class="table table-hover">
                   <thead>
@@ -309,6 +318,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Delete Confirmation Script -->
+  <script src="/frontend/deleteConfirmation.js"></script>
   <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth-compat.js"></script>
@@ -316,6 +327,7 @@
   <!-- Custom Scripts -->
   <script src="/frontend/app.js"></script>
   <script src="/frontend/statistics.js"></script>
+  <script src="/frontend/cardFilter.js"></script>
 </body>
 
 </html>

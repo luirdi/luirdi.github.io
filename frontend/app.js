@@ -501,21 +501,10 @@ function deleteSelectedTransaction(event) {
 }
 
 // Legacy delete transaction function (kept for compatibility)
+// The deleteTransaction function is now implemented in deleteConfirmation.js
+// This is just a reference to maintain compatibility with existing code
 function deleteTransaction(id) {
-  if (!currentUserId) {
-    alert("Por favor, faça login para excluir transações.");
-    return;
-  }
-
-  if (confirm("Tem certeza que deseja excluir esta transação?")) {
-    const transactionRef = database.ref(
-      `users/${currentUserId}/transactions/${id}`
-    );
-    transactionRef.remove().catch((error) => {
-      alert("Erro ao excluir transação: " + error.message);
-      console.error("Failed to delete transaction:", error);
-    });
-  }
+  showDeleteConfirmation(id);
 }
 
 // Render transactions list
@@ -734,6 +723,12 @@ function updateFinancialSummary() {
   totalPaidExpenses.textContent = formatCurrency(paidExpenses);
   totalCreditCard.textContent = formatCurrency(creditCardTotal);
   totalOtherExpenses.textContent = formatCurrency(otherPaymentsTotal);
+  
+  // Initialize card filters after updating the financial summary
+  // This ensures the filters work properly after changing months
+  setTimeout(() => {
+    initCardFilters();
+  }, 0);
 }
 
 // Format currency
