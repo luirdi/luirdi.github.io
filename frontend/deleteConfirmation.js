@@ -8,7 +8,7 @@ function createDeleteConfirmationModal() {
   }
 
   const modalHTML = `
-    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true" style="z-index: 1060;">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -21,7 +21,7 @@ function createDeleteConfirmationModal() {
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="button" class="btn btn-danger" id="deleteCurrentOnlyBtn">Excluir</button>
-            <button type="button" class="btn btn-outline-danger" id="deleteAllRelatedBtn">Excluir TUDO!</button>
+            <button type="button" class="btn btn-warning" id="deleteAllRelatedBtn">🗑️ tudo</button>
           </div>
         </div>
       </div>
@@ -31,6 +31,14 @@ function createDeleteConfirmationModal() {
   const modalContainer = document.createElement('div');
   modalContainer.innerHTML = modalHTML;
   document.body.appendChild(modalContainer.firstElementChild);
+  
+  // Ensure the backdrop has a lower z-index than the modal
+  const backdropStyle = document.createElement('style');
+  backdropStyle.innerHTML = `
+    .modal-backdrop.show:nth-of-type(1) { z-index: 1050 !important; }
+    .modal-backdrop.show:nth-of-type(2) { z-index: 1055 !important; }
+  `;
+  document.head.appendChild(backdropStyle);
 
   // Initialize the modal
   const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
@@ -154,7 +162,7 @@ function showDeleteConfirmation(transactionId) {
     const seriesType = transaction.isInstallment ? "parcela" : "pagamento recorrente";
     
     confirmMessage = `Esta transação é parte de um ${seriesType}. ` +
-                    `Existem mais ${remainingCount} lançamentos futuros relacionados.`;
+                    `Existem mais ${remainingCount} lançamento(s) futuro(s) relacionado(s).`;
     
     // Show both delete buttons
     document.getElementById('deleteCurrentOnlyBtn').style.display = 'block';
