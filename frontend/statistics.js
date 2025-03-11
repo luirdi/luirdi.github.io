@@ -4,6 +4,9 @@
 let statisticsModal;
 let statisticsChart;
 
+// Statistics date state
+let statisticsDate = new Date();
+
 // Initialize statistics functionality
 document.addEventListener('DOMContentLoaded', () => {
   // Create the statistics modal if it doesn't exist
@@ -20,6 +23,26 @@ function createStatisticsModal() {
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="statisticsModalLabel">Estatísticas por Categoria</h5>
+            <div class="date-navigation d-flex align-items-center ms-auto me-3">
+              <div class="month-selector me-3 text-center">
+                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsMonth(1)" title="Próximo mês">
+                  <i class="bi bi-chevron-up" style="font-size: 1.25rem;"></i>
+                </button>
+                <div id="statisticsCurrentMonth" class="current-date fw-bold my-1">Janeiro</div>
+                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsMonth(-1)" title="Mês anterior">
+                  <i class="bi bi-chevron-down" style="font-size: 1.25rem;"></i>
+                </button>
+              </div>
+              <div class="year-selector text-center">
+                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsYear(1)" title="Próximo ano">
+                  <i class="bi bi-chevron-up" style="font-size: 1.25rem;"></i>
+                </button>
+                <div id="statisticsCurrentYear" class="current-date fw-bold my-1">2025</div>
+                <button class="btn btn-link p-0 d-flex justify-content-center" onclick="changeStatisticsYear(-1)" title="Ano anterior">
+                  <i class="bi bi-chevron-down" style="font-size: 1.25rem;"></i>
+                </button>
+              </div>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
           </div>
           <div class="modal-body">
@@ -69,9 +92,38 @@ function showStatistics() {
     statisticsModal = new bootstrap.Modal(document.getElementById('statisticsModal'));
   }
   
+  // Sync statistics date with main app date
+  statisticsDate = new Date(currentDate);
+  updateStatisticsDate();
+  
   // Calculate statistics and show modal
   calculateCategoryStatistics();
   statisticsModal.show();
+}
+
+// Update the statistics date display
+function updateStatisticsDate() {
+  const statisticsMonthElement = document.getElementById('statisticsCurrentMonth');
+  const statisticsYearElement = document.getElementById('statisticsCurrentYear');
+  
+  if (statisticsMonthElement && statisticsYearElement) {
+    statisticsMonthElement.textContent = MONTHS[statisticsDate.getMonth()];
+    statisticsYearElement.textContent = statisticsDate.getFullYear();
+  }
+}
+
+// Change month in statistics view
+function changeStatisticsMonth(delta) {
+  statisticsDate.setMonth(statisticsDate.getMonth() + delta);
+  updateStatisticsDate();
+  calculateCategoryStatistics();
+}
+
+// Change year in statistics view
+function changeStatisticsYear(delta) {
+  statisticsDate.setFullYear(statisticsDate.getFullYear() + delta);
+  updateStatisticsDate();
+  calculateCategoryStatistics();
 }
 
 // Calculate statistics by category
@@ -80,17 +132,7 @@ function calculateCategoryStatistics() {
   const currentUserId = firebase.auth().currentUser?.uid;
   if (!currentUserId) return;
   
-  // Get current month and year
-  const currentDate = new Date();
-  const currentMonthElement = document.getElementById("currentMonth");
-  const currentYearElement = document.getElementById("currentYear");
-  
-  const monthIndex = MONTHS.indexOf(currentMonthElement.textContent);
-  const year = parseInt(currentYearElement.textContent);
-  
-  // Set the date to the selected month and year
-  currentDate.setMonth(monthIndex);
-  currentDate.setFullYear(year);
+  // Use the statistics date for calculations
   
   // Get transactions for the current month and year
   const transactionsRef = firebase.database().ref(`users/${currentUserId}/transactions`);
@@ -107,7 +149,9 @@ function calculateCategoryStatistics() {
     let totalAmount = 0;
     
     // Get current month and year as numbers for filtering
-    const [currentMonth, currentYear] = getCurrentMonthYear();
+    const options = { timeZone: TIMEZONE, month: "numeric", year: "numeric" };
+    const dateStr = statisticsDate.toLocaleDateString(LOCALE, options);
+    const [currentMonth, currentYear] = dateStr.split("/").map(Number);
     
     Object.keys(data).forEach(key => {
       const transaction = { id: key, ...data[key] };
