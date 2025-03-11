@@ -21,7 +21,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add cursor pointer style to indicate it's clickable
     checkingAccountElement.style.cursor = 'pointer';
   }
+  
+  // Set up listeners for transaction changes
+  setupTransactionChangeListeners();
 });
+
+// Function to set up listeners for transaction changes
+function setupTransactionChangeListeners() {
+  // Listen for changes to the transactions array
+  if (typeof database !== 'undefined' && typeof firebase !== 'undefined') {
+    // When auth state changes and user is logged in
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const transactionsRef = database.ref(`users/${user.uid}/transactions`);
+        
+        // Listen for any changes to transactions
+        transactionsRef.on('child_added', updateModalData);
+        transactionsRef.on('child_changed', updateModalData);
+        transactionsRef.on('child_removed', updateModalData);
+      }
+    });
+  }
+}
+
+// Function to update all modal data when transactions change
+function updateModalData() {
+  // Update both modals if they exist
+  const creditCardModal = document.getElementById('creditCardModal');
+  const checkingAccountModal = document.getElementById('checkingAccountModal');
+  
+  if (creditCardModal) {
+    updateCreditCardModalData();
+  }
+  
+  if (checkingAccountModal) {
+    updateCheckingAccountModalData();
+  }
+}
 
 // Function to show the Credit Card modal
 function showCreditCardModal() {
@@ -32,6 +68,8 @@ function showCreditCardModal() {
   if (!modal) {
     createCreditCardModal();
   } else {
+    // Update modal data before showing it
+    updateCreditCardModalData();
     // Show the modal using Bootstrap's modal method
     const modalInstance = new bootstrap.Modal(modal);
     modalInstance.show();
@@ -47,6 +85,8 @@ function showCheckingAccountModal() {
   if (!modal) {
     createCheckingAccountModal();
   } else {
+    // Update modal data before showing it
+    updateCheckingAccountModalData();
     // Show the modal using Bootstrap's modal method
     const modalInstance = new bootstrap.Modal(modal);
     modalInstance.show();
@@ -185,14 +225,45 @@ function updateCreditCardModalData() {
     modalTotalElement.textContent = totalCreditCardElement.textContent;
   }
   
-  // You would typically fetch these values from your data source
-  // For now, we'll just use placeholder values or try to get them from the UI
+  // Calculate subtotals for each card type
+  let titularTotal = 0;
+  let adicional1Total = 0;
+  let adicional2Total = 0;
   
-  // Get card type subtotals if they exist in the UI
-  const cardTypeSubtotalElement = document.getElementById('cardTypeSubtotal');
-  if (cardTypeSubtotalElement) {
-    // This would depend on your app's structure and how you store this data
-    // For now, we'll leave the default values
+  // Make sure the global transactions array exists and is accessible
+  if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+    transactions.forEach((transaction) => {
+      if (transaction.type === "credit_card") {
+        switch(transaction.cardType) {
+          case "titular":
+            titularTotal += transaction.amount;
+            break;
+          case "adicional1":
+            adicional1Total += transaction.amount;
+            break;
+          case "adicional2":
+            adicional2Total += transaction.amount;
+            break;
+        }
+      }
+    });
+  }
+  
+  // Update the modal with card type subtotals
+  const titularElement = document.getElementById('modalCreditCardTitular');
+  const adicional1Element = document.getElementById('modalCreditCardAdicional1');
+  const adicional2Element = document.getElementById('modalCreditCardAdicional2');
+  
+  if (titularElement) {
+    titularElement.textContent = formatCurrency(titularTotal);
+  }
+  
+  if (adicional1Element) {
+    adicional1Element.textContent = formatCurrency(adicional1Total);
+  }
+  
+  if (adicional2Element) {
+    adicional2Element.textContent = formatCurrency(adicional2Total);
   }
 }
 
@@ -206,21 +277,40 @@ function updateCheckingAccountModalData() {
     modalTotalElement.textContent = totalCheckingAccountElement.textContent;
   }
   
-  // You would typically fetch these values from your data source
-  // For now, we'll just use placeholder values
+  // Calculate pending and paid transactions
+  let pendingCount = 0;
+  let paidCount = 0;
   
-  // Count transactions in the transactions list if possible
-  const transactionsList = document.getElementById('transactionsList');
-  if (transactionsList) {
-    const allTransactions = transactionsList.querySelectorAll('tr');
-    const paidTransactions = transactionsList.querySelectorAll('tr .text-success');
-    
-    const pendingElement = document.getElementById('modalCheckingAccountPending');
-    const paidElement = document.getElementById('modalCheckingAccountPaid');
-    
-    if (pendingElement && paidElement) {
-      pendingElement.textContent = allTransactions.length - paidTransactions.length;
-      paidElement.textContent = paidTransactions.length;
-    }
+  // Make sure the global transactions array exists and is accessible
+  if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+    transactions.forEach((transaction) => {
+      if (transaction.type === "conta_corrente") {
+        if (transaction.isPaid) {
+          paidCount++;
+        } else {
+          pendingCount++;
+        }
+      }
+    });
   }
+  
+  // Update the modal with transaction counts
+  const pendingElement = document.getElementById('modalCheckingAccountPending');
+  const paidElement = document.getElementById('modalCheckingAccountPaid');
+  
+  if (pendingElement) {
+    pendingElement.textContent = pendingCount;
+  }
+  
+  if (paidElement) {
+    paidElement.textContent = paidCount;
+  }
+}
+
+// Helper function to format currency (copied from app.js)
+function formatCurrency(value) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
 }
