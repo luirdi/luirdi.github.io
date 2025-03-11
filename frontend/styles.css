@@ -8,7 +8,9 @@ body {
   margin: 0px;
   font-family: "PT Sans Narrow";
   color: #333;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
+  background-color: #f0f4f8;
+
 }
 
 html {
@@ -112,18 +114,25 @@ html {
   margin: 1.5rem 0;
 }
 
+.date-selector-container {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 50px;
+  padding: 0.5rem 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .month-selector,
 .year-selector {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin: 0 1rem;
 }
 
 .current-date {
-  margin: 0.5rem 0;
   font-weight: bold;
-  color: var(--bs-secondary);
+  color: var(--bs-primary);
+  padding: 0 0.2rem;
 }
 
 .summary-card {
@@ -135,6 +144,9 @@ html {
   background-color: #fff;
 }
 
+.month-selector.d-flex.align-items-center.me-3 {
+  margin-right: 0rem !important;
+}
 .summary-card.expenses {
   border-left-color: var(--bs-danger);
 }
