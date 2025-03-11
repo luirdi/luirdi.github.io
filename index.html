@@ -56,6 +56,7 @@
       <div class="d-flex align-items-center">
         <h1 class="fw-bold text-primary mb-0 pt-sans-narrow-regular pt-sans-narrow-bold">FinPlanner_v2</h1>
       </div>
+      
       <div class="date-navigation d-flex align-items-center">
         <div class="date-selector-container d-flex align-items-center bg-light rounded-pill px-3 py-2 shadow-sm">
           <!-- Month Selector -->
@@ -267,8 +268,7 @@
   <!-- Statistics Button -->
   <div class="text-center mb-3">
     <button onclick="showStatistics()" class="btn btn-primary mt-3">
-      <i class="bi bi-bar-chart-fill me-2"></i>Estatísticas por Categoria
-    </button>
+      <i class="bi bi-bar-chart-fill me-2"></i>Estatísticas</button>
   </div>
 
   <button onclick="firebase.auth().signOut().then(() => window.location.href = '/login.html')" class="btn btn-danger mt-4">Sair</button>
