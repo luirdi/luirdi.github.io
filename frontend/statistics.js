@@ -183,7 +183,7 @@ function initializeYearDropdown() {
   const currentYear = new Date().getFullYear();
 
   // Add options for last 5 years and next 5 years
-  for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+  for (let year = currentYear - 1; year <= currentYear + 5; year++) {
     const option = document.createElement('li');
     const link = document.createElement('a');
     link.classList.add('dropdown-item');
