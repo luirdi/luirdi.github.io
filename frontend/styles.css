@@ -368,3 +368,7 @@ html {
 .table > tbody > tr > .text-center {
   text-align: left !important;
 }
+
+.btn.btn-primary.dropdown-toggle {
+  padding:5px 10px !important;
+}
