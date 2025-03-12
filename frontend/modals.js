@@ -313,7 +313,7 @@ function createCheckingAccountModal() {
                         <th scope="col">Descrição</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Valor</th>
-                        <th scope="col text-center">Pago</th>
+                        <th scope="col">Pago</th>
                       </tr>
                     </thead>
                     <tbody id="modalTransactionsList" class="align-middle"></tbody>
