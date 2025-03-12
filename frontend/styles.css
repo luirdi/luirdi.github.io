@@ -352,3 +352,17 @@ html {
   --bs-table-color-state: var(--bs-table-hover-color);
   --bs-table-bg-state: inherit;
 } */
+
+.btn.btn-sm.btn-outline-secondary.rounded-circle.p-1.me-2 {
+  margin-left: 0px!important;
+  margin-right: 0px!important;
+}
+
+.btn.btn-sm.btn-outline-secondary.rounded-circle.p-1.ms-2 {
+  margin-left: 0px!important;
+  margin-right: 0px!important;
+}
+
+.col.text-center {
+  text-align: center !important;
+}

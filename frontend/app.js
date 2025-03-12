@@ -87,7 +87,7 @@ document.getElementById("type").addEventListener("change", function (e) {
     document.getElementById("installments").value = "1";
     document.getElementById("cardType").value = "titular";
     // Removed automatic checking of invoiceClosed
-  } else if (e.target.value === "conta_corrente") {
+  } else if (e.target.value === "other_") {
     creditCardFields.forEach((field) => (field.style.display = "none"));
     recurringPaymentFields.forEach((field) => (field.style.display = "block"));
   } else {
@@ -320,7 +320,7 @@ function addRegularTransaction(formData, transactionsRef) {
     isPaid: false, // Default payment status is false (not paid)
   };
 
-  if (formData.type === "conta_corrente") {
+  if (formData.type === "other_") {
     const recurringInstallments = parseInt(
       document.getElementById("recurringInstallments").value
     );
@@ -568,28 +568,47 @@ function createTransactionRow(transaction) {
   }
 
   // Add Bootstrap classes for better styling
-  row.innerHTML = `
-    <td data-id="${transaction.id}">${formattedDate}</td>
-    <td data-id="${
-      transaction.id
-    }" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
-    <td data-id="${transaction.id}">${getCategoryTranslation(
-    transaction.category
-  )}</td>
-    <td class="transaction-expense fw-medium" data-id="${
-      transaction.id
-    }" data-value="${transaction.amount}">
-        ${formattedAmount}
-    </td>
-    <td data-id="${transaction.id}" class="text-center">
-      <div class="form-check form-switch d-inline-block">
-        <input class="form-check-input payment-checkbox" type="checkbox" role="switch" id="payment-${
-          transaction.id
-        }" 
-          ${transaction.isPaid ? "checked" : ""} data-id="${transaction.id}">
-      </div>
-    </td>
-  `;
+  if (transaction.type === "credit_card") {
+    // For credit card transactions, don't include the payment checkbox column
+    row.innerHTML = `
+      <td data-id="${transaction.id}">${formattedDate}</td>
+      <td data-id="${
+        transaction.id
+      }" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
+      <td data-id="${transaction.id}">${getCategoryTranslation(
+      transaction.category
+    )}</td>
+      <td class="transaction-expense fw-medium" data-id="${
+        transaction.id
+      }" data-value="${transaction.amount}">
+          ${formattedAmount}
+      </td>
+    `;
+  } else {
+    // For regular transactions, include the payment checkbox column
+    row.innerHTML = `
+      <td data-id="${transaction.id}">${formattedDate}</td>
+      <td data-id="${
+        transaction.id
+      }" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
+      <td data-id="${transaction.id}">${getCategoryTranslation(
+      transaction.category
+    )}</td>
+      <td class="transaction-expense fw-medium" data-id="${
+        transaction.id
+      }" data-value="${transaction.amount}">
+          ${formattedAmount}
+      </td>
+      <td data-id="${transaction.id}" class="text-center">
+        <div class="form-check form-switch d-inline-block">
+          <input class="form-check-input payment-checkbox" type="checkbox" role="switch" id="payment-${
+            transaction.id
+          }" 
+            ${transaction.isPaid ? "checked" : ""} data-id="${transaction.id}">
+        </div>
+      </td>
+    `;
+  }
 
   // Add click event to select the row
   row.addEventListener("click", function (e) {
@@ -601,12 +620,14 @@ function createTransactionRow(transaction) {
     selectTransaction(transaction.id);
   });
 
-  // Add event listener for the payment checkbox
+  // Add event listener for the payment checkbox if it exists
   const checkbox = row.querySelector(".payment-checkbox");
-  checkbox.addEventListener("change", function (e) {
-    e.stopPropagation(); // Prevent row selection
-    updatePaymentStatus(transaction.id, this.checked);
-  });
+  if (checkbox) {
+    checkbox.addEventListener("change", function (e) {
+      e.stopPropagation(); // Prevent row selection
+      updatePaymentStatus(transaction.id, this.checked);
+    });
+  }
 
   return row;
 }
@@ -648,7 +669,7 @@ function updateFinancialSummary() {
       if (transaction.isPaid) {
         paidExpenses += transaction.amount;
       }
-    } else if (transaction.type === "conta_corrente") {
+    } else if (transaction.type === "other_") {
       otherPaymentsTotal += transaction.amount;
       if (transaction.isPaid) {
         paidExpenses += transaction.amount;

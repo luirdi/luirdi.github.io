@@ -199,7 +199,7 @@ function createCreditCardModal() {
                 <h6 class="card-subtitle mb-2 text-muted">Resumo do Cartão</h6>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <span>Fatura Atual:</span>
-                  <span class="fw-bold text-warning" id="modalCreditCardTotal">R$ 0,00</span>
+                  <span class="fw-bold text-danger" id="modalCreditCardTotal">R$ 0,00</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <span>Titular:</span>
@@ -235,7 +235,6 @@ function createCreditCardModal() {
                         <th scope="col">Descrição</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Valor</th>
-                        <th scope="col" class="text-center">Pago</th>
                       </tr>
                     </thead>
                     <tbody id="modalCreditCardTransactionsList" class="align-middle"></tbody>
@@ -281,17 +280,17 @@ function createCheckingAccountModal() {
         <div class="modal-content">
           <div class="modal-header bg-primary bg-opacity-10">
             <h5 class="modal-title" id="checkingAccountModalLabel">
-              <i class="bi bi-bank2 me-2 text-primary"></i>Detalhes da Conta Corrente
+              <i class="bi bi-bank2 me-2 text-primary"></i>Detalhes de Outros
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
           </div>
           <div class="modal-body">
             <div class="card mb-3">
               <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">Resumo da Conta</h6>
+                <h6 class="card-subtitle mb-2 text-muted">Resumo das despesas</h6>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <span>Saldo Atual:</span>
-                  <span class="fw-bold text-primary" id="modalCheckingAccountTotal">R$ 0,00</span>
+                  <span class="fw-bold text-danger" id="modalCheckingAccountTotal">R$ 0,00</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <span>Transações Pendentes:</span>
@@ -314,7 +313,7 @@ function createCheckingAccountModal() {
                         <th scope="col">Descrição</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Valor</th>
-                        <th scope="col" class="text-center">Pago</th>
+                        <th scope="col text-center">Pago</th>
                       </tr>
                     </thead>
                     <tbody id="modalTransactionsList" class="align-middle"></tbody>
