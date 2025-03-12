@@ -97,8 +97,10 @@ html {
 .btn-primary:hover {
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-bg);
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 255, 0.25);
+  /* transform: translateY(-3px); */
+  /* transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 255, 0.25); */
+
 }
 
 /* Custom form styles */

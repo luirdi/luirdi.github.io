@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!document.getElementById('statisticsModal')) {
     createStatisticsModal();
   }
+
+  // Initialize year and month dropdowns when DOM is loaded
+  initializeYearDropdown();
+  initializeMonthDropdown();
 });
 
 // Create the statistics modal
@@ -24,31 +28,25 @@ function createStatisticsModal() {
           <div class="modal-header">
             <h5 class="modal-title" id="statisticsModalLabel">Estatísticas por Categoria</h5>
             <div class="date-navigation d-flex align-items-center ms-auto me-3">
-              <div class="date-selector-container d-flex align-items-center bg-light rounded-pill px-3 py-2 shadow-sm">
-                <!-- Month Selector -->
-                <div class="month-selector d-flex align-items-center me-3">
-                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 me-2" onclick="changeStatisticsMonth(-1)" title="Mês anterior">
-                    <i class="bi bi-chevron-left"></i>
+              <div class="btn-group">
+                <!-- Month Dropdown -->
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="statisticsCurrentMonth">
+                    Janeiro
                   </button>
-                  <span id="statisticsCurrentMonth" class="current-date fw-bold text-primary">Janeiro</span>
-                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-2" onclick="changeStatisticsMonth(1)" title="Próximo mês">
-                    <i class="bi bi-chevron-right"></i>
-                  </button>
+                  <ul class="dropdown-menu" id="statisticsMonthDropdown">
+                    <!-- Month options will be populated dynamically -->
+                  </ul>
                 </div>
                 
-                <!-- Divider -->
-                <div class="vr mx-2"></div>
-                
-                <!-- Year Selector -->
-                <div class="year-selector d-flex align-items-center">
-                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 me-2" onclick="changeStatisticsYear(-1)" title="Ano anterior">
-                    <i class="bi bi-chevron-left"></i>
-                  </button>
-                  <span id="statisticsCurrentYear" class="current-date fw-bold text-primary">2025</span>
-                  <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-2" onclick="changeStatisticsYear(1)" title="Próximo ano">
-                    <i class="bi bi-chevron-right"></i>
-                  </button>
-                </div>
+                <!-- Year Dropdown -->
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span id="statisticsCurrentYear">2025</span>
+                  <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" id="statisticsYearDropdown">
+                  <!-- Year options will be populated dynamically -->
+                </ul>
               </div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -132,6 +130,73 @@ function changeStatisticsYear(delta) {
   statisticsDate.setFullYear(statisticsDate.getFullYear() + delta);
   updateStatisticsDate();
   calculateCategoryStatistics();
+}
+
+// Set specific year in statistics view
+function setStatisticsYear(year) {
+  statisticsDate.setFullYear(year);
+  updateStatisticsDate();
+  calculateCategoryStatistics();
+}
+
+// Set specific month in statistics view
+function setStatisticsMonth(monthIndex) {
+  statisticsDate.setMonth(monthIndex);
+  updateStatisticsDate();
+  calculateCategoryStatistics();
+}
+
+// Initialize month dropdown with options
+function initializeMonthDropdown() {
+  const dropdown = document.getElementById('statisticsMonthDropdown');
+  if (!dropdown) return;
+
+  // Clear existing options
+  dropdown.innerHTML = '';
+
+  // Add options for all 12 months
+  for (let i = 0; i < MONTHS.length; i++) {
+    const option = document.createElement('li');
+    const link = document.createElement('a');
+    link.classList.add('dropdown-item');
+    link.href = '#';
+    link.textContent = MONTHS[i];
+    link.onclick = function (e) {
+      e.preventDefault();
+      setStatisticsMonth(i);
+    };
+
+    option.appendChild(link);
+    dropdown.appendChild(option);
+  }
+}
+
+// Initialize year dropdown with options
+function initializeYearDropdown() {
+  const dropdown = document.getElementById('statisticsYearDropdown');
+  if (!dropdown) return;
+
+  // Clear existing options
+  dropdown.innerHTML = '';
+
+  // Get current year
+  const currentYear = new Date().getFullYear();
+
+  // Add options for last 5 years and next 5 years
+  for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+    const option = document.createElement('li');
+    const link = document.createElement('a');
+    link.classList.add('dropdown-item');
+    link.href = '#';
+    link.textContent = year;
+    link.onclick = function (e) {
+      e.preventDefault();
+      setStatisticsYear(year);
+    };
+
+    option.appendChild(link);
+    dropdown.appendChild(option);
+  }
 }
 
 // Calculate statistics by category
