@@ -639,7 +639,7 @@ function getCategoryTranslation(category) {
     man_parking_fuel: "Carro/Moto",
     cuidados_pessoais: "Cuidados Pessoais",
     educacao_qualificacao: "Educação",
-    loan: "Empréstimo",
+    loan: "Empréstimo/Financiamento",
     estorno_pagamento: "Estorno/Pagamento",
     health: "Saúde",
     outros: "Outros",
@@ -772,3 +772,45 @@ function addSortEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
   addSortEventListeners();
 });
+
+// Initialize date navigation dropdowns
+function initializeDateDropdowns() {
+  const monthDropdown = document.getElementById('monthDropdown');
+  const yearDropdown = document.getElementById('yearDropdown');
+
+  // Populate months
+  MONTHS.forEach((month, index) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.classList.add('dropdown-item');
+    a.href = '#';
+    a.textContent = month;
+    a.onclick = () => {
+      currentMonthElement.textContent = month;
+      currentDate.setMonth(index);
+      loadTransactions();
+    };
+    li.appendChild(a);
+    monthDropdown.appendChild(li);
+  });
+
+  // Populate years (current year ± 2 years)
+  const currentYear = new Date().getFullYear();
+  for (let year = currentYear - 1; year <= currentYear + 3; year++) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.classList.add('dropdown-item');
+    a.href = '#';
+    a.textContent = year;
+    a.onclick = () => {
+      currentYearElement.textContent = year;
+      currentDate.setFullYear(year);
+      loadTransactions();
+    };
+    li.appendChild(a);
+    yearDropdown.appendChild(li);
+  }
+}
+
+// Call initializeDateDropdowns after DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeDateDropdowns);

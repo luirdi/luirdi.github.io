@@ -55,6 +55,28 @@
       <div class="d-flex align-items-center">
         <h1 class="fw-bold text-primary mb-0 pt-sans-narrow-regular pt-sans-narrow-bold">FinPlanner_v2</h1>
       </div>
+      <div class="date-navigation d-flex align-items-center ms-auto">
+        <div class="btn-group">
+          <!-- Month Dropdown -->
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="currentMonth">
+              Janeiro
+            </button>
+            <ul class="dropdown-menu" id="monthDropdown">
+              <!-- Month options will be populated dynamically -->
+            </ul>
+          </div>
+          
+          <!-- Year Dropdown -->
+          <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="currentYear">2025</span>
+            <span class="visually-hidden">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="yearDropdown">
+            <!-- Year options will be populated dynamically -->
+          </ul>
+        </div>
+      </div>
           </div>
   </div>
 
@@ -140,7 +162,7 @@
         <option value="utensilios_casa">Casa</option>
         <option value="cuidados_pessoais">Cuidados Pessoais</option>
         <option value="educacao_qualificacao">Educação</option>
-        <option value="loan">Empréstimo</option>
+        <option value="loan">Empréstimo/Financiamento</option>
         <option value="estorno_pagamento">Estorno/Pagamento</option>
         <option value="outros">Outros</option>
         <option value="presente">Presente</option>
