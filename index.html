@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8" />
@@ -66,7 +67,7 @@
               <!-- Month options will be populated dynamically -->
             </ul>
           </div>
-          
+
           <!-- Year Dropdown -->
           <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
             <span id="currentYear">2025</span>
@@ -77,7 +78,7 @@
           </ul>
         </div>
       </div>
-          </div>
+    </div>
   </div>
 
   <div id="dashboardContainer" class="container mt-4">
@@ -154,35 +155,91 @@
 
                 <div class="col-md-6 col-lg-3">
                   <label for="category" class="form-label">Categoria</label>
-        <select class="form-select" id="category" required>
-        <option value="" disabled selected>Selecione</option>
+                  <select class="form-select" id="category" required>
+                    <option value="" disabled selected>Selecione</option>
 
-        <option value="alimentacao">Alimentação</option>
-        <option value="man_parking_fuel">Carro-Moto</option>
-        <option value="utensilios_casa">Casa</option>
-        <option value="cuidados_pessoais">Cuidados Pessoais</option>
-        <option value="educacao_qualificacao">Educação</option>
-        <option value="loan">Empréstimo/Financiamento</option>
-        <option value="estorno_pagamento">Estorno/Pagamento</option>
-        <option value="outros">Outros</option>
-        <option value="presente">Presente</option>
-        <option value="health">Saúde</option>
-        <option value="servicos">Serviços Essenciais</option>
-        <option value="servicos_not">Serviços</option>
-        <option value="streaming_internet_tv">Streaming/Internet/TV</option>
-        <option value="uber">Uber</option>
-        <option value="vestuario">Vestuário</option>
-        
+                    <option value="alimentacao">Alimentação</option>
+                    <option value="man_parking_fuel">Carro-Moto</option>
+                    <option value="utensilios_casa">Casa</option>
+                    <option value="cuidados_pessoais">Cuidados Pessoais</option>
+                    <option value="educacao_qualificacao">Educação</option>
+                    <option value="loan">Empréstimo/Financiamento</option>
+                    <option value="estorno_pagamento">Estorno/Pagamento</option>
+                    <option value="outros">Outros</option>
+                    <option value="presente">Presente</option>
+                    <option value="health">Saúde</option>
+                    <option value="servicos">Serviços Essenciais</option>
+                    <option value="servicos_not">Serviços</option>
+                    <option value="streaming_internet_tv">Streaming/Internet/TV</option>
+                    <option value="uber">Uber</option>
+                    <option value="vestuario">Vestuário</option>
+
                   </select>
                   <div class="invalid-feedback">Por favor, selecione uma categoria.</div>
                 </div>
                 <div class="col-md-6 col-lg-3">
                   <label for="type" class="form-label">Tipo</label>
                   <select class="form-select" id="type" required>
+                    
                     <option value="credit_card">Cartão de Crédito</option>
                     <option value="other_">Outros</option>
                   </select>
                   <div class="invalid-feedback">Por favor, selecione um tipo de pagamento.</div>
+                </div>
+                <div class="col-md-6 col-lg-3 credit-card-fields" style="display: none;">
+                  <label for="bankSelect" class="form-label">Banco</label>
+                  <select class="form-select" id="bankSelect">
+                    <option value="" disabled selected>Selecione o banco</option>
+                    <option value="banco_do_brasil">Banco do Brasil</option>
+                    <option value="bradesco">Bradesco</option>
+                    <option value="caixa">Caixa Econômica Federal</option>
+                    <option value="itau">Itaú</option>
+                    <option value="santander">Santander</option>
+                    <option value="nubank">Nubank</option>
+                    <option value="inter">Banco Inter</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
+                <div class="col-md-6 col-lg-3 credit-card-fields custom-card-name" style="display: none;">
+                  <label for="customCardName" class="form-label">Nome do Cartão</label>
+                  <input type="text" class="form-control" id="customCardName" placeholder="Digite o nome do cartão">
+                </div>
+                <div class="col-md-6 col-lg-3 credit-card-fields due-date-field" style="display: none;">
+                  <label for="cardDueDate" class="form-label">Vencimento</label>
+                  <select class="form-select" id="cardDueDate">
+                    <option value="" disabled selected>Dia do vencimento</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                  </select>
                 </div>
                 <div class="col-md-6 col-lg-3 credit-card-fields" style="display: none;">
                   <label for="cardType" class="form-label">Tipo de Cartão</label>
@@ -279,9 +336,12 @@
   <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-database-compat.js"></script>
   <!-- Custom Scripts -->
   <script src="/frontend/app.js"></script>
-  <script src="/frontend/statistics.js"></script>
+  <script src="/frontend/auth.js"></script>
   <script src="/frontend/cardFilter.js"></script>
+  <script src="/frontend/creditCardManager.js"></script>
+  <script src="/frontend/deleteConfirmation.js"></script>
   <script src="/frontend/modals.js"></script>
+  <script src="/frontend/statistics.js"></script>
 </body>
 
 </html>
