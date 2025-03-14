@@ -81,12 +81,16 @@ document.getElementById("type").addEventListener("change", function (e) {
   );
 
   if (e.target.value === "credit_card") {
-    creditCardFields.forEach((field) => (field.style.display = "block"));
+    // Ocultar os campos de cartão de crédito no formulário principal
+    creditCardFields.forEach((field) => (field.style.display = "none"));
     recurringPaymentFields.forEach((field) => (field.style.display = "none"));
-    // Set default values for credit card payments
-    document.getElementById("installments").value = "1";
-    document.getElementById("cardType").value = "titular";
-    // Removed automatic checking of invoiceClosed
+
+    // Abrir o modal de cartão de crédito
+    if (typeof createCreditCardFormModal === 'function') {
+      createCreditCardFormModal();
+    } else {
+      console.error('A função createCreditCardFormModal não está disponível');
+    }
   } else if (e.target.value === "other_") {
     creditCardFields.forEach((field) => (field.style.display = "none"));
     recurringPaymentFields.forEach((field) => (field.style.display = "block"));
@@ -163,7 +167,7 @@ function loadTransactions() {
     "value",
     (snapshot) => {
       transactions = [];
-      
+
       // Transaction lists are now in modals, no need to clear them here
       // They will be updated in updateModalData()
 
@@ -440,12 +444,12 @@ function updateDeleteButtons() {
   // Update modal delete buttons
   const modalRegularBtn = document.getElementById("deleteRegularTransactionBtn");
   const modalCreditBtn = document.getElementById("deleteCreditCardTransactionBtn");
-  
+
   if (modalRegularBtn) {
     modalRegularBtn.disabled = !hasRegularTransactions;
     modalRegularBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir';
   }
-  
+
   if (modalCreditBtn) {
     modalCreditBtn.disabled = !hasCreditCardTransactions;
     modalCreditBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir';
@@ -485,12 +489,12 @@ function deleteSelectedTransaction(event) {
   } else {
     // For multiple transactions, show a simple confirmation
     const confirmMessage = `Tem certeza que deseja excluir estas ${transactionsToDelete.length} transações?`;
-    
+
     if (confirm(confirmMessage)) {
       // Get the type of the first transaction (assuming all are the same type)
       const firstTransaction = transactions.find(t => t.id === transactionsToDelete[0]);
       const transactionType = firstTransaction ? firstTransaction.type : null;
-      
+
       // Use the performDelete function from deleteConfirmation.js
       performDelete(transactionsToDelete, transactionType);
     }
@@ -514,7 +518,7 @@ function renderTransactions() {
 
   // Update modal data to refresh the transaction lists in modals
   updateModalData();
-  
+
   // Update delete buttons to reflect current selections
   updateDeleteButtons();
 }
@@ -541,7 +545,7 @@ function createTransactionRow(transaction) {
 
   // Capitalize the description
   let displayDescription = capitalizeWords(transaction.description);
-  
+
   // Add card type identifier for additional cards
   if (transaction.type === "credit_card" && transaction.cardType) {
     if (transaction.cardType === "adicional1") {
@@ -550,7 +554,7 @@ function createTransactionRow(transaction) {
       displayDescription = `${displayDescription} #A2`;
     }
   }
-  
+
   if (transaction.isInstallment) {
     const baseDescription = displayDescription.split(" (")[0];
     // Only show installment information if there's more than 1 installment
@@ -573,14 +577,12 @@ function createTransactionRow(transaction) {
     // For credit card transactions, don't include the payment checkbox column
     row.innerHTML = `
       <td data-id="${transaction.id}">${formattedDate}</td>
-      <td data-id="${
-        transaction.id
+      <td data-id="${transaction.id
       }" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
       <td data-id="${transaction.id}">${getCategoryTranslation(
-      transaction.category
-    )}</td>
-      <td class="transaction-expense fw-medium" data-id="${
-        transaction.id
+        transaction.category
+      )}</td>
+      <td class="transaction-expense fw-medium" data-id="${transaction.id
       }" data-value="${transaction.amount}">
           ${formattedAmount}
       </td>
@@ -589,22 +591,19 @@ function createTransactionRow(transaction) {
     // For regular transactions, include the payment checkbox column
     row.innerHTML = `
       <td data-id="${transaction.id}">${formattedDate}</td>
-      <td data-id="${
-        transaction.id
+      <td data-id="${transaction.id
       }" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
       <td data-id="${transaction.id}">${getCategoryTranslation(
-      transaction.category
-    )}</td>
-      <td class="transaction-expense fw-medium" data-id="${
-        transaction.id
+        transaction.category
+      )}</td>
+      <td class="transaction-expense fw-medium" data-id="${transaction.id
       }" data-value="${transaction.amount}">
           ${formattedAmount}
       </td>
       <td data-id="${transaction.id}" class="text-center">
         <div class="form-check form-switch d-inline-block">
-          <input class="form-check-input payment-checkbox" type="checkbox" role="switch" id="payment-${
-            transaction.id
-          }" 
+          <input class="form-check-input payment-checkbox" type="checkbox" role="switch" id="payment-${transaction.id
+      }" 
             ${transaction.isPaid ? "checked" : ""} data-id="${transaction.id}">
         </div>
       </td>
@@ -682,7 +681,7 @@ function updateFinancialSummary() {
   totalPaidExpenses.textContent = formatCurrency(paidExpenses);
   totalCreditCard.textContent = formatCurrency(creditCardTotal);
   totalOtherExpenses.textContent = formatCurrency(otherPaymentsTotal);
-  
+
   // Initialize card filters after updating the financial summary
   // This ensures the filters work properly after changing months
   setTimeout(() => {
