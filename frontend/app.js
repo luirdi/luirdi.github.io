@@ -246,7 +246,8 @@ function validateTransactionForm(formData) {
     isNaN(formData.amount) ||
     formData.amount <= 0 ||
     !formData.date ||
-    !formData.category
+    !formData.category ||
+    !formData.type
   ) {
     alert("Por favor, preencha todos os campos corretamente.");
     return false;
