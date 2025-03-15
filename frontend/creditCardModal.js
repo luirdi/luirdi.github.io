@@ -23,13 +23,18 @@ function createCreditCardFormModal() {
           <div class="modal-body">
             <form id="creditCardFormModalForm">
               <div class="mb-3">
-                <label for="cardBank" class="form-label">Banco/Administradora</label>
+                <label for="cardBank" class="form-label">Banco</label>
                 <select class="form-select" id="cardBank">
                   <option value="" selected>Selecione uma opção</option>
-                        <option value="american_express">American Express</option>
-                        <option value="elo">Elo</option>                
-                        <option value="mastercard">Mastercard</option>
-                        <option value="visa">Visa</option>
+                        <option value="banco_do_brasil">BB</option>
+                        <option value="bradesco">Bradesco</option>
+                        <option value="btg_pactual">BTG Pactual</option>
+                        <option value="c6_bank">C6 Bank</option>
+                        <option value="caixa">CEF</option>
+                        <option value="banco_inter">Inter</option>
+                        <option value="itau">Itaú</option>
+                        <option value="nubank">Nubank</option>
+                        <option value="santander">Santander</option>
                         <option value="outro">Outro</option>
                 </select>
               </div>                       
