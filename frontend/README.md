@@ -15,7 +15,7 @@
 
 [luirdi.github.io](luirdi.github.io)
 
-:óculos:
+:sunglasses:
 :rocket:
 :star:
 :tophat:
