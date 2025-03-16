@@ -16,3 +16,6 @@
 [luirdi.github.io](luirdi.github.io)
 
 :lixeira:
+:rocket:
+:draft:
+:firework:
