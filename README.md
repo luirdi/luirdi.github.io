@@ -35,7 +35,7 @@ $ npm list -g --depth=0 (pacotes instalados na máquina)
 ├── vite@6.2.0
 └── yarn@1.22.22
 
-## Dicas CSS
+$$ Dica CSS $$
           padding: min (5em, 8%); //Ajusta o preenchimento da caixa de acordo com o tamanho da tela.
           font-size: clamp(1.8rem, calc (7vw + 1rem), 5rem); //Ajusta o tamanho da fonte da caixa de acordo com o tamanho da tela. **Tamanho mínimo, preferencial e máximo.**
 
