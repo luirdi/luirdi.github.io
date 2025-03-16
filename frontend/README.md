@@ -18,4 +18,4 @@
 :trash:
 :rocket:
 :star:
-:lightning:
+:tophat:
