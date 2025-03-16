@@ -15,7 +15,7 @@
 
 [luirdi.github.io](luirdi.github.io)
 
-:trash:
+:óculos:
 :rocket:
 :star:
 :tophat:
