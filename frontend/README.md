@@ -15,7 +15,7 @@
 
 [luirdi.github.io](luirdi.github.io)
 
-:lixeira:
+:trash:
 :rocket:
-:draft:
-:firework:
+:star:
+:lightning:
