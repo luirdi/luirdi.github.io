@@ -1,27 +1,27 @@
 // Modal functionality for credit card and checking account cards
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Get the card elements
   const creditCardElement = document.getElementById('cartaodecredito');
   const checkingAccountElement = document.getElementById('recorrente');
-  
+
   // Add click event listeners to the cards
   if (creditCardElement) {
-    creditCardElement.addEventListener('click', function() {
+    creditCardElement.addEventListener('click', function () {
       showCreditCardModal();
     });
     // Add cursor pointer style to indicate it's clickable
     creditCardElement.style.cursor = 'pointer';
   }
-  
+
   if (checkingAccountElement) {
-    checkingAccountElement.addEventListener('click', function() {
+    checkingAccountElement.addEventListener('click', function () {
       showCheckingAccountModal();
     });
     // Add cursor pointer style to indicate it's clickable
     checkingAccountElement.style.cursor = 'pointer';
   }
-  
+
   // Set up listeners for transaction changes
   setupTransactionChangeListeners();
 });
@@ -34,7 +34,7 @@ function setupTransactionChangeListeners() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         const transactionsRef = database.ref(`users/${user.uid}/transactions`);
-        
+
         // Listen for any changes to transactions
         transactionsRef.on('child_added', updateModalData);
         transactionsRef.on('child_changed', updateModalData);
@@ -49,11 +49,11 @@ function updateModalData() {
   // Update both modals if they exist
   const creditCardModal = document.getElementById('creditCardModal');
   const checkingAccountModal = document.getElementById('checkingAccountModal');
-  
+
   if (creditCardModal) {
     updateCreditCardModalData();
   }
-  
+
   if (checkingAccountModal) {
     updateCheckingAccountModalData();
   }
@@ -68,17 +68,17 @@ function filterModalCardTransactions(cardType) {
     document.getElementById('modalCardFilterAdicional1'),
     document.getElementById('modalCardFilterAdicional2')
   ];
-  
+
   // Make sure all buttons exist before proceeding
   if (buttons.some(btn => !btn)) {
     console.error('Modal card filter buttons not found in the DOM');
     return;
   }
-  
+
   buttons.forEach(btn => btn.classList.remove('active'));
-  
+
   // Set active class on selected button
-  switch(cardType) {
+  switch (cardType) {
     case 'all':
       document.getElementById('modalCardFilterAll').classList.add('active');
       break;
@@ -92,23 +92,23 @@ function filterModalCardTransactions(cardType) {
       document.getElementById('modalCardFilterAdicional2').classList.add('active');
       break;
   }
-  
+
   // Filter transactions
   const rows = document.querySelectorAll('#modalCreditCardTransactionsList tr');
   let subtotal = 0;
-  
+
   // Make sure the global transactions array exists and is accessible
   if (typeof transactions === 'undefined' || !Array.isArray(transactions)) {
     console.error('Transactions array is not available');
     return;
   }
-  
+
   rows.forEach(row => {
     const transactionId = row.dataset.id;
     const transaction = transactions.find(t => t.id === transactionId);
-    
+
     if (!transaction) return;
-    
+
     if (cardType === 'all' || transaction.cardType === cardType) {
       row.style.display = '';
       subtotal += transaction.amount;
@@ -116,7 +116,7 @@ function filterModalCardTransactions(cardType) {
       row.style.display = 'none';
     }
   });
-  
+
   // Update subtotal display
   updateModalCardSubtotal(subtotal, cardType);
 }
@@ -125,10 +125,10 @@ function filterModalCardTransactions(cardType) {
 function updateModalCardSubtotal(amount, cardType) {
   const subtotalElement = document.getElementById('modalCardTypeSubtotal');
   if (!subtotalElement) return;
-  
+
   let cardTypeLabel = '';
-  
-  switch(cardType) {
+
+  switch (cardType) {
     case 'all':
       cardTypeLabel = 'Todos os cartões';
       break;
@@ -142,7 +142,7 @@ function updateModalCardSubtotal(amount, cardType) {
       cardTypeLabel = 'Cartão Adicional #2';
       break;
   }
-  
+
   subtotalElement.textContent = `${cardTypeLabel}: ${formatCurrency(amount)}`;
 }
 
@@ -150,7 +150,7 @@ function updateModalCardSubtotal(amount, cardType) {
 function showCreditCardModal() {
   // Get the modal element
   const modal = document.getElementById('creditCardModal');
-  
+
   // Create a new Bootstrap modal instance if it doesn't exist
   if (!modal) {
     createCreditCardModal();
@@ -167,7 +167,7 @@ function showCreditCardModal() {
 function showCheckingAccountModal() {
   // Get the modal element
   const modal = document.getElementById('checkingAccountModal');
-  
+
   // Create a new Bootstrap modal instance if it doesn't exist
   if (!modal) {
     createCheckingAccountModal();
@@ -232,6 +232,7 @@ function createCreditCardModal() {
                     <thead>
                       <tr>
                         <th scope="col">Data</th>
+                        <th scope="col">Banco</th>
                         <th scope="col">Descrição</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Valor</th>
@@ -251,23 +252,23 @@ function createCreditCardModal() {
       </div>
     </div>
   `;
-  
+
   // Append modal to body
   document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
+
   // Show the modal
   const modal = document.getElementById('creditCardModal');
   const modalInstance = new bootstrap.Modal(modal);
-  
+
   // Set up filter buttons
   document.getElementById('modalCardFilterAll').addEventListener('click', () => filterModalCardTransactions('all'));
   document.getElementById('modalCardFilterTitular').addEventListener('click', () => filterModalCardTransactions('titular'));
   document.getElementById('modalCardFilterAdicional1').addEventListener('click', () => filterModalCardTransactions('adicional1'));
   document.getElementById('modalCardFilterAdicional2').addEventListener('click', () => filterModalCardTransactions('adicional2'));
-  
+
   // Update modal data
   updateCreditCardModalData();
-  
+
   modalInstance.show();
 }
 
@@ -330,17 +331,17 @@ function createCheckingAccountModal() {
       </div>
     </div>
   `;
-  
+
   // Append modal to body
   document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
+
   // Show the modal
   const modal = document.getElementById('checkingAccountModal');
   const modalInstance = new bootstrap.Modal(modal);
-  
+
   // Update modal data
   updateCheckingAccountModalData();
-  
+
   modalInstance.show();
 }
 
@@ -349,34 +350,34 @@ function updateCreditCardModalData() {
   // Get the total credit card amount from the main UI
   const totalCreditCardElement = document.getElementById('totalCreditCard');
   const modalTotalElement = document.getElementById('modalCreditCardTotal');
-  
+
   if (totalCreditCardElement && modalTotalElement) {
     modalTotalElement.textContent = totalCreditCardElement.textContent;
   }
-  
+
   // Calculate subtotals for each card type
   let titularTotal = 0;
   let adicional1Total = 0;
   let adicional2Total = 0;
-  
+
   // Make sure the global transactions array exists and is accessible
   if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
     // Clear the modal transactions list
     const modalCreditCardTransactionsList = document.getElementById('modalCreditCardTransactionsList');
     if (modalCreditCardTransactionsList) {
       modalCreditCardTransactionsList.innerHTML = '';
-      
+
       // Filter and render credit card transactions
       const creditCardTransactions = transactions.filter(t => t.type === 'credit_card');
-      
+
       // Sort transactions by date (newest first)
       creditCardTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-      
+
       // Render each transaction in the modal
       creditCardTransactions.forEach(transaction => {
         if (transaction.type === "credit_card") {
           // Add to card type totals
-          switch(transaction.cardType) {
+          switch (transaction.cardType) {
             case "titular":
               titularTotal += transaction.amount;
               break;
@@ -387,47 +388,47 @@ function updateCreditCardModalData() {
               adicional2Total += transaction.amount;
               break;
           }
-          
+
           // Create transaction row
           const row = createTransactionRow(transaction);
           modalCreditCardTransactionsList.appendChild(row);
         }
       });
-      
+
       // Add delete button for credit card transactions
       const modalCreditCardDeleteBtnContainer = document.getElementById('modalCreditCardDeleteBtnContainer');
       if (modalCreditCardDeleteBtnContainer) {
         modalCreditCardDeleteBtnContainer.innerHTML = '';
-        
+
         const creditCardDeleteBtn = document.createElement('button');
         creditCardDeleteBtn.id = 'deleteCreditCardTransactionBtn';
         creditCardDeleteBtn.className = 'btn btn-danger mt-3 d-flex align-items-center mx-auto';
         creditCardDeleteBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir';
         creditCardDeleteBtn.disabled = true;
-        creditCardDeleteBtn.addEventListener('click', function(event) {
+        creditCardDeleteBtn.addEventListener('click', function (event) {
           deleteSelectedTransaction(event);
         });
         modalCreditCardDeleteBtnContainer.appendChild(creditCardDeleteBtn);
       }
-      
+
       // Apply current filter
       filterModalCardTransactions('all');
     }
   }
-  
+
   // Update the modal with card type subtotals
   const titularElement = document.getElementById('modalCreditCardTitular');
   const adicional1Element = document.getElementById('modalCreditCardAdicional1');
   const adicional2Element = document.getElementById('modalCreditCardAdicional2');
-  
+
   if (titularElement) {
     titularElement.textContent = formatCurrency(titularTotal);
   }
-  
+
   if (adicional1Element) {
     adicional1Element.textContent = formatCurrency(adicional1Total);
   }
-  
+
   if (adicional2Element) {
     adicional2Element.textContent = formatCurrency(adicional2Total);
   }
@@ -438,28 +439,28 @@ function updateCheckingAccountModalData() {
   // Get the total checking account amount from the main UI
   const totalCheckingAccountElement = document.getElementById('totalOtherExpenses');
   const modalTotalElement = document.getElementById('modalCheckingAccountTotal');
-  
+
   if (totalCheckingAccountElement && modalTotalElement) {
     modalTotalElement.textContent = totalCheckingAccountElement.textContent;
   }
-  
+
   // Calculate pending and paid transactions
   let pendingCount = 0;
   let paidCount = 0;
-  
+
   // Make sure the global transactions array exists and is accessible
   if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
     // Clear the modal transactions list
     const modalTransactionsList = document.getElementById('modalTransactionsList');
     if (modalTransactionsList) {
       modalTransactionsList.innerHTML = '';
-      
+
       // Filter and render checking account transactions
       const checkingAccountTransactions = transactions.filter(t => t.type !== 'credit_card');
-      
+
       // Sort transactions by date (newest first)
       checkingAccountTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-      
+
       // Render each transaction in the modal
       checkingAccountTransactions.forEach(transaction => {
         if (transaction.type !== 'credit_card') {
@@ -469,39 +470,39 @@ function updateCheckingAccountModalData() {
           } else {
             pendingCount++;
           }
-          
+
           // Create transaction row
           const row = createTransactionRow(transaction);
           modalTransactionsList.appendChild(row);
         }
       });
-      
+
       // Add delete button for regular transactions
       const modalRegularDeleteBtnContainer = document.getElementById('modalRegularDeleteBtnContainer');
       if (modalRegularDeleteBtnContainer) {
         modalRegularDeleteBtnContainer.innerHTML = '';
-        
+
         const regularDeleteBtn = document.createElement('button');
         regularDeleteBtn.id = 'deleteRegularTransactionBtn';
         regularDeleteBtn.className = 'btn btn-danger mt-3 d-flex align-items-center mx-auto';
         regularDeleteBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Excluir';
         regularDeleteBtn.disabled = true;
-        regularDeleteBtn.addEventListener('click', function(event) {
+        regularDeleteBtn.addEventListener('click', function (event) {
           deleteSelectedTransaction(event);
         });
         modalRegularDeleteBtnContainer.appendChild(regularDeleteBtn);
       }
     }
   }
-  
+
   // Update the modal with transaction counts
   const pendingElement = document.getElementById('modalCheckingAccountPending');
   const paidElement = document.getElementById('modalCheckingAccountPaid');
-  
+
   if (pendingElement) {
     pendingElement.textContent = pendingCount;
   }
-  
+
   if (paidElement) {
     paidElement.textContent = paidCount;
   }

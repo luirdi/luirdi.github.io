@@ -266,6 +266,17 @@ function addCreditCardTransaction(formData, transactionsRef) {
   const cardType = document.getElementById("cardType").value;
   const installmentAmount = formData.amount / installments;
 
+  // Get bank information
+  let customCardName = document.getElementById("customCardName").value;
+  // If customCardName is empty, it means the user didn't select "outro" in the bank dropdown
+  // In that case, we should use the selected bank value
+  if (!customCardName) {
+    const bankSelect = document.getElementById("bankSelect");
+    if (bankSelect && bankSelect.value) {
+      customCardName = bankSelect.options[bankSelect.selectedIndex].text;
+    }
+  }
+
   const installmentPromises = [];
 
   for (let i = 0; i < installments; i++) {
@@ -297,6 +308,7 @@ function addCreditCardTransaction(formData, transactionsRef) {
       totalInstallments: installments,
       invoiceClosed,
       cardType: cardType,
+      customCardName: customCardName, // Add bank information to transaction
       isPaid: false, // Default payment status is false (not paid)
     };
 
@@ -575,8 +587,19 @@ function createTransactionRow(transaction) {
   // Add Bootstrap classes for better styling
   if (transaction.type === "credit_card") {
     // For credit card transactions, don't include the payment checkbox column
+    // Get bank name from customCardName field
+    let bankName = "";
+    if (transaction.customCardName) {
+      // If customCardName exists, use it as the bank name
+      bankName = transaction.customCardName;
+    } else {
+      // Default to empty string if no bank information is available
+      bankName = "";
+    }
+
     row.innerHTML = `
       <td data-id="${transaction.id}">${formattedDate}</td>
+      <td data-id="${transaction.id}">${bankName}</td>
       <td data-id="${transaction.id
       }" class="text-truncate" style="max-width: 150px;">${displayDescription}</td>
       <td data-id="${transaction.id}">${getCategoryTranslation(
