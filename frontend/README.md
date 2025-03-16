@@ -1,5 +1,5 @@
 # Dicas
-## :shortcuts: Atalhos
+## :garbage: Atalhos
 ##### Option + seta para cima ou para baixo desloca a linha.
 ##### Command + C sem selecionar copia a linha inteira.
 ##### Command + shif + Z = Refaz a operação desfeita.
