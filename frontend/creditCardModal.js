@@ -3,6 +3,9 @@
 // Constants for localStorage
 const CARD_DUE_DATES_KEY = 'cardDueDates';
 
+// DOM Element cache to avoid repeated queries
+const domElements = {};
+
 // Function to create and show the credit card form modal
 function createCreditCardFormModal() {
   // Create modal element if it doesn't exist
@@ -46,37 +49,7 @@ function createCreditCardFormModal() {
                 <label for="modalCardDueDate" class="form-label">Vencimento</label>
                 <select class="form-select" id="modalCardDueDate">
                   <option value="" disabled selected>Dia do vencimento</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                  <option value="11">11</option>
-                  <option value="12">12</option>
-                  <option value="13">13</option>
-                  <option value="14">14</option>
-                  <option value="15">15</option>
-                  <option value="16">16</option>
-                  <option value="17">17</option>
-                  <option value="18">18</option>
-                  <option value="19">19</option>
-                  <option value="20">20</option>
-                  <option value="21">21</option>
-                  <option value="22">22</option>
-                  <option value="23">23</option>
-                  <option value="24">24</option>
-                  <option value="25">25</option>
-                  <option value="26">26</option>
-                  <option value="27">27</option>
-                  <option value="28">28</option>
-                  <option value="29">29</option>
-                  <option value="30">30</option>
-                  <option value="31">31</option>
+                  ${generateDueDateOptions()}
                 </select>
               </div>
               <div class="mb-3">
@@ -90,18 +63,7 @@ function createCreditCardFormModal() {
               <div class="mb-3">
                 <label for="modalInstallments" class="form-label">Parcelas</label>
                 <select class="form-select" id="modalInstallments">
-                  <option value="1">1x</option>
-                  <option value="2">2x</option>
-                  <option value="3">3x</option>
-                  <option value="4">4x</option>
-                  <option value="5">5x</option>
-                  <option value="6">6x</option>
-                  <option value="7">7x</option>
-                  <option value="8">8x</option>
-                  <option value="9">9x</option>
-                  <option value="10">10x</option>
-                  <option value="11">11x</option>
-                  <option value="12">12x</option>
+                  ${generateInstallmentOptions()}
                 </select>
               </div>
               <div class="mb-3 form-check">
@@ -124,6 +86,9 @@ function createCreditCardFormModal() {
   // Append modal to body
   document.body.insertAdjacentHTML('beforeend', modalHTML);
 
+  // Cache DOM elements for better performance
+  cacheDOMElements();
+  
   // Set up event listeners
   setupCreditCardFormModalListeners();
 
@@ -131,130 +96,184 @@ function createCreditCardFormModal() {
   showCreditCardFormModal();
 }
 
+// Helper function to generate due date options
+function generateDueDateOptions() {
+  let options = '';
+  for (let i = 1; i <= 31; i++) {
+    options += `<option value="${i}">${i}</option>`;
+  }
+  return options;
+}
+
+// Helper function to generate installment options
+function generateInstallmentOptions() {
+  let options = '';
+  for (let i = 1; i <= 12; i++) {
+    options += `<option value="${i}">${i}x</option>`;
+  }
+  return options;
+}
+
+// Cache DOM elements for better performance
+function cacheDOMElements() {
+  const elements = [
+    'creditCardFormModal', 'cardBank', 'customCardNameContainer', 
+    'modalCustomCardName', 'modalCardDueDate', 'modalCardType', 
+    'modalInstallments', 'modalInvoiceClosed', 'confirmCreditCardBtn'
+  ];
+  
+  elements.forEach(id => {
+    domElements[id] = document.getElementById(id);
+  });
+}
+
 // Function to show the credit card form modal
 function showCreditCardFormModal() {
-  const modal = document.getElementById('creditCardFormModal');
-  if (modal) {
-    // Reset form fields to default values
-    const cardBankSelect = document.getElementById('cardBank');
-    if (cardBankSelect) {
-      cardBankSelect.value = ''; // Reset to default "Selecione uma opção"
-
-      // Hide custom card name field
-      const customCardNameContainer = document.getElementById('customCardNameContainer');
-      if (customCardNameContainer) {
-        customCardNameContainer.style.display = 'none';
-      }
-
-      // Reset custom card name input
-      const customCardNameInput = document.getElementById('modalCustomCardName');
-      if (customCardNameInput) {
-        customCardNameInput.value = '';
-      }
-    }
-
-    // Reset due date
-    const modalCardDueDate = document.getElementById('modalCardDueDate');
-    if (modalCardDueDate) {
-      modalCardDueDate.value = '';
-    }
-
-    // Reset other fields to defaults
-    const modalCardType = document.getElementById('modalCardType');
-    if (modalCardType) {
-      modalCardType.value = 'titular';
-    }
-
-    const modalInstallments = document.getElementById('modalInstallments');
-    if (modalInstallments) {
-      modalInstallments.value = '1';
-    }
-
-    const modalInvoiceClosed = document.getElementById('modalInvoiceClosed');
-    if (modalInvoiceClosed) {
-      modalInvoiceClosed.checked = false;
-    }
-
+  if (!domElements.creditCardFormModal) {
+    cacheDOMElements();
+  }
+  
+  if (domElements.creditCardFormModal) {
+    // Reset form to default state
+    resetCreditCardForm();
+    
     // Show the modal
-    const modalInstance = new bootstrap.Modal(modal);
+    const modalInstance = new bootstrap.Modal(domElements.creditCardFormModal);
     modalInstance.show();
+  }
+}
+
+// Function to reset the credit card form to default values
+function resetCreditCardForm() {
+  if (domElements.cardBank) {
+    domElements.cardBank.value = '';
+  }
+  
+  if (domElements.customCardNameContainer) {
+    domElements.customCardNameContainer.style.display = 'none';
+  }
+  
+  if (domElements.modalCustomCardName) {
+    domElements.modalCustomCardName.value = '';
+  }
+  
+  if (domElements.modalCardDueDate) {
+    domElements.modalCardDueDate.value = '';
+  }
+  
+  if (domElements.modalCardType) {
+    domElements.modalCardType.value = 'titular';
+  }
+  
+  if (domElements.modalInstallments) {
+    domElements.modalInstallments.value = '1';
+  }
+  
+  if (domElements.modalInvoiceClosed) {
+    domElements.modalInvoiceClosed.checked = false;
   }
 }
 
 // Function to set up event listeners for the credit card form modal
 function setupCreditCardFormModalListeners() {
+  if (!domElements.cardBank) {
+    cacheDOMElements();
+  }
+  
   // Show/hide custom card name field based on bank selection
-  const cardBankSelect = document.getElementById('cardBank');
-  const customCardNameContainer = document.getElementById('customCardNameContainer');
-  const modalCardDueDate = document.getElementById('modalCardDueDate');
-
-  if (cardBankSelect && customCardNameContainer) {
-    cardBankSelect.addEventListener('change', function () {
-      if (this.value === 'outro') {
-        customCardNameContainer.style.display = 'block';
-        // Reset due date when selecting "outro"
-        modalCardDueDate.value = '';
-      } else {
-        customCardNameContainer.style.display = 'none';
-        // Load saved due date for selected bank
-        loadSavedDueDate(this.value);
-      }
-    });
+  if (domElements.cardBank && domElements.customCardNameContainer) {
+    domElements.cardBank.addEventListener('change', handleCardBankChange);
   }
 
   // Confirm button event listener
-  const confirmBtn = document.getElementById('confirmCreditCardBtn');
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', function () {
-      // Get values from modal form
-      const cardBank = document.getElementById('cardBank').value;
-      const customCardName = document.getElementById('modalCustomCardName').value;
-      const cardDueDate = document.getElementById('modalCardDueDate').value;
-      const cardType = document.getElementById('modalCardType').value;
-      const installments = document.getElementById('modalInstallments').value;
-      const invoiceClosed = document.getElementById('modalInvoiceClosed').checked;
+  if (domElements.confirmCreditCardBtn) {
+    domElements.confirmCreditCardBtn.addEventListener('click', handleConfirmButtonClick);
+  }
+}
 
-      // Validate form
-      if (!validateCreditCardForm(cardBank, customCardName, cardDueDate)) {
-        return;
-      }
+// Handler for card bank change event
+function handleCardBankChange() {
+  const selectedBank = domElements.cardBank.value;
+  
+  if (selectedBank === 'outro') {
+    domElements.customCardNameContainer.style.display = 'block';
+    // Reset due date when selecting "outro"
+    domElements.modalCardDueDate.value = '';
+  } else {
+    domElements.customCardNameContainer.style.display = 'none';
+    // Load saved due date for selected bank
+    loadSavedDueDate(selectedBank);
+  }
+}
 
-      // Save due date for this card bank
-      saveDueDate(cardBank, customCardName, cardDueDate);
+// Handler for confirm button click
+function handleConfirmButtonClick() {
+  // Get form data
+  const formData = getFormData();
+  
+  // Validate form
+  if (!validateCreditCardForm(formData)) {
+    return;
+  }
 
-      // Transfer values to the main form
-      transferValuesToMainForm(cardBank, customCardName, cardDueDate, cardType, installments, invoiceClosed);
+  // Save due date for this card bank
+  saveDueDate(formData.cardBank, formData.customCardName, formData.cardDueDate);
 
-      // Submit the main form automatically
-      document.getElementById('transactionForm').dispatchEvent(new Event('submit'));
+  // Transfer values to the main form
+  transferValuesToMainForm(formData);
 
-      // Close the modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('creditCardFormModal'));
-      if (modal) {
-        modal.hide();
-      }
-    });
+  // Submit the main form automatically
+  document.getElementById('transactionForm')?.dispatchEvent(new Event('submit'));
+
+  // Close the modal
+  closeModal();
+}
+
+// Function to get form data
+function getFormData() {
+  return {
+    cardBank: domElements.cardBank.value,
+    customCardName: domElements.modalCustomCardName.value,
+    cardDueDate: domElements.modalCardDueDate.value,
+    cardType: domElements.modalCardType.value,
+    installments: domElements.modalInstallments.value,
+    invoiceClosed: domElements.modalInvoiceClosed.checked
+  };
+}
+
+// Function to close the modal
+function closeModal() {
+  const modal = bootstrap.Modal.getInstance(domElements.creditCardFormModal);
+  if (modal) {
+    modal.hide();
   }
 }
 
 // Function to validate the credit card form
-function validateCreditCardForm(cardBank, customCardName, cardDueDate) {
+function validateCreditCardForm(formData) {
+  const { cardBank, customCardName, cardDueDate } = formData;
+  
   if (!cardBank) {
-    alert('Por favor, selecione um banco ou administradora.');
+    showValidationError('Por favor, selecione um banco ou administradora.');
     return false;
   }
 
   if (cardBank === 'outro' && !customCardName) {
-    alert('Por favor, digite o nome do cartão.');
+    showValidationError('Por favor, digite o nome do cartão.');
     return false;
   }
 
   if (!cardDueDate) {
-    alert('Por favor, selecione o dia de vencimento.');
+    showValidationError('Por favor, selecione o dia de vencimento.');
     return false;
   }
 
   return true;
+}
+
+// Function to show validation error
+function showValidationError(message) {
+  alert(message); // Could be improved with a more user-friendly notification
 }
 
 // Function to save due date for a card bank
@@ -266,7 +285,7 @@ function saveDueDate(cardBank, customCardName, dueDate) {
   if (!cardId || !dueDate) return;
 
   // Get saved due dates
-  const savedDueDates = JSON.parse(localStorage.getItem(CARD_DUE_DATES_KEY) || '{}');
+  const savedDueDates = getStoredDueDates();
 
   // Save due date for this card
   savedDueDates[cardId] = dueDate;
@@ -275,54 +294,70 @@ function saveDueDate(cardBank, customCardName, dueDate) {
   localStorage.setItem(CARD_DUE_DATES_KEY, JSON.stringify(savedDueDates));
 }
 
+// Function to get stored due dates
+function getStoredDueDates() {
+  try {
+    return JSON.parse(localStorage.getItem(CARD_DUE_DATES_KEY) || '{}');
+  } catch (e) {
+    console.error('Error parsing stored due dates:', e);
+    return {};
+  }
+}
+
 // Function to load saved due date for a card bank
 function loadSavedDueDate(cardId) {
   if (!cardId) return;
 
   // Get saved due dates
-  const savedDueDates = JSON.parse(localStorage.getItem(CARD_DUE_DATES_KEY) || '{}');
-
-  // Get due date select element
-  const modalCardDueDate = document.getElementById('modalCardDueDate');
+  const savedDueDates = getStoredDueDates();
 
   // Set due date if saved
   if (savedDueDates[cardId]) {
-    modalCardDueDate.value = savedDueDates[cardId];
+    domElements.modalCardDueDate.value = savedDueDates[cardId];
   } else {
-    modalCardDueDate.value = '';
+    domElements.modalCardDueDate.value = '';
   }
 }
 
 // Function to transfer values from modal to main form
-function transferValuesToMainForm(cardBank, customCardName, cardDueDate, cardType, installments, invoiceClosed) {
+function transferValuesToMainForm(formData) {
+  const { cardBank, customCardName, cardDueDate, cardType, installments, invoiceClosed } = formData;
+  
   // Set values in the main form
-  if (document.getElementById('cardType')) {
-    document.getElementById('cardType').value = cardType;
-  }
-
-  if (document.getElementById('installments')) {
-    document.getElementById('installments').value = installments;
-  }
-
-  if (document.getElementById('invoiceClosed')) {
-    document.getElementById('invoiceClosed').checked = invoiceClosed;
-  }
-
-  if (document.getElementById('cardDueDate')) {
-    document.getElementById('cardDueDate').value = cardDueDate;
-  }
+  setFormFieldValue('cardType', cardType);
+  setFormFieldValue('installments', installments);
+  setFormFieldCheckbox('invoiceClosed', invoiceClosed);
+  setFormFieldValue('cardDueDate', cardDueDate);
 
   // Handle custom card name field
-  if (document.getElementById('customCardName')) {
+  const customCardNameField = document.getElementById('customCardName');
+  const customCardNameContainer = document.querySelector('.custom-card-name');
+  
+  if (customCardNameField && customCardNameContainer) {
     if (cardBank === 'outro') {
-      document.getElementById('customCardName').value = customCardName;
-      document.querySelector('.custom-card-name').style.display = 'block';
+      customCardNameField.value = customCardName;
+      customCardNameContainer.style.display = 'block';
     } else {
       // Get the display text of the selected bank instead of its value
-      const bankSelect = document.getElementById('cardBank');
-      const selectedBankText = bankSelect.options[bankSelect.selectedIndex].text;
-      document.getElementById('customCardName').value = selectedBankText;
-      document.querySelector('.custom-card-name').style.display = 'none';
+      const selectedBankText = domElements.cardBank.options[domElements.cardBank.selectedIndex].text;
+      customCardNameField.value = selectedBankText;
+      customCardNameContainer.style.display = 'none';
     }
+  }
+}
+
+// Helper function to set form field value
+function setFormFieldValue(fieldId, value) {
+  const field = document.getElementById(fieldId);
+  if (field) {
+    field.value = value;
+  }
+}
+
+// Helper function to set form field checkbox
+function setFormFieldCheckbox(fieldId, checked) {
+  const field = document.getElementById(fieldId);
+  if (field) {
+    field.checked = checked;
   }
 }
