@@ -18,4 +18,4 @@
 :sunglasses:
 :rocket:
 :star:
-:tophat:
+:wastebasket:
