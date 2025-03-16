@@ -318,7 +318,10 @@ function transferValuesToMainForm(cardBank, customCardName, cardDueDate, cardTyp
       document.getElementById('customCardName').value = customCardName;
       document.querySelector('.custom-card-name').style.display = 'block';
     } else {
-      document.getElementById('customCardName').value = cardBank;
+      // Get the display text of the selected bank instead of its value
+      const bankSelect = document.getElementById('cardBank');
+      const selectedBankText = bankSelect.options[bankSelect.selectedIndex].text;
+      document.getElementById('customCardName').value = selectedBankText;
       document.querySelector('.custom-card-name').style.display = 'none';
     }
   }
