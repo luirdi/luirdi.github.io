@@ -214,6 +214,14 @@ html {
   flex: 0 0 auto;
   width: 33%;
 }
+
+/* Garantindo que o formulário de adicionar transação tenha no máximo 2 colunas em mobile */
+@media (max-width: 576px) {
+  #transactionForm .col-md-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
 .table td {
   padding: 0.25rem;
   vertical-align: middle;
@@ -230,6 +238,12 @@ html {
   .col-sm-6 {
     flex: 0 0 auto;
     width: 25%;
+  }
+  
+  /* Ajuste para o container ADICIONAR TRANSAÇÃO ter no máximo 2 colunas em mobile */
+  #transactionForm .col-md-6 {
+    flex: 0 0 auto;
+    width: 50%;
   }
 
   .mt-4c {
