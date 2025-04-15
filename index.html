@@ -124,36 +124,29 @@
             <h5 class="card-title">Adicionar Transação</h5>
             <form id="transactionForm" class="needs-validation" novalidate>
               <div class="row g-3">
-
-                <div class="col-md-6 col-lg-3">
+                <!-- Primeira linha: Data e Descrição -->
+                <div class="col-6">
                   <label for="date" class="form-label">Data</label>
                   <input type="date" class="form-control" id="date" required />
                   <div class="invalid-feedback">Por favor, selecione uma data.</div>
                 </div>
 
-
-                <div class="col-md-6 col-lg-3">
+                <div class="col-6">
                   <label for="description" class="form-label">Descrição</label>
                   <input type="text" class="form-control" id="description" required />
                   <div class="invalid-feedback">Por favor, informe uma descrição.</div>
                 </div>
 
-
-
-                <div class="col-md-6 col-lg-3">
+                <!-- Segunda linha: Valor e Categoria -->
+                <div class="col-6">
                   <label for="amount" class="form-label">Valor</label>
                   <div class="input-group">
-                    <!-- <span class="input-group-text">R$</span> -->
                     <input type="number" class="form-control" id="amount" step="0.01" required />
                     <div class="invalid-feedback">Por favor, informe um valor válido.</div>
                   </div>
                 </div>
 
-
-
-
-
-                <div class="col-md-6 col-lg-3">
+                <div class="col-6">
                   <label for="category" class="form-label">Categoria</label>
                   <select class="form-select" id="category" required>
                     <option value="" disabled selected>Selecione</option>
@@ -172,11 +165,12 @@
                     <option value="streaming_internet_tv">Streaming/Internet/TV</option>
                     <option value="uber">Uber</option>
                     <option value="vestuario">Vestuário</option>
-
                   </select>
                   <div class="invalid-feedback">Por favor, selecione uma categoria.</div>
                 </div>
-                <div class="col-md-3 col-lg-3">
+
+                <!-- Terceira linha: Tipo (ocupando linha inteira) -->
+                <div class="col-12">
                   <label for="type" class="form-label">Tipo</label>
                   <select class="form-select" id="type" required>
                     <option value="" disabled selected>Selecione</option>
