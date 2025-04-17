@@ -124,7 +124,7 @@ function populateCardPaymentModal() {
           // Create card group elements
           Object.values(cardGroups).forEach(group => {
                     const cardGroupElement = document.createElement('div');
-                    cardGroupElement.className = 'col-md-6';
+                    cardGroupElement.className = 'col-md-6 col-lg-6';
 
                     // Check if all transactions in this group are paid
                     const allPaid = group.transactions.every(t => t.isPaid === true);
