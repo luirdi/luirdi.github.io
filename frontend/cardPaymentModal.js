@@ -181,6 +181,7 @@ function updateCardVisualStatus(event) {
           // Atualizar o valor da dívida atual no dashboard
           const totalExpensesElement = document.getElementById('totalExpenses');
           const totalPaidExpensesElement = document.getElementById('totalPaidExpenses');
+          const totalCreditCardElement = document.getElementById('totalCreditCard');
 
           if (checkbox.checked) {
                     // Marcado como pago
@@ -194,13 +195,16 @@ function updateCardVisualStatus(event) {
                     }
 
                     // Atualizar valores no dashboard (simulação visual até confirmação)
-                    if (totalPaidExpensesElement && totalExpensesElement) {
+                    if (totalPaidExpensesElement && totalExpensesElement && totalCreditCardElement) {
+                              // Obter valores atuais
                               const currentPaidValue = parseFloat(totalPaidExpensesElement.dataset.value || 0);
                               const currentExpensesValue = parseFloat(totalExpensesElement.dataset.value || 0);
+                              const currentCreditCardValue = parseFloat(totalCreditCardElement.dataset.value || 0);
 
                               // Adicionar o valor do cartão às despesas pagas
-                              totalPaidExpensesElement.dataset.value = (currentPaidValue + cardTotal).toString();
-                              totalPaidExpensesElement.textContent = formatCurrency(currentPaidValue + cardTotal);
+                              const newPaidValue = currentPaidValue + cardTotal;
+                              totalPaidExpensesElement.dataset.value = newPaidValue.toString();
+                              totalPaidExpensesElement.textContent = formatCurrency(newPaidValue);
 
                               // Atualizar o visual do dashboard
                               updateDashboardVisuals();
@@ -215,8 +219,11 @@ function updateCardVisualStatus(event) {
                     cardLabel.innerHTML = cardName;
 
                     // Atualizar valores no dashboard (simulação visual até confirmação)
-                    if (totalPaidExpensesElement && totalExpensesElement) {
+                    if (totalPaidExpensesElement && totalExpensesElement && totalCreditCardElement) {
+                              // Obter valores atuais
                               const currentPaidValue = parseFloat(totalPaidExpensesElement.dataset.value || 0);
+                              const currentExpensesValue = parseFloat(totalExpensesElement.dataset.value || 0);
+                              const currentCreditCardValue = parseFloat(totalCreditCardElement.dataset.value || 0);
 
                               // Remover o valor do cartão das despesas pagas
                               const newPaidValue = Math.max(0, currentPaidValue - cardTotal);
@@ -231,15 +238,19 @@ function updateCardVisualStatus(event) {
 
 // Função auxiliar para atualizar os visuais do dashboard
 function updateDashboardVisuals() {
-          // Esta função pode ser expandida conforme necessário
-          // Por enquanto, apenas garante que os valores sejam atualizados visualmente
+          // Atualiza os elementos visuais do dashboard com base nos valores atuais
           const totalExpensesElement = document.getElementById('totalExpenses');
           const totalPaidExpensesElement = document.getElementById('totalPaidExpenses');
+          const totalCreditCardElement = document.getElementById('totalCreditCard');
 
-          if (totalExpensesElement && totalPaidExpensesElement) {
-                    // Atualizar cores e estilos conforme necessário
+          if (totalExpensesElement && totalPaidExpensesElement && totalCreditCardElement) {
+                    // Obter valores atuais
                     const paidValue = parseFloat(totalPaidExpensesElement.dataset.value || 0);
                     const expensesValue = parseFloat(totalExpensesElement.dataset.value || 0);
+                    const creditCardValue = parseFloat(totalCreditCardElement.dataset.value || 0);
+
+                    // Atualizar o texto dos elementos
+                    totalPaidExpensesElement.textContent = formatCurrency(paidValue);
 
                     // Se todas as despesas estiverem pagas, atualizar o estilo
                     if (paidValue >= expensesValue) {
@@ -248,6 +259,19 @@ function updateDashboardVisuals() {
                     } else {
                               totalExpensesElement.classList.remove('text-success');
                               totalExpensesElement.classList.add('text-danger');
+                    }
+
+                    // Atualizar a visualização do valor total de cartões de crédito
+                    // Se todos os cartões estiverem pagos, mostrar em verde
+                    const allCardCheckboxes = document.querySelectorAll('#cardPaymentList input[type="checkbox"]');
+                    const allChecked = Array.from(allCardCheckboxes).every(checkbox => checkbox.checked);
+
+                    if (allChecked && allCardCheckboxes.length > 0) {
+                              totalCreditCardElement.classList.remove('text-danger');
+                              totalCreditCardElement.classList.add('text-success');
+                    } else {
+                              totalCreditCardElement.classList.remove('text-success');
+                              totalCreditCardElement.classList.add('text-danger');
                     }
           }
 }
