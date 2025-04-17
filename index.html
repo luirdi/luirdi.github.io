@@ -124,26 +124,26 @@
             <h5 class="card-title">Adicionar Transação</h5>
             <form id="transactionForm" class="needs-validation" novalidate>
               <div class="row g-3">
-                <!-- Primeira linha: Data e Descrição -->
-                <div class="col-6">
-                  <label for="date" class="form-label">Data</label>
-                  <input type="date" class="form-control" id="date" required />
-                  <div class="invalid-feedback">Por favor, selecione uma data.</div>
-                </div>
-
+                <!-- Primeira linha: Descrição e Valor -->
                 <div class="col-6">
                   <label for="description" class="form-label">Descrição</label>
                   <input type="text" class="form-control" id="description" required />
                   <div class="invalid-feedback">Por favor, informe uma descrição.</div>
                 </div>
-
-                <!-- Segunda linha: Valor e Categoria -->
                 <div class="col-6">
                   <label for="amount" class="form-label">Valor</label>
                   <div class="input-group">
                     <input type="number" class="form-control" id="amount" step="0.01" required />
                     <div class="invalid-feedback">Por favor, informe um valor válido.</div>
                   </div>
+                </div>
+
+
+                <!-- Segunda linha: Data e Categoria -->
+                <div class="col-6">
+                  <label for="date" class="form-label">Data</label>
+                  <input type="date" class="form-control" id="date" required />
+                  <div class="invalid-feedback">Por favor, selecione uma data.</div>
                 </div>
 
                 <div class="col-6">
