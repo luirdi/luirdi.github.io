@@ -9,6 +9,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  output: 'export',
+  // Adicione esta linha se o repositório não estiver na raiz do domínio
+  // basePath: '/nome-do-repositorio',
 }
 
 export default nextConfig
