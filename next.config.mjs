@@ -10,8 +10,8 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
-  // Adicione esta linha se o repositório não estiver na raiz do domínio
-  // basePath: '/nome-do-repositorio',
+  // Remova o comentário da linha abaixo se o site não estiver na raiz do domínio
+  // basePath: '/luirdi.github.io',
 }
 
 export default nextConfig
